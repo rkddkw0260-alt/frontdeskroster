@@ -667,7 +667,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v9';
+const APP_VERSION='2026-05-v10';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -910,7 +910,13 @@ function generate(){
   setRoster(JSON.parse(JSON.stringify(result, (k,v)=>v instanceof Date?v.toISOString():v)));
   setCounts(curCounts);
   setBaseMonth(m);
-  markUnsaved();
+  // 생성 즉시 자동 저장
+  setRoster(JSON.parse(JSON.stringify(result,(k,v)=>v instanceof Date?v.toISOString():v)));
+  setCounts(curCounts);
+  saveToCloud();
+  // 저장 버튼 완료 상태로
+  const sbtn=document.getElementById('save-roster-btn');
+  if(sbtn){sbtn.textContent='💾 저장됨 ✓';sbtn.disabled=true;sbtn.style.opacity='.5';}
   renderRoster(yr,mo,result);
   renderStats(emps);
   goPage('roster');
@@ -1102,7 +1108,8 @@ function doSwap(){
 
   closeSwapModal();
   // ★ 교체 후 roster 저장
-  markUnsaved();
+  setRoster(JSON.parse(JSON.stringify(curRoster,(k,v)=>v instanceof Date?v.toISOString():v)));
+  saveToCloud();
   cancelSwap();
   const m=document.getElementById('base-month').value;
   renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);
