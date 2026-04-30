@@ -667,7 +667,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v3';
+const APP_VERSION='2026-05-v4';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 이력·당직표·카운트만 초기화 (직원목록·공휴일·비밀번호는 유지)
   ['hist3','roster3','counts3','basemonth3'].forEach(k=>localStorage.removeItem(k));
@@ -1312,7 +1312,7 @@ function saveFile(){
 //  GAS 클라우드 저장/불러오기
 // ══════════════════════════════════════════════
 // ★ 배포 후 받은 웹앱 URL로 교체하세요
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwayE5ggfFbCpwZNssmxK-HWZWNExYLsXIUOhV4pEcCuPfmM88vgx3vJu8qhH2tsLnrtw/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwI_xiY7dTjq5OTRPVHF19XGGgBR7ZU9vrNmyItDL39ee1sEaokEgDS_9NjAXejfPe1NQ/exec';
 
 function syncDot(status, msg) {
   var dot = document.getElementById('sync-dot');
