@@ -667,7 +667,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v10';
+const APP_VERSION='2026-05-v11';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1344,7 +1344,7 @@ function getSnapshot() {
     counts:    getCounts(),
     baseMonth: getBaseMonth(),
     hist: (function(){ try{return JSON.parse(localStorage.getItem('hist3')||'[]');}catch(e){return [];} })(),
-    emps: (function(){ try{return JSON.parse(localStorage.getItem('emps3')||'null');}catch(e){return null;} })(),
+    emps: (function(){ try{ var v=localStorage.getItem('emps3'); return v?JSON.parse(v):getEmps(); }catch(e){return getEmps();} })(),
     hols: (function(){ try{return JSON.parse(localStorage.getItem('hols3')||'[]');}catch(e){return [];} })(),
     pw:   (function(){ try{return localStorage.getItem('admin_pw')||'sinokorgat01!';}catch(e){return 'sinokorgat01!';} })(),
   };
