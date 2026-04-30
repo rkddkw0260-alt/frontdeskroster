@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>데스크 당직표 자동생성기</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:#f2f1ed;color:#1c1b18;font-size:14px;line-height:1.5}
+.shell{display:flex;min-height:100vh}
+
+/* ── 사이드바 ── */
+.side{width:200px;background:#1c1b18;color:#fff;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;overflow-y:auto}
+.side-logo{padding:24px 20px 14px;font-size:11px;letter-spacing:.12em;color:rgba(255,255,255,.3);text-transform:uppercase}
+.side-title{padding:0 20px 18px;font-size:16px;font-weight:600;line-height:1.35;border-bottom:1px solid rgba(255,255,255,.08)}
+.side-nav{padding:10px 0;flex:1}
+.nav-btn{display:flex;align-items:center;gap:9px;width:100%;padding:10px 20px;background:none;border:none;color:rgba(255,255,255,.5);font-size:13px;font-family:inherit;cursor:pointer;text-align:left;transition:.15s;border-left:2px solid transparent}
+.nav-btn:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav-btn.on{color:#fff;background:rgba(255,255,255,.1);border-left-color:#7ec89a}
+.nav-lock{font-size:10px;opacity:.4;margin-left:auto}
+.side-footer{padding:14px 20px;font-size:11px;color:rgba(255,255,255,.22);border-top:1px solid rgba(255,255,255,.08);line-height:1.8}
+
+/* ── 메인 ── */
+.main{margin-left:200px;padding:36px 40px;flex:1;zoom:1.5}
+.page{display:none}.page.on{display:block}
+.pg-head{margin-bottom:22px}
+.pg-h{font-size:21px;font-weight:700;letter-spacing:-.02em}
+.pg-sub{font-size:13px;color:#888;margin-top:3px}
+
+/* ── 카드 ── */
+.card{background:#fff;border:1px solid #e4e2dc;border-radius:10px;padding:20px 24px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card-h{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#bbb;margin-bottom:14px}
+
+/* ── 폼 ── */
+.field{margin-bottom:13px}
+.field>label{display:block;font-size:12px;font-weight:500;color:#666;margin-bottom:5px}
+input[type=month],input[type=date],input[type=text],input[type=password],select{border:1px solid #ddd;border-radius:6px;padding:8px 11px;font-size:13px;font-family:inherit;background:#fff;color:#1c1b18;outline:none;transition:border .15s}
+input[type=month],input[type=date]{width:auto}
+input[type=text],input[type=password]{width:100%}
+select{width:100%}
+input:focus,select:focus{border-color:#2d5a3d}
+
+/* ── 버튼 ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;transition:.15s;border:1px solid #ddd;background:#fff;color:#1c1b18}
+.btn:hover{background:#f5f4f0}
+.btn-green{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
+.btn-green:hover{background:#235030}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-danger{color:#b82222;border-color:#e8b4b4}
+.btn-danger:hover{background:#fdf0f0}
+.btn-full{width:100%;justify-content:center;padding:12px;font-size:14px}
+.btn-swap{padding:4px 10px;font-size:11px;background:#fff8e6;border-color:#e6c96a;color:#7a5000}
+.btn-swap:hover{background:#fff3d0}
+.btn-swap.selected{background:#2d5a3d;color:#fff;border-color:#2d5a3d}
+
+/* ── 배지/태그 ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.b-장비팀{background:#e6eef8;color:#1e4080}
+.b-전산팀{background:#eeeef8;color:#3535a0}
+.b-기타{background:#e8f4ed;color:#1a5c32}
+.b-fix{background:#fff3e0;color:#bf6000}
+.b-swapped{background:#fce8e8;color:#8b0000}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;background:#f2f1ed;border:1px solid #e4e2dc;color:#555}
+.tag .x{cursor:pointer;color:#bbb;font-size:14px;line-height:1}
+.tag .x:hover{color:#b82222}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:24px}
+
+/* ── 통계 ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-box{background:#fff;border:1px solid #e4e2dc;border-radius:8px;padding:14px;text-align:center}
+.stat-n{font-size:24px;font-weight:700;letter-spacing:-.02em}
+.stat-l{font-size:11px;color:#aaa;margin-top:3px}
+
+/* ── 테이블 ── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f5f4f0;padding:9px 12px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.05em;color:#999;border-bottom:1px solid #e4e2dc;white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid #f0efeb;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafaf8}
+
+/* ── 당직표 ── */
+.roster-day{background:#fff;border:1px solid #e4e2dc;border-radius:8px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.roster-dh{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#f5f4f0;border-bottom:1px solid #e4e2dc}
+.day-pill{padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;background:#dcebd5;color:#2d5a3d}
+.day-dt{font-size:13px;font-weight:500}
+.day-cnt{font-size:12px;color:#bbb;margin-left:auto}
+.roster-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.slot-row{display:flex;align-items:center;gap:9px;padding:9px 14px;border-right:1px solid #f0efeb;border-bottom:1px solid #f0efeb;transition:.15s}
+.slot-row.swap-hi{background:#fffbea;border-color:#e6c96a}
+.slot-n{width:20px;height:20px;border-radius:50%;background:#f2f1ed;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#aaa;flex-shrink:0}
+.slot-time{font-size:11px;color:#bbb;min-width:90px}
+.slot-name{font-weight:500;flex:1}
+.slot-rank{font-size:11px;color:#aaa;margin-right:4px}
+.slot-dept{font-size:10px;padding:1px 7px;border-radius:20px;background:#f0f0f0;color:#666;white-space:nowrap}
+
+/* ── 알림 ── */
+.alert{padding:10px 14px;border-radius:7px;font-size:13px;border-left:3px solid;margin-bottom:12px}
+.a-info{background:#e8eef8;border-color:#1e4080;color:#1e3a6e}
+.a-ok{background:#e8f4ed;border-color:#2d5a3d;color:#1a4a2a}
+.a-warn{background:#fff8e6;border-color:#c89000;color:#6a4800}
+
+/* ── 바 ── */
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-track{flex:1;height:5px;background:#eee;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;background:#2d5a3d;border-radius:3px}
+
+/* ── 모달 ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:12px;padding:24px 28px;width:460px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.modal-h{font-size:16px;font-weight:600;margin-bottom:4px}
+.modal-sub{font-size:13px;color:#888;margin-bottom:18px}
+.modal-foot{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+
+/* ── 교체 패널 ── */
+.swap-panel{background:#fffdf0;border:1px solid #e6c96a;border-radius:8px;padding:14px 16px;margin-bottom:14px;display:none}
+.swap-panel.show{display:block}
+.swap-cards{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;margin:10px 0}
+.swap-card{flex:1;min-width:160px;background:#fff;border:1px solid #e4e2dc;border-radius:8px;padding:12px 14px}
+.swap-card.filled{border-color:#2d5a3d;background:#f0f6f2}
+.swap-card-label{font-size:11px;color:#aaa;margin-bottom:6px;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.swap-card-name{font-size:15px;font-weight:600}
+.swap-card-detail{font-size:12px;color:#888;margin-top:3px}
+.swap-arrow{display:flex;align-items:center;font-size:20px;color:#aaa;padding:0 4px}
+
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.divider{height:1px;background:#eee;margin:14px 0}
+@media print{.side,.row,.swap-panel,.btn-swap{display:none}.main{margin-left:0;padding:16px}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="shell">
+
+<!-- ══ 사이드바 ══ -->
+<nav class="side">
+  <div class="side-logo">Desk Duty v2</div>
+  <div class="side-title">당직표<br>자동생성기</div>
+  <div class="side-nav">
+    <button class="nav-btn on" id="nb-roster" onclick="goPage('roster')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1A1.5 1.5 0 002 2.5v11A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0012.5 1h-9zm0 1.5h9v11h-9v-11zM5 5.75A.75.75 0 015.75 5h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 5.75zm0 3A.75.75 0 015.75 8h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 8.75zm0 3A.75.75 0 015.75 11h2.5a.75.75 0 010 1.5h-2.5A.75.75 0 015 11.75z"/></svg>
+      당직표
+    </button>
+    <button class="nav-btn" id="nb-guide" onclick="goPage('guide')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zM6.5 4.5a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8 7.75a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 7.75z"/></svg>
+      방문대장 안내
+    </button>
+    <button class="nav-btn" id="nb-setup" onclick="requirePw('setup')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.5a5.5 5.5 0 110 11 5.5 5.5 0 010-11zM8.75 5.25a.75.75 0 00-1.5 0v3c0 .414.336.75.75.75h2a.75.75 0 000-1.5H8.75V5.25z"/></svg>
+      설정
+      <span class="nav-lock">🔒</span>
+    </button>
+    <button class="nav-btn" id="nb-stats" onclick="requirePw('stats')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 11a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5zm4-4a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5zm4-4a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5z"/></svg>
+      통계
+      <span class="nav-lock">🔒</span>
+    </button>
+    <button class="nav-btn" id="nb-history" onclick="requirePw('history')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.75 4.75a.75.75 0 00-1.5 0V8.5c0 .414.336.75.75.75h2.5a.75.75 0 000-1.5H8.75V4.75z"/></svg>
+      이력
+      <span class="nav-lock">🔒</span>
+    </button>
+    <button class="nav-btn" id="nb-members" onclick="requirePw('members')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/></svg>
+      직원 관리
+      <span class="nav-lock">🔒</span>
+    </button>
+    <button class="nav-btn" id="nb-manual" onclick="requirePw('manual')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1A1.5 1.5 0 002 2.5v11A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0012.5 1h-9zm0 1.5h9v11h-9v-11zM5 5.75A.75.75 0 015.75 5h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 5.75zm0 3A.75.75 0 015.75 8h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 8.75zm0 3A.75.75 0 015.75 11h2.5a.75.75 0 010 1.5h-2.5A.75.75 0 015 11.75z"/></svg>
+      매뉴얼 / 로그
+      <span class="nav-lock">🔒</span>
+    </button>
+  </div>
+  <div class="side-admin" style="padding:10px 20px;border-top:1px solid rgba(255,255,255,.08)">
+  <button id="lock-btn" onclick="lockAdmin()" style="display:none;width:100%;padding:7px 12px;background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.3);border-radius:6px;color:#ff9999;font-size:12px;font-family:inherit;cursor:pointer;text-align:center">🔓 관리자 잠금</button>
+  <div id="lock-status" style="font-size:11px;color:rgba(255,255,255,.35);text-align:center;margin-top:4px"></div>
+</div>
+<div style="padding:8px 16px;border-top:1px solid rgba(255,255,255,.08)">
+    <span style="font-size:10px;color:rgba(255,255,255,.35)">
+      <span id="sync-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#aaa;margin-right:4px;vertical-align:middle;transition:.3s"></span>
+      <span id="sync-txt">연결 중...</span>
+    </span>
+  </div>
+  <div class="side-footer">근무일 기준 3일 간격<br>하루 8슬롯 × 8명<br>이력 자동저장</div>
+  <style>
+    #sync-dot.ok{background:#4caf50!important}
+    #sync-dot.saving{background:#ff9800!important;animation:sp .8s infinite}
+    #sync-dot.error{background:#f44336!important}
+    @keyframes sp{0%,100%{opacity:1}50%{opacity:.2}}
+  </style>
+</nav>
+
+<!-- ══ 메인 ══ -->
+<main class="main">
+
+<!-- 당직표 (공개) -->
+<div id="pg-roster" class="page on">
+  <div class="pg-head">
+    <div class="pg-h" id="roster-h">당직표</div>
+    <div class="pg-sub" id="roster-sub">설정 탭에서 당직표를 생성하세요</div>
+  </div>
+
+  <!-- 교체 패널 -->
+  <div class="swap-panel" id="swap-panel">
+    <div style="font-size:13px;font-weight:600;margin-bottom:2px">⇄ 당직 교체</div>
+    <div style="font-size:12px;color:#888;margin-bottom:10px">교체할 두 슬롯의 <strong>교체</strong> 버튼을 각각 클릭하세요</div>
+    <div class="swap-cards">
+      <div class="swap-card" id="swap-a">
+        <div class="swap-card-label">교체 A</div>
+        <div class="swap-card-name" style="color:#ccc">선택 전</div>
+        <div class="swap-card-detail"></div>
+      </div>
+      <div class="swap-arrow">⇄</div>
+      <div class="swap-card" id="swap-b">
+        <div class="swap-card-label">교체 B</div>
+        <div class="swap-card-name" style="color:#ccc">선택 전</div>
+        <div class="swap-card-detail"></div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn btn-green btn-sm" id="swap-confirm-btn" onclick="confirmSwap()" disabled style="opacity:.4">교체 확정</button>
+      <button class="btn btn-sm" onclick="cancelSwap()">취소</button>
+      <span id="swap-hint" style="font-size:12px;color:#aaa"></span>
+    </div>
+  </div>
+
+  <div class="row" style="margin-bottom:14px">
+    <button class="btn btn-sm" id="swap-toggle-btn" onclick="toggleSwapMode()">⇄ 교체 모드</button>
+    <button class="btn btn-green btn-sm" onclick="saveRoster()" id="save-roster-btn" style="opacity:.4;cursor:not-allowed" disabled>💾 저장</button>
+    <button class="btn btn-sm" onclick="downloadExcel()">📥 엑셀 다운로드</button>
+    <button class="btn btn-sm" onclick="copyTsv()">표 복사</button>
+    <button class="btn btn-sm" onclick="window.print()">인쇄</button>
+
+  </div>
+
+  <div id="roster-out"><div class="alert a-info">왼쪽 설정 탭(🔒)에서 당직표를 먼저 생성해주세요.</div></div>
+</div>
+
+<!-- 설정 (잠금) -->
+<div id="pg-setup" class="page">
+  <div class="pg-head"><div class="pg-h">설정</div><div class="pg-sub">기준월과 공휴일을 설정한 뒤 당직표를 생성하세요</div></div>
+  <div class="card">
+    <div class="card-h">기준월</div>
+    <div class="row">
+      <input type="month" id="base-month" value="2026-05">
+      <button class="btn btn-sm" onclick="autoHolidays()">공휴일 자동 입력</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h">공휴일 <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#bbb;font-size:11px">— 해당 날짜는 당직표에서 제외</span></div>
+    <div class="chips" id="hol-chips"><span style="font-size:12px;color:#ccc">추가된 공휴일 없음</span></div>
+    <div class="row"><input type="date" id="hol-input"><button class="btn btn-sm" onclick="addHoliday()">+ 추가</button></div>
+  </div>
+  <div class="card">
+    <div class="card-h">비밀번호 변경</div>
+    <div class="field"><label>새 비밀번호</label><input type="password" id="new-pw1" placeholder="새 비밀번호 입력"></div>
+    <div class="field"><label>새 비밀번호 확인</label><input type="password" id="new-pw2" placeholder="동일하게 입력"></div>
+    <button class="btn btn-sm" onclick="changePw()">변경</button>
+  </div>
+  <div class="card">
+    <div class="card-h">배정 규칙 요약</div>
+    <div style="font-size:13px;color:#555;line-height:2.1">
+      ✅ 하루 8슬롯 → 서로 다른 8명<br>
+      ✅ 근무일 기준 최소 3일 간격<br>
+      ✅ 전체 편차 <strong>1~2회 이내</strong>로 균등 배정<br>
+      ✅ 시간대 고정 인원은 지정 슬롯만
+    </div>
+  </div>
+  <button class="btn btn-green btn-full" onclick="generate()">당직표 생성 →</button>
+</div>
+
+<!-- 통계 (잠금) -->
+<div id="pg-stats" class="page">
+  <div class="pg-head"><div class="pg-h">배정 통계</div><div class="pg-sub">이번 달 생성 기준</div></div>
+  <div id="stats-out"><div class="alert a-info">당직표를 먼저 생성해주세요.</div></div>
+</div>
+
+<!-- 이력 (잠금) -->
+<div id="pg-history" class="page">
+  <div class="pg-head"><div class="pg-h">배정 이력</div><div class="pg-sub">생성 및 교체 기록 (브라우저 자동저장)</div></div>
+  <div class="row" style="margin-bottom:14px"><button class="btn btn-danger btn-sm" onclick="clearHistory()">이력 전체 삭제</button></div>
+  <div id="hist-out"><div class="alert a-info">이력이 없습니다.</div></div>
+</div>
+
+<!-- 직원 관리 (잠금) -->
+<div id="pg-members" class="page">
+  <div class="pg-head"><div class="pg-h">직원 관리</div><div class="pg-sub">직원 추가·삭제, 시간대 고정 설정</div></div>
+  <div class="row" style="margin-bottom:14px">
+    <button class="btn btn-green btn-sm" onclick="openAddModal()">+ 직원 추가</button>
+    <span style="font-size:12px;color:#aaa" id="emp-cnt"></span>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>#</th><th>이름</th><th>직급</th><th>소속</th><th>고정 시간대</th><th>관리</th></tr></thead>
+      <tbody id="mem-tbody"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- 매뉴얼 / 로그 (공개) -->
+<div id="pg-manual" class="page">
+  <div class="pg-head">
+    <div class="pg-h">매뉴얼 &amp; 업데이트 로그</div>
+    <div class="pg-sub">기능 설명 및 변경 이력</div>
+  </div>
+
+  <!-- 파일 저장 & 공유 (담당자 전용) -->
+  <div class="card" style="border:1.5px solid #2d5a3d;background:#f6fff8">
+    <div class="card-h" style="color:#2d5a3d">💾 파일 저장 & 공유 (담당자 전용)</div>
+    <div style="font-size:13px;color:#444;line-height:2;margin-bottom:14px">
+      당직표 데이터를 HTML 파일에 직접 저장해서 GitHub에 재배포하는 방식입니다.<br>
+      <span style="color:#888;font-size:12px">※ GAS 클라우드 저장(💾 저장 버튼)과는 별개로, GitHub 페이지를 최신 상태로 유지할 때 사용합니다.</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;margin-bottom:16px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-weight:600;min-width:24px">①</span><span>당직표 생성 또는 교체 완료</span></div>
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-weight:600;min-width:24px">②</span><span>아래 <strong>📥 파일 다운로드</strong> 버튼 클릭 → HTML 파일 저장</span></div>
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-weight:600;min-width:24px">③</span><span>GitHub 저장소에 <code style="background:#f0f0f0;padding:1px 6px;border-radius:4px">index.html</code> 파일 덮어쓰기 업로드</span></div>
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-weight:600;min-width:24px">④</span><span>GitHub Pages 자동 배포 → 링크에 즉시 반영</span></div>
+    </div>
+    <button class="btn btn-green" id="save-file-btn" onclick="saveFile()" style="font-size:13px">📥 파일 다운로드</button>
+  </div>
+
+  <!-- 업데이트 로그 -->
+  <div class="card">
+    <div class="card-h">📋 업데이트 로그</div>
+    <div style="display:flex;gap:0;padding:14px 0">
+      <div style="min-width:120px;font-size:12px;font-weight:600;color:#2d5a3d;padding-top:1px">v1.0 · 2026-05</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">데스크 당직표 자동생성기 최초 배포</div>
+        <div style="font-size:12px;color:#888;line-height:1.9">
+          • 기준월 + 공휴일 설정 → 평일 자동 추출<br>
+          • 하루 8슬롯 × 서로 다른 8명 배정<br>
+          • 근무일 기준 최소 3일 간격 적용 (토·일 미포함)<br>
+          • 누적 이력 기반 균등 분배 (편차 1~2회 이내)<br>
+          • 당직 교체 기능 (교체 모드 → A/B 선택 → 확정)<br>
+          • 시간대 고정 배정 (직원관리에서 설정)<br>
+          • 💾 저장 버튼 — 명시적 저장 시에만 반영<br>
+          • 📥 엑셀 다운로드 (신관 2층 입구 당직표 양식)<br>
+          • 배정 이력 누적 저장 / 월별 삭제<br>
+          • 관리자 비밀번호 잠금 (설정·통계·이력·직원관리·매뉴얼)<br>
+          • 방문대장 작성 안내 (AEO 필수 기재 항목 포함)<br>
+          • Google Apps Script 연동 — 클라우드 저장/불러오기<br>
+          • GitHub Pages 배포 지원
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 기능 매뉴얼 -->
+  <div class="card">
+    <div class="card-h">📖 기능 매뉴얼</div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <div style="border-left:3px solid #2d5a3d;padding-left:14px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">📅 당직표 생성</div>
+        <div style="font-size:12px;color:#666;line-height:1.9">
+          1. <strong>설정 탭</strong> → 기준월 선택 (예: 2026-06)<br>
+          2. <strong>공휴일 자동 입력</strong> 버튼 클릭 또는 날짜 직접 추가<br>
+          3. <strong>당직표 생성 →</strong> 버튼 클릭<br>
+          4. 생성된 당직표는 <strong>당직표 탭</strong>에서 확인<br>
+          <span style="color:#aaa">※ 매달 생성하면 이전 달 이력이 자동 반영되어 연속 공평 배분</span>
+        </div>
+      </div>
+
+      <div style="border-left:3px solid #4a8fc1;padding-left:14px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">⇄ 당직 교체</div>
+        <div style="font-size:12px;color:#666;line-height:1.9">
+          1. 당직표 탭 상단 <strong>⇄ 교체 모드</strong> 버튼 클릭<br>
+          2. 각 슬롯에 <strong>교체</strong> 버튼 표시됨<br>
+          3. 교체할 A 슬롯의 교체 버튼 클릭 → B 슬롯 교체 버튼 클릭<br>
+          4. 상단 패널에서 두 슬롯 확인 후 <strong>교체 확정</strong> 클릭<br>
+          5. 당직표 즉시 반영 + 이력에 교체 기록 자동 저장<br>
+          <span style="color:#aaa">※ 교체된 슬롯에는 주황색 '교체' 배지 표시</span>
+        </div>
+      </div>
+
+      <div style="border-left:3px solid #bf6000;padding-left:14px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">📌 시간대 고정</div>
+        <div style="font-size:12px;color:#666;line-height:1.9">
+          1. <strong>직원 관리 탭</strong> → 해당 직원 <strong>편집</strong> 클릭<br>
+          2. <strong>고정 시간대</strong> 드롭다운에서 슬롯 선택 (슬롯 1~8)<br>
+          3. 저장 후 → 이후 모든 달 당직표에서 해당 슬롯만 배정됨<br>
+          <span style="color:#aaa">※ 고정된 직원은 당직표에 주황색 '고정' 배지 표시</span>
+        </div>
+      </div>
+
+      <div style="border-left:3px solid #888;padding-left:14px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">🔒 관리자 모드</div>
+        <div style="font-size:12px;color:#666;line-height:1.9">
+          • 1회 인증 후 <strong>관리자 모드</strong> 유지 (페이지 새로고침 전까지)<br>
+          • 사이드바 하단 <strong>🔓 관리자 잠금</strong> 버튼으로 즉시 재잠금<br>
+          • 비밀번호 변경: 설정 탭 → 비밀번호 변경 섹션
+        </div>
+      </div>
+
+      <div style="border-left:3px solid #c03030;padding-left:14px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">🗂️ 이력 관리</div>
+        <div style="font-size:12px;color:#666;line-height:1.9">
+          • 당직표 생성/교체 시 자동 저장 (브라우저 종료 후에도 유지)<br>
+          • <strong>이력 탭</strong>에서 월별로 확인 및 삭제 가능<br>
+          • 이력이 쌓일수록 배정 균등도 향상 (누적 기반 공평 분배)<br>
+          • <strong>표 복사</strong> 버튼: 날짜·요일·시간·성명·직급·부서 형식으로 클립보드 복사 → 엑셀 붙여넣기 가능
+        </div>
+      </div>
+
+
+
+      <div style="border-left:3px solid #1e4080;padding-left:14px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">⚙️ 배정 규칙</div>
+        <div style="font-size:12px;color:#666;line-height:1.9">
+          • 하루 8개 시간대 → 서로 다른 8명 배정 (중복 없음)<br>
+          • 근무일 기준 최소 3일 간격 (토·일 미포함)<br>
+          &nbsp;&nbsp;예) 월요일 당직 → 다음 가능일 목요일<br>
+          &nbsp;&nbsp;예) 금요일 당직 → 다음 가능일 수요일<br>
+          • 전체 배정 횟수 편차 1~2회 이내 균등 분배<br>
+          • 인원이 부족해 3일 간격 불가 시 간격 조건 자동 완화
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 방문대장 안내 (당직자 공개) -->
+<div id="pg-guide" class="page">
+  <div class="pg-head">
+    <div class="pg-h">신관 2층 방문대장 작성 안내</div>
+    <div class="pg-sub">당직 근무 시 방문자 기재 항목 안내</div>
+  </div>
+
+  <!-- AEO 공지 -->
+  <div style="background:#fff8e6;border:1.5px solid #e6c96a;border-radius:10px;padding:16px 20px;margin-bottom:14px">
+    <div style="font-size:13px;font-weight:700;color:#7a4f00;margin-bottom:8px">⭐ AEO 관련 방문대장 필수 기재 요청</div>
+    <div style="font-size:13px;color:#5a3a00;line-height:1.9">
+      아래와 같이 방문일자, 방문시간, 회사명, 방문자 명, 방문목적, 연락처, 업무담당자,
+      방문증 번호, 신분증 확인 여부 체크까지 기재하도록 안내 부탁드리겠습니다.
+    </div>
+  </div>
+
+  <!-- 기재 항목 -->
+  <div class="card">
+    <div class="card-h">📋 필수 기재 항목</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">
+      <div style="background:#f5f4f0;border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;color:#aaa;margin-bottom:3px">① 방문일자</div>
+        <div style="font-size:13px;font-weight:500">방문한 날짜</div>
+      </div>
+      <div style="background:#f5f4f0;border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;color:#aaa;margin-bottom:3px">② 방문시간</div>
+        <div style="font-size:13px;font-weight:500">입실 / 퇴실 시간</div>
+      </div>
+      <div style="background:#f5f4f0;border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;color:#aaa;margin-bottom:3px">③ 회사명</div>
+        <div style="font-size:13px;font-weight:500">방문자 소속 회사</div>
+      </div>
+      <div style="background:#f5f4f0;border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;color:#aaa;margin-bottom:3px">④ 방문자 명</div>
+        <div style="font-size:13px;font-weight:500">방문자 성명</div>
+      </div>
+      <div style="background:#f5f4f0;border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;color:#aaa;margin-bottom:3px">⑤ 방문목적</div>
+        <div style="font-size:13px;font-weight:500">방문 이유 / 용건</div>
+      </div>
+      <div style="background:#f5f4f0;border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;color:#aaa;margin-bottom:3px">⑥ 연락처</div>
+        <div style="font-size:13px;font-weight:500">방문자 연락처</div>
+      </div>
+      <div style="background:#f5f4f0;border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;color:#aaa;margin-bottom:3px">⑦ 업무담당자</div>
+        <div style="font-size:13px;font-weight:500">사내 담당 직원명</div>
+      </div>
+      <div style="background:#fff3e0;border:1px solid #e6c96a;border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;color:#bf6000;margin-bottom:3px">⑧ 방문증 번호</div>
+        <div style="font-size:13px;font-weight:600;color:#7a4000">방문증 번호 필수 기재</div>
+      </div>
+      <div style="background:#fce8e8;border:1px solid #e8b4b4;border-radius:8px;padding:12px 14px">
+        <div style="font-size:11px;color:#b82222;margin-bottom:3px">⑨ 신분증 확인 여부</div>
+        <div style="font-size:13px;font-weight:600;color:#8b0000">Y / N 체크 필수</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 작성 유의사항 -->
+  <div class="card">
+    <div class="card-h">⚠️ 작성 유의사항</div>
+    <div style="font-size:13px;color:#555;line-height:2.2">
+      • 방문자가 <strong>입실 시</strong> 방문대장에 직접 서명·기재하도록 안내<br>
+      • 신분증은 반드시 육안 확인 후 <strong>Y</strong> 체크<br>
+      • 방문증은 입실 전 교부, 퇴실 시 반납 확인<br>
+      • 퇴실 시간도 빠짐없이 기재<br>
+      • 기재 누락 시 AEO 감사에서 지적 대상이 될 수 있음
+    </div>
+  </div>
+
+  <!-- 방문대장 양식 참고 이미지 -->
+  <div class="card">
+    <div class="card-h">📄 방문대장 양식 참고</div>
+    <div style="font-size:12px;color:#888;margin-bottom:10px">장금상선 방문대장 (2025년) 양식 예시</div>
+    <div style="background:#f5f4f0;border-radius:8px;padding:12px;overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:11px;min-width:700px">
+        <thead>
+          <tr style="background:#2d5a3d;color:#fff">
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" rowspan="2">방문일자</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" colspan="2">방문시간</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" rowspan="2">회사명</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" rowspan="2">방문자 명</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" rowspan="2">방문목적</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" rowspan="2">연락처</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" rowspan="2">업무담당자</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" rowspan="2">방문증번호</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" rowspan="2">신분증 확인 여부</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center" rowspan="2">비고</th>
+          </tr>
+          <tr style="background:#2d5a3d;color:#fff">
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center">입실</th>
+            <th style="padding:7px 8px;border:1px solid #1a3d28;text-align:center">퇴실</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:#fff">
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888">예) 1/15</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888">09:40</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888">14:15</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888">○○물류</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888">홍길동</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888">업무협의</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888">010-0000-0000</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888">(본인 이름)</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;font-weight:600;color:#2d5a3d">S03</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;font-weight:600;color:#2d5a3d">Y</td>
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888"></td>
+          </tr>
+          <tr style="background:#f9f9f7">
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center" colspan="11" style="color:#aaa;font-size:11px;text-align:center">
+              <span style="color:#aaa">↑ 위 양식에 맞게 빠짐없이 기재해주세요</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:11px;color:#aaa;margin-top:8px">※ 실제 양식은 데스크 비치된 방문대장 용지를 사용하세요</div>
+  </div>
+</div>
+
+
+</main>
+</div>
+
+<!-- 비밀번호 확인 모달 -->
+<div class="modal-bg" id="pw-modal">
+  <div class="modal">
+    <div class="modal-h">🔒 비밀번호 확인</div>
+    <div class="modal-sub" id="pw-modal-sub">이 페이지는 관리자만 접근할 수 있습니다</div>
+    <div class="field"><label>비밀번호</label><input type="password" id="pw-input" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')submitPw()"></div>
+    <div id="pw-err" style="font-size:12px;color:#b82222;margin-bottom:4px;display:none">비밀번호가 맞지 않습니다</div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closePwModal()">취소</button>
+      <button class="btn btn-green" onclick="submitPw()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 직원 추가/편집 모달 -->
+<div class="modal-bg" id="emp-modal" onclick="bgClose(event,'emp-modal')">
+  <div class="modal">
+    <div class="modal-h" id="emp-modal-h">직원 추가</div>
+    <div class="modal-sub"></div>
+    <input type="hidden" id="m-idx" value="-1">
+    <div class="field"><label>이름 *</label><input type="text" id="m-name" placeholder="홍길동"></div>
+    <div class="field"><label>직급 *</label><input type="text" id="m-rank" placeholder="대리, 과장, 차장…"></div>
+    <div class="field"><label>소속 *</label><input type="text" id="m-dept" placeholder="장비팀, 전산팀…"></div>
+    <div class="field">
+      <label>고정 시간대 <span style="font-weight:400;color:#bbb">(없으면 자동 배정)</span></label>
+      <select id="m-fixed">
+        <option value="">고정 없음</option>
+        <option value="0">슬롯 1 · 09:00~10:00</option>
+        <option value="1">슬롯 2 · 10:00~11:00</option>
+        <option value="2">슬롯 3 · 11:00~11:50</option>
+        <option value="3">슬롯 4 · 13:00~14:00</option>
+        <option value="4">슬롯 5 · 14:00~15:00</option>
+        <option value="5">슬롯 6 · 15:00~16:00</option>
+        <option value="6">슬롯 7 · 16:00~17:00</option>
+        <option value="7">슬롯 8 · 17:00~17:50</option>
+      </select>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeEmpModal()">취소</button>
+      <button class="btn btn-green" onclick="saveEmp()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 교체 확인 모달 -->
+<div class="modal-bg" id="swap-modal">
+  <div class="modal">
+    <div class="modal-h">⇄ 당직 교체 확인</div>
+    <div class="modal-sub">아래 두 슬롯을 교체합니다. 이력에도 자동 반영됩니다.</div>
+    <div class="swap-cards" id="swap-confirm-cards" style="margin-bottom:0"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeSwapModal()">취소</button>
+      <button class="btn btn-green" onclick="doSwap()">교체 확정</button>
+    </div>
+  </div>
+</div>
+
+<script id="app-data" type="application/json">{}</script>
+<script>
+// ══════════════════════════════════════════════
+//  상수
+// ══════════════════════════════════════════════
+const TIMES=['09:00~10:00','10:00~11:00','11:00~11:50','13:00~14:00','14:00~15:00','15:00~16:00','16:00~17:00','17:00~17:50'];
+const DAYS=['일','월','화','수','목','금','토'];
+const KR_HOL={
+  '2026':['2026-01-01','2026-02-17','2026-02-18','2026-02-19','2026-03-01','2026-05-01','2026-05-05','2026-05-15','2026-05-25','2026-06-06','2026-08-15','2026-09-25','2026-09-26','2026-09-27','2026-10-03','2026-10-09','2026-12-25'],
+  '2027':['2027-01-01','2027-02-07','2027-02-08','2027-02-09','2027-03-01','2027-05-01','2027-05-05','2027-06-06','2027-08-15','2027-10-03','2027-10-09','2027-12-25']
+};
+const DEF_HIST=[{"date": "2026-04-01", "name": "김재원", "rank": "차장", "dept": "수입영업팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-01", "name": "이성민", "rank": "차장대우", "dept": "수입영업1팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-01", "name": "조아로리", "rank": "대리", "dept": "총무팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-01", "name": "김용래", "rank": "과장", "dept": "특수영업팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-01", "name": "류화수", "rank": "과장", "dept": "기획팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-01", "name": "이가준", "rank": "과장", "dept": "기획팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-01", "name": "천재우", "rank": "과장", "dept": "기획팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-01", "name": "김재찬", "rank": "차장", "dept": "영업기획1팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-02", "name": "장준혁", "rank": "차장", "dept": "수입영업2팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-02", "name": "민현준", "rank": "대리", "dept": "수입영업1팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-02", "name": "박해성", "rank": "계장", "dept": "심사팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-02", "name": "박현석", "rank": "수석", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-02", "name": "이승윤", "rank": "6급사원", "dept": "전산팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-02", "name": "송국환", "rank": "차장", "dept": "심사팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-02", "name": "박형종", "rank": "부장", "dept": "영업기획2팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-02", "name": "지윤중", "rank": "차장", "dept": "영업기획2팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-03", "name": "이상록", "rank": "차장", "dept": "수입영업팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-03", "name": "이동섭", "rank": "차장", "dept": "수입영업1팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-03", "name": "박정욱", "rank": "부장대우", "dept": "심사팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-03", "name": "고준영", "rank": "부장대우", "dept": "심사팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-03", "name": "장세훈", "rank": "부장대우", "dept": "심사팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-03", "name": "안성헌", "rank": "부장", "dept": "전략팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-03", "name": "유성만", "rank": "부장", "dept": "특수영업팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-03", "name": "최기순", "rank": "부장", "dept": "기획팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-06", "name": "이석현", "rank": "차장", "dept": "수입영업팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-06", "name": "김수엽", "rank": "대리", "dept": "수입영업2팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-06", "name": "김남룡", "rank": "수석", "dept": "전산팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-06", "name": "김승일", "rank": "수석", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-06", "name": "박대형", "rank": "수석", "dept": "전산팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-06", "name": "정재경", "rank": "수석", "dept": "전산팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-06", "name": "박현준", "rank": "수석", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-06", "name": "이용범", "rank": "수석", "dept": "전산팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-07", "name": "정철환", "rank": "수석", "dept": "전산팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-07", "name": "호수현", "rank": "수석", "dept": "전산팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-07", "name": "황승인", "rank": "수석", "dept": "전산팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-07", "name": "황태원", "rank": "수석", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-07", "name": "이성민", "rank": "차장대우", "dept": "수입영업1팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-07", "name": "민현준", "rank": "대리", "dept": "수입영업1팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-07", "name": "이정준", "rank": "수석", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-07", "name": "김준", "rank": "대리", "dept": "영업기획2팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-08", "name": "이동섭", "rank": "차장", "dept": "수입영업1팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-08", "name": "이재훈", "rank": "차장대우", "dept": "수입영업팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-08", "name": "문광진", "rank": "대리", "dept": "전산팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-08", "name": "안의영", "rank": "대리", "dept": "영업기획1팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-08", "name": "안의영", "rank": "대리", "dept": "영업기획1팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-08", "name": "이가준", "rank": "과장", "dept": "기획팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-08", "name": "김재찬", "rank": "차장", "dept": "영업기획1팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-08", "name": "류화수", "rank": "과장", "dept": "기획팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-09", "name": "김수엽", "rank": "대리", "dept": "수입영업2팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-09", "name": "이승훈", "rank": "차장", "dept": "수입영업2팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-09", "name": "노승민", "rank": "대리", "dept": "영업기획1팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-09", "name": "천재우", "rank": "과장", "dept": "기획팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-09", "name": "김용래", "rank": "과장", "dept": "특수영업팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-09", "name": "김승일", "rank": "수석", "dept": "전산팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-09", "name": "박현석", "rank": "수석", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-09", "name": "박현준", "rank": "수석", "dept": "전산팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-10", "name": "박형종", "rank": "부장", "dept": "영업기획2팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-10", "name": "장준혁", "rank": "차장", "dept": "수입영업2팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-10", "name": "송국환", "rank": "차장", "dept": "심사팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-10", "name": "박해성", "rank": "계장", "dept": "심사팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-10", "name": "지윤중", "rank": "차장", "dept": "영업기획2팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-10", "name": "박정욱", "rank": "부장대우", "dept": "심사팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-10", "name": "장세훈", "rank": "부장대우", "dept": "심사팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-10", "name": "안성헌", "rank": "부장", "dept": "전략팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-13", "name": "유성만", "rank": "부장", "dept": "특수영업팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-13", "name": "김재원", "rank": "차장", "dept": "수입영업팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-13", "name": "최기순", "rank": "부장", "dept": "기획팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-13", "name": "김남룡", "rank": "수석", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-13", "name": "고준영", "rank": "부장대우", "dept": "심사팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-13", "name": "박대형", "rank": "수석", "dept": "전산팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-13", "name": "이정준", "rank": "수석", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-13", "name": "이용범", "rank": "수석", "dept": "전산팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-14", "name": "정재경", "rank": "수석", "dept": "전산팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-14", "name": "이상록", "rank": "차장", "dept": "수입영업팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-14", "name": "정철환", "rank": "수석", "dept": "전산팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-14", "name": "호수현", "rank": "수석", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-14", "name": "황승인", "rank": "수석", "dept": "전산팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-14", "name": "황태원", "rank": "수석", "dept": "전산팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-14", "name": "이성민", "rank": "차장대우", "dept": "수입영업1팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-14", "name": "조아로리", "rank": "대리", "dept": "총무팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-15", "name": "이석현", "rank": "차장", "dept": "수입영업팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-15", "name": "이승윤", "rank": "6급사원", "dept": "전산팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-15", "name": "노승민", "rank": "대리", "dept": "영업기획1팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-15", "name": "안의영", "rank": "대리", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-15", "name": "김준", "rank": "대리", "dept": "영업기획2팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-15", "name": "이동섭", "rank": "차장", "dept": "수입영업1팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-15", "name": "박현준", "rank": "수석", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-15", "name": "김수엽", "rank": "대리", "dept": "수입영업2팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-16", "name": "김용래", "rank": "과장", "dept": "특수영업팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-16", "name": "류화수", "rank": "과장", "dept": "기획팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-16", "name": "천재우", "rank": "과장", "dept": "기획팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-16", "name": "이가준", "rank": "과장", "dept": "기획팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-16", "name": "박해성", "rank": "계장", "dept": "심사팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-16", "name": "김재찬", "rank": "차장", "dept": "영업기획1팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-16", "name": "문광진", "rank": "대리", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-16", "name": "박현석", "rank": "수석", "dept": "전산팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-17", "name": "박형종", "rank": "부장", "dept": "영업기획2팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-17", "name": "송국환", "rank": "차장", "dept": "심사팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-17", "name": "지윤중", "rank": "차장", "dept": "영업기획2팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-17", "name": "고준영", "rank": "부장대우", "dept": "심사팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-17", "name": "박정욱", "rank": "부장대우", "dept": "심사팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-17", "name": "장세훈", "rank": "부장대우", "dept": "심사팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-17", "name": "안성헌", "rank": "부장", "dept": "전략팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-17", "name": "유성만", "rank": "부장", "dept": "특수영업팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-20", "name": "최기순", "rank": "부장", "dept": "기획팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-20", "name": "박현준", "rank": "수석", "dept": "전산팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-20", "name": "김승일", "rank": "수석", "dept": "전산팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-20", "name": "박대형", "rank": "수석", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-20", "name": "이용범", "rank": "수석", "dept": "전산팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-20", "name": "노승민", "rank": "수석", "dept": "전산팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-20", "name": "정재경", "rank": "수석", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-20", "name": "정철환", "rank": "수석", "dept": "전산팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-21", "name": "호수현", "rank": "수석", "dept": "전산팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-21", "name": "황승인", "rank": "수석", "dept": "전산팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-21", "name": "황태원", "rank": "수석", "dept": "전산팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-21", "name": "이성민", "rank": "차장대우", "dept": "수입영업1팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-21", "name": "이승훈", "rank": "차장", "dept": "수입영업2팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-21", "name": "이동섭", "rank": "차장", "dept": "수입영업1팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-21", "name": "안의영", "rank": "대리", "dept": "영업기획1팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-21", "name": "이승윤", "rank": "6급사원", "dept": "전산팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-22", "name": "민현준", "rank": "대리", "dept": "수입영업1팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-22", "name": "이석현", "rank": "차장", "dept": "수입영업팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-22", "name": "문광진", "rank": "대리", "dept": "전산팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-22", "name": "김준", "rank": "대리", "dept": "영업기획2팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-22", "name": "조아로리", "rank": "대리", "dept": "총무팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-22", "name": "노승민", "rank": "대리", "dept": "전산팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-22", "name": "류화수", "rank": "과장", "dept": "기획팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-22", "name": "김용래", "rank": "과장", "dept": "특수영업팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-23", "name": "김수엽", "rank": "대리", "dept": "수입영업2팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-23", "name": "민현준", "rank": "대리", "dept": "수입영업1팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-23", "name": "김재찬", "rank": "차장", "dept": "영업기획1팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-23", "name": "박해성", "rank": "계장", "dept": "심사팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-23", "name": "이가준", "rank": "과장", "dept": "기획팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-23", "name": "천재우", "rank": "과장", "dept": "기획팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-23", "name": "박형종", "rank": "부장", "dept": "영업기획2팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-23", "name": "송국환", "rank": "차장", "dept": "심사팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-24", "name": "김재원", "rank": "차장", "dept": "수입영업팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-24", "name": "이재훈", "rank": "차장대우", "dept": "수입영업팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-24", "name": "박현석", "rank": "수석", "dept": "전산팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-24", "name": "김남룡", "rank": "수석", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-24", "name": "지윤중", "rank": "차장", "dept": "영업기획2팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-24", "name": "고준영", "rank": "부장대우", "dept": "심사팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-24", "name": "박정욱", "rank": "부장대우", "dept": "심사팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-24", "name": "장세훈", "rank": "부장대우", "dept": "심사팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-27", "name": "이상록", "rank": "차장", "dept": "수입영업팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-27", "name": "안성헌", "rank": "부장", "dept": "전략팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-27", "name": "유성만", "rank": "부장", "dept": "특수영업팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-27", "name": "김남룡", "rank": "수석", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-27", "name": "최기순", "rank": "부장", "dept": "기획팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-27", "name": "김승일", "rank": "수석", "dept": "전산팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-27", "name": "박대형", "rank": "수석", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-27", "name": "이용범", "rank": "수석", "dept": "전산팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-28", "name": "이정준", "rank": "수석", "dept": "전산팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-28", "name": "정재경", "rank": "수석", "dept": "전산팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-28", "name": "호수현", "rank": "수석", "dept": "전산팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-28", "name": "황승인", "rank": "수석", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-28", "name": "정철환", "rank": "수석", "dept": "전산팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-28", "name": "이성민", "rank": "차장대우", "dept": "수입영업1팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-28", "name": "황태원", "rank": "수석", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-28", "name": "이동섭", "rank": "차장", "dept": "수입영업1팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-29", "name": "장준혁", "rank": "차장", "dept": "수입영업2팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-29", "name": "이승훈", "rank": "차장", "dept": "수입영업2팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-29", "name": "민현준", "rank": "대리", "dept": "수입영업1팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-29", "name": "이승윤", "rank": "6급사원", "dept": "전산팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-29", "name": "문광진", "rank": "대리", "dept": "전산팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-29", "name": "천재우", "rank": "과장", "dept": "기획팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-29", "name": "노승민", "rank": "대리", "dept": "전산팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-29", "name": "안의영", "rank": "대리", "dept": "영업기획1팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}, {"date": "2026-04-30", "name": "이재훈", "rank": "차장대우", "dept": "수입영업팀", "slot": 0, "time": "09:00~10:00", "type": "배정"}, {"date": "2026-04-30", "name": "장준혁", "rank": "차장", "dept": "수입영업2팀", "slot": 1, "time": "10:00~11:00", "type": "배정"}, {"date": "2026-04-30", "name": "김용래", "rank": "과장", "dept": "특수영업팀", "slot": 2, "time": "11:00~11:50", "type": "배정"}, {"date": "2026-04-30", "name": "조아로리", "rank": "대리", "dept": "총무팀", "slot": 3, "time": "13:00~14:00", "type": "배정"}, {"date": "2026-04-30", "name": "김준", "rank": "대리", "dept": "영업기획2팀", "slot": 4, "time": "14:00~15:00", "type": "배정"}, {"date": "2026-04-30", "name": "류화수", "rank": "과장", "dept": "기획팀", "slot": 5, "time": "15:00~16:00", "type": "배정"}, {"date": "2026-04-30", "name": "이가준", "rank": "과장", "dept": "기획팀", "slot": 6, "time": "16:00~17:00", "type": "배정"}, {"date": "2026-04-30", "name": "박해성", "rank": "계장", "dept": "심사팀", "slot": 7, "time": "17:00~17:50", "type": "배정"}];
+
+const DEF_EMPS=[
+  {name:'이승윤',rank:'6급사원',dept:'전산팀',fixed:''},
+  {name:'김준',rank:'대리',dept:'영업기획2팀',fixed:''},
+  {name:'노승민',rank:'대리',dept:'전산팀',fixed:''},
+  {name:'문광진',rank:'대리',dept:'전산팀',fixed:''},
+  {name:'안의영',rank:'대리',dept:'영업기획1팀',fixed:''},
+  {name:'조아로리',rank:'대리',dept:'총무팀',fixed:''},
+  {name:'류화수',rank:'과장',dept:'기획팀',fixed:''},
+  {name:'이가준',rank:'과장',dept:'기획팀',fixed:''},
+  {name:'천재우',rank:'과장',dept:'기획팀',fixed:''},
+  {name:'김재찬',rank:'차장',dept:'영업기획1팀',fixed:''},
+  {name:'박해성',rank:'계장',dept:'심사팀',fixed:''},
+  {name:'박현석',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'박현준',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'박형종',rank:'부장',dept:'영업기획2팀',fixed:''},
+  {name:'송국환',rank:'차장',dept:'심사팀',fixed:''},
+  {name:'지윤중',rank:'차장',dept:'영업기획2팀',fixed:''},
+  {name:'고준영',rank:'부장대우',dept:'심사팀',fixed:''},
+  {name:'박정욱',rank:'부장대우',dept:'심사팀',fixed:''},
+  {name:'장세훈',rank:'부장대우',dept:'심사팀',fixed:''},
+  {name:'안성헌',rank:'부장',dept:'전략팀',fixed:''},
+  {name:'최기순',rank:'부장',dept:'기획팀',fixed:''},
+  {name:'김남룡',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'김승일',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'박대형',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'이용범',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'이정준',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'정재경',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'정철환',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'호수현',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'황승인',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'황태원',rank:'수석',dept:'전산팀',fixed:''},
+  {name:'김진우',rank:'계장',dept:'장비팀',fixed:''},
+  {name:'정훈',rank:'부장',dept:'장비팀',fixed:''},
+  {name:'권도윤',rank:'과장',dept:'장비팀',fixed:''},
+  {name:'김민수',rank:'대리',dept:'장비팀',fixed:''},
+  {name:'권오현',rank:'차장',dept:'장비팀',fixed:''},
+  {name:'정다운',rank:'대리',dept:'장비팀',fixed:''}
+];
+
+// ══════════════════════════════════════════════
+//  localStorage
+// ══════════════════════════════════════════════
+// ── 임베디드 데이터 (파일에 직접 저장된 공유 데이터) ──
+let _embedded={};
+try{
+  const raw=document.getElementById('app-data').textContent.trim();
+  if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
+}catch(e){}
+
+const ls={
+  get(k,d){
+    // 임베디드 데이터 우선 (공유용), 없으면 localStorage
+    if(_embedded[k]!==undefined) return _embedded[k];
+    try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch{return d;}
+  },
+  set(k,v){
+    // localStorage에 저장 (담당자 세션용)
+    try{localStorage.setItem(k,JSON.stringify(v));}catch{}
+    // 메모리 캐시도 업데이트
+    _embedded[k]=v;
+  }
+};
+const getEmps=()=>ls.get('emps3',DEF_EMPS);
+const setEmps=v=>ls.set('emps3',v);
+const getHols=()=>ls.get('hols3',[]);
+const setHols=v=>ls.set('hols3',v);
+const getHist=()=>ls.get('hist3',DEF_HIST);
+const setHist=v=>ls.set('hist3',v);
+const getPw=()=>ls.get('admin_pw','sinokorgat01!');
+const getRoster=()=>ls.get('roster3',null);
+const setRoster=v=>ls.set('roster3',v);
+const getCounts=()=>ls.get('counts3',{});
+const setCounts=v=>ls.set('counts3',v);
+const getBaseMonth=()=>ls.get('basemonth3','');
+const setBaseMonth=v=>ls.set('basemonth3',v);
+const setPw=v=>ls.set('admin_pw',v);
+
+// ══════════════════════════════════════════════
+//  상태
+// ══════════════════════════════════════════════
+let curRoster=null;   // [{day,ds,slots:[{slot,emp,swapped}]}]
+let adminUnlocked=false;
+let curCounts={};
+let swapMode=false;
+let swapA=null;       // {dayIdx,slotIdx,ds,slot,emp}
+let swapB=null;
+let pwTarget=null;    // 인증 후 이동할 페이지
+
+// ══════════════════════════════════════════════
+//  비밀번호
+// ══════════════════════════════════════════════
+function requirePw(target){
+  if(adminUnlocked){goPage(target);return;}
+  pwTarget=target;
+  document.getElementById('pw-input').value='';
+  document.getElementById('pw-err').style.display='none';
+  document.getElementById('pw-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('pw-input').focus(),100);
+}
+function lockAdmin(){
+  adminUnlocked=false;
+  document.getElementById('lock-btn').style.display='none';
+  document.getElementById('lock-status').textContent='';
+  goPage('roster');
+}
+function submitPw(){
+  const v=document.getElementById('pw-input').value;
+  if(v===getPw()){
+    adminUnlocked=true;
+    document.getElementById('pw-modal').classList.remove('show');
+    document.getElementById('lock-btn').style.display='inline-flex';
+    document.getElementById('lock-status').textContent='관리자 모드';
+    goPage(pwTarget);
+  } else {
+    document.getElementById('pw-err').style.display='block';
+    document.getElementById('pw-input').value='';
+    document.getElementById('pw-input').focus();
+  }
+}
+function closePwModal(){document.getElementById('pw-modal').classList.remove('show');}
+function changePw(){
+  const p1=document.getElementById('new-pw1').value;
+  const p2=document.getElementById('new-pw2').value;
+  if(!p1){alert('새 비밀번호를 입력해주세요.');return;}
+  if(p1!==p2){alert('비밀번호가 일치하지 않습니다.');return;}
+  setPw(p1);
+  document.getElementById('new-pw1').value='';
+  document.getElementById('new-pw2').value='';
+  alert('비밀번호가 변경되었습니다.');
+}
+
+// ══════════════════════════════════════════════
+//  네비
+// ══════════════════════════════════════════════
+const PG_IDS=['roster','guide','setup','stats','history','members','manual'];
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  const pg=document.getElementById('pg-'+id);
+  if(pg)pg.classList.add('on');
+  const nb=document.getElementById('nb-'+id);
+  if(nb)nb.classList.add('on');
+  if(id==='members')renderMembers();
+  if(id==='history')renderHistory();
+  if(id==='stats')renderStats(getEmps());
+}
+
+// ══════════════════════════════════════════════
+//  날짜 유틸
+// ══════════════════════════════════════════════
+function isWorkday(ds,hols){const w=new Date(ds).getDay();return w>0&&w<6&&!hols.includes(ds);}
+function workdayGap(a,b,hols){
+  if(a>=b)return 0;
+  let cnt=0;
+  const cur=new Date(a);cur.setDate(cur.getDate()+1);
+  const end=new Date(b);
+  while(cur<=end){if(isWorkday(cur.toISOString().slice(0,10),hols))cnt++;cur.setDate(cur.getDate()+1);}
+  return cnt;
+}
+function getWorkdays(yr,mo){
+  const hols=getHols(),days=[];
+  const d=new Date(yr,mo-1,1);
+  while(d.getMonth()===mo-1){
+    const ds=d.toISOString().slice(0,10);
+    if(isWorkday(ds,hols))days.push(ds);
+    d.setDate(d.getDate()+1);
+  }
+  return days;
+}
+
+// ══════════════════════════════════════════════
+//  공휴일
+// ══════════════════════════════════════════════
+function addHoliday(){
+  const v=document.getElementById('hol-input').value;if(!v)return;
+  const h=getHols();if(!h.includes(v)){h.push(v);h.sort();setHols(h);}
+  document.getElementById('hol-input').value='';renderHols();
+}
+function removeHoliday(d){setHols(getHols().filter(x=>x!==d));renderHols();}
+function autoHolidays(){
+  const m=document.getElementById('base-month').value;if(!m)return;
+  const yr=m.slice(0,4),mo=m.slice(5,7);
+  const h=getHols();
+  (KR_HOL[yr]||[]).filter(d=>d.slice(5,7)===mo).forEach(d=>{if(!h.includes(d))h.push(d);});
+  h.sort();setHols(h);renderHols();
+}
+function renderHols(){
+  const h=getHols();
+  document.getElementById('hol-chips').innerHTML=h.length
+    ?h.map(d=>`<span class="tag">${d}<span class="x" onclick="removeHoliday('${d}')">×</span></span>`).join('')
+    :'<span style="font-size:12px;color:#ccc">추가된 공휴일 없음</span>';
+}
+
+// ══════════════════════════════════════════════
+//  생성 (균등 배정 핵심)
+// ══════════════════════════════════════════════
+function generate(){
+  try{
+  const m=document.getElementById('base-month').value;
+  if(!m){alert('기준월을 선택해주세요');return;}
+  const yr=+m.slice(0,4),mo=+m.slice(5,7);
+  const hols=getHols();
+  const workdays=getWorkdays(yr,mo);
+  console.log('[생성] 기준월:',m,'근무일:',workdays.length,'공휴일:',hols);
+  if(!workdays.length){alert('근무일이 없습니다.');return;}
+  const emps=getEmps();
+  const n=emps.length;
+  console.log('[생성] 직원수:',n);
+  if(n<8){alert('직원이 최소 8명 필요합니다.');return;}
+
+  // 이력 로드
+  const hist=getHist();
+  const lastOf={};
+  hist.forEach(h=>{if(!lastOf[h.name]||h.date>lastOf[h.name])lastOf[h.name]=h.date;});
+
+  // 이력 누적 횟수 (먼저 계산)
+  const accCnt=Object.fromEntries(emps.map(e=>[e.name,0]));
+  hist.forEach(h=>{if(accCnt[h.name]!==undefined)accCnt[h.name]++;});
+
+  // ★ 균등화: 이번달 목표치 설정
+  // - 고정슬롯 인원 고려: 고정 인원은 해당 슬롯 외 배정 불가 → 실질 풀이 줄어드는 슬롯 있음
+  // - 누적 적게 받은 사람부터 +1 목표 할당
+  const totalSlots=workdays.length*8;
+  const base=Math.floor(totalSlots/n);
+  const extraCount=totalSlots%n;
+  // 이번달 누적 적은 사람 기준 정렬
+  const sortedByAcc=[...emps.map((e,i)=>({i,acc:accCnt[e.name]||0}))].sort((a,b)=>a.acc-b.acc||(a.i-b.i));
+  const target=new Array(n).fill(base);
+  for(let k=0;k<extraCount;k++) target[sortedByAcc[k].i]=base+1;
+  // 하드캡: 어떤 이유로도 base+2 초과 불가 (폴백 단계에서도 적용)
+  const hardCap=base+2;
+
+  // 이번 달 배정 횟수 (0으로 초기화)
+  const thisCnt=Object.fromEntries(emps.map(e=>[e.name,0]));
+
+  // 슬롯별 누적 횟수
+  const sltCnt=Object.fromEntries(emps.map(e=>[e.name,new Array(8).fill(0)]));
+  hist.forEach(h=>{if(sltCnt[h.name]&&h.slot>=0)sltCnt[h.name][h.slot]++;});
+
+  const result=[];
+  const newEntries=[];
+
+  workdays.forEach(ds=>{
+    const day=new Date(ds);
+    const used=new Set();
+    const slots=[];
+
+    for(let s=0;s<8;s++){
+      // 이 슬롯 고정 인원이 있고 아직 목표 미달이면 우선 배정
+      let pick=pickEmp(s,ds,hols,emps,n,used,lastOf,thisCnt,sltCnt,target,true);
+      // 단계별 폴백은 pickEmp 내부에서 처리
+      if(pick>=0){
+        const e=emps[pick];
+        slots.push({slot:s,emp:{...e},swapped:false});
+        accCnt[e.name]++;thisCnt[e.name]++;sltCnt[e.name][s]++;
+        used.add(pick);lastOf[e.name]=ds;
+        newEntries.push({date:ds,name:e.name,rank:e.rank,dept:e.dept,slot:s,time:TIMES[s],type:'배정'});
+      }
+    }
+    result.push({day,ds,slots});
+  });
+
+  // 이력 저장
+  const moKey=m.slice(0,7);
+  setHist([...getHist().filter(h=>h.date.slice(0,7)!==moKey),...newEntries]);
+
+  curRoster=result;
+  curCounts=Object.fromEntries(emps.map(e=>[e.name,accCnt[e.name]]));
+  // ★ 당직표·카운트·기준월 localStorage 저장
+  setRoster(JSON.parse(JSON.stringify(result, (k,v)=>v instanceof Date?v.toISOString():v)));
+  setCounts(curCounts);
+  setBaseMonth(m);
+  markUnsaved();
+  renderRoster(yr,mo,result);
+  renderStats(emps);
+  goPage('roster');
+  console.log('[생성] 완료!');
+  }catch(err){console.error('[생성] 오류:',err);alert('생성 오류: '+err.message);}
+}
+
+// ── 단계별 후보 선택 (엄격 → 간격 완화 → 목표 완화 → 최소 배정자) ──
+function pickEmp(s,ds,hols,emps,n,used,lastOf,thisCnt,sltCnt,target,strict){
+  // [1단계] 목표 미달 + 3일 간격 둘 다 만족
+  let best=_pick(s,ds,hols,emps,n,used,lastOf,thisCnt,sltCnt,target,true,true);
+  if(best>=0)return best;
+  // [2단계] 목표 미달 조건만 유지, 간격 완화
+  best=_pick(s,ds,hols,emps,n,used,lastOf,thisCnt,sltCnt,target,true,false);
+  if(best>=0)return best;
+  // [3단계] 간격 유지, 목표 하드캡(base+2)으로 완화
+  best=_pick(s,ds,hols,emps,n,used,lastOf,thisCnt,sltCnt,target,false,true,2);
+  if(best>=0)return best;
+  // [4단계] 둘 다 완화 — 그래도 이번달 최소 배정자 우선
+  best=_pick(s,ds,hols,emps,n,used,lastOf,thisCnt,sltCnt,target,false,false,999);
+  return best;
+}
+
+function _pick(s,ds,hols,emps,n,used,lastOf,thisCnt,sltCnt,target,capStrict,gapStrict,capExtra){
+  const extra=capExtra!==undefined?capExtra:0;
+  let bestIdx=-1,bestScore=Infinity;
+  for(let i=0;i<n;i++){
+    if(used.has(i))continue;
+    const e=emps[i];
+    if(e.fixed!==''&&+e.fixed!==s)continue;
+    // 목표 상한 체크
+    const cap=capStrict?target[i]:(target[i]+extra);
+    if(thisCnt[e.name]>=cap)continue;
+    // 간격 체크
+    if(gapStrict){
+      const ld=lastOf[e.name];
+      if(ld&&workdayGap(ld,ds,hols)<3)continue;
+    }
+    // 점수: 이번달 적게 받은 사람 우선 → 슬롯별 적게 받은 사람 우선
+    const score=thisCnt[e.name]*1000+sltCnt[e.name][s]*10+i*0.01;
+    if(score<bestScore){bestScore=score;bestIdx=i;}
+  }
+  return bestIdx;
+}
+
+// ══════════════════════════════════════════════
+//  당직표 렌더
+// ══════════════════════════════════════════════
+function renderRoster(yr,mo,data){
+  if(!data){document.getElementById('roster-out').innerHTML='<div class="alert a-info">왼쪽 설정 탭(🔒)에서 당직표를 먼저 생성해주세요.</div>';return;}
+  document.getElementById('roster-h').textContent=`${yr}년 ${mo}월 당직표`;
+  document.getElementById('roster-sub').textContent=`총 ${data.length}개 근무일 · 공휴일 ${getHols().length}일 제외`;
+
+  document.getElementById('roster-out').innerHTML=data.map(({day,ds,slots},di)=>{
+    if(typeof day==='string') day=new Date(day);
+    const dow=DAYS[day.getDay()];
+    const dd=String(day.getDate()).padStart(2,'0');
+    const mm=String(day.getMonth()+1).padStart(2,'0');
+    const sHTML=slots.map(({slot,emp,swapped},si)=>{
+      const key=`${di}-${si}`;
+      const isSelA=swapA&&swapA.dayIdx===di&&swapA.slotIdx===si;
+      const isSelB=swapB&&swapB.dayIdx===di&&swapB.slotIdx===si;
+      const hiClass=(isSelA||isSelB)?'swap-hi':'';
+      const dc=emp.dept==='장비팀'?'b-장비팀':emp.dept==='전산팀'?'b-전산팀':'b-기타';
+      return `<div class="slot-row ${hiClass}" id="sr-${key}">
+        <div class="slot-n">${slot+1}</div>
+        <div class="slot-time">${TIMES[slot]}</div>
+        <div class="slot-name">${emp.name}</div>
+        <div class="slot-rank">${emp.rank}</div>
+        <span class="slot-dept">${emp.dept}</span>
+        ${swapped?`<span class="badge b-swapped" style="font-size:10px;padding:1px 5px">교체</span>`:''}
+        ${swapMode?`<button class="btn btn-swap btn-sm ${(isSelA||isSelB)?'selected':''}" onclick="selectSwap(${di},${si},'${ds}',${slot},'${emp.name}','${emp.rank}','${emp.dept}')" style="margin-left:auto;flex-shrink:0">${(isSelA||isSelB)?'✓선택':'교체'}</button>`:''}
+      </div>`;
+    }).join('');
+    return `<div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">${dow}요일</div>
+        <div class="day-dt">${yr}년 ${mm}월 ${dd}일</div>
+        <div class="day-cnt">${slots.length}명</div>
+      </div>
+      <div class="roster-slots">${sHTML}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  교체 기능
+// ══════════════════════════════════════════════
+function toggleSwapMode(){
+  swapMode=!swapMode;
+  swapA=null;swapB=null;
+  const btn=document.getElementById('swap-toggle-btn');
+  const panel=document.getElementById('swap-panel');
+  if(swapMode){
+    btn.classList.add('btn-green');btn.style.color='#fff';
+    panel.classList.add('show');
+    setHint('교체할 슬롯의 교체 버튼을 클릭하세요 (A → B 순서)');
+  } else {
+    btn.classList.remove('btn-green');btn.style.color='';
+    panel.classList.remove('show');
+  }
+  if(curRoster){const m=document.getElementById('base-month').value;renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);}
+}
+
+function selectSwap(di,si,ds,slot,name,rank,dept){
+  const entry={dayIdx:di,slotIdx:si,ds,slot,name,rank,dept};
+  if(!swapA){
+    swapA=entry;
+    fillSwapCard('swap-a',name,rank,dept,ds,slot,true);
+    setHint('B 슬롯을 선택하세요');
+  } else if(!swapB){
+    if(swapA.dayIdx===di&&swapA.slotIdx===si){swapA=null;clearSwapCard('swap-a');setHint('A 슬롯을 선택하세요');return;}
+    swapB=entry;
+    fillSwapCard('swap-b',name,rank,dept,ds,slot,true);
+    setHint('교체 확정 버튼을 누르세요');
+    const cb=document.getElementById('swap-confirm-btn');
+    cb.disabled=false;cb.style.opacity='1';
+  } else {
+    // 이미 둘 다 선택됨 → 리셋 후 새로 A 선택
+    swapA=entry;swapB=null;
+    fillSwapCard('swap-a',name,rank,dept,ds,slot,true);
+    clearSwapCard('swap-b');
+    const cb=document.getElementById('swap-confirm-btn');
+    cb.disabled=true;cb.style.opacity='.4';
+    setHint('B 슬롯을 선택하세요');
+  }
+  if(curRoster){const m=document.getElementById('base-month').value;renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);}
+}
+
+function fillSwapCard(id,name,rank,dept,ds,slot,filled){
+  const el=document.getElementById(id);
+  el.classList.toggle('filled',filled);
+  el.querySelector('.swap-card-name').textContent=name;
+  el.querySelector('.swap-card-name').style.color='';
+  el.querySelector('.swap-card-detail').textContent=`${ds} · ${TIMES[slot]} · ${rank}`;
+}
+function clearSwapCard(id){
+  const el=document.getElementById(id);
+  el.classList.remove('filled');
+  el.querySelector('.swap-card-name').textContent='선택 전';
+  el.querySelector('.swap-card-name').style.color='#ccc';
+  el.querySelector('.swap-card-detail').textContent='';
+}
+function setHint(t){document.getElementById('swap-hint').textContent=t;}
+
+function confirmSwap(){
+  if(!swapA||!swapB)return;
+  // 확인 모달 띄우기
+  document.getElementById('swap-confirm-cards').innerHTML=`
+    <div class="swap-card filled">
+      <div class="swap-card-label">A</div>
+      <div class="swap-card-name">${swapA.name}</div>
+      <div class="swap-card-detail">${swapA.ds} · ${TIMES[swapA.slot]}</div>
+    </div>
+    <div class="swap-arrow">⇄</div>
+    <div class="swap-card filled">
+      <div class="swap-card-label">B</div>
+      <div class="swap-card-name">${swapB.name}</div>
+      <div class="swap-card-detail">${swapB.ds} · ${TIMES[swapB.slot]}</div>
+    </div>`;
+  document.getElementById('swap-modal').classList.add('show');
+}
+
+function closeSwapModal(){document.getElementById('swap-modal').classList.remove('show');}
+
+function doSwap(){
+  if(!swapA||!swapB||!curRoster)return;
+  // 실제 교체
+  const da=curRoster[swapA.dayIdx].slots[swapA.slotIdx];
+  const db=curRoster[swapB.dayIdx].slots[swapB.slotIdx];
+  const tmpEmp={...da.emp};
+  da.emp={...db.emp};da.swapped=true;
+  db.emp=tmpEmp;db.swapped=true;
+
+  // 이력에 교체 기록
+  const hist=getHist();
+  const now=new Date().toISOString().slice(0,10);
+  hist.push({
+    date:swapA.ds,name:da.emp.name,rank:da.emp.rank,dept:da.emp.dept,
+    slot:swapA.slot,time:TIMES[swapA.slot],
+    type:`교체(${swapB.ds} ${TIMES[swapB.slot]}의 ${swapB.name}과 교체)`
+  });
+  hist.push({
+    date:swapB.ds,name:db.emp.name,rank:db.emp.rank,dept:db.emp.dept,
+    slot:swapB.slot,time:TIMES[swapB.slot],
+    type:`교체(${swapA.ds} ${TIMES[swapA.slot]}의 ${swapA.name}과 교체)`
+  });
+  setHist(hist);
+
+  closeSwapModal();
+  // ★ 교체 후 roster 저장
+  markUnsaved();
+  cancelSwap();
+  const m=document.getElementById('base-month').value;
+  renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);
+  alert(`교체 완료!\n${swapA.name} ↔ ${swapB.name}`);
+}
+
+function cancelSwap(){
+  swapA=null;swapB=null;
+  clearSwapCard('swap-a');clearSwapCard('swap-b');
+  const cb=document.getElementById('swap-confirm-btn');
+  cb.disabled=true;cb.style.opacity='.4';
+  setHint('교체할 슬롯의 교체 버튼을 클릭하세요');
+  if(curRoster){const m=document.getElementById('base-month').value;renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);}
+}
+
+// ══════════════════════════════════════════════
+//  통계
+// ══════════════════════════════════════════════
+function renderStats(emps){
+  if(!curRoster){document.getElementById('stats-out').innerHTML='<div class="alert a-info">당직표를 먼저 생성해주세요.</div>';return;}
+  const vals=emps.map(e=>curCounts[e.name]||0);
+  const total=vals.reduce((a,b)=>a+b,0);
+  const avg=(total/emps.length).toFixed(1);
+  const max=Math.max(...vals)||1;
+  const min=Math.min(...vals.filter(v=>v>0))||0;
+  const diff=max-min;
+  const sorted=[...emps].sort((a,b)=>(curCounts[b.name]||0)-(curCounts[a.name]||0));
+  const hist=getHist();
+  document.getElementById('stats-out').innerHTML=`
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-n">${curRoster.length}</div><div class="stat-l">근무일 수</div></div>
+      <div class="stat-box"><div class="stat-n">${avg}</div><div class="stat-l">평균 배정</div></div>
+      <div class="stat-box"><div class="stat-n">${max}</div><div class="stat-l">최대 배정</div></div>
+      <div class="stat-box"><div class="stat-n">${min}</div><div class="stat-l">최소 배정</div></div>
+    </div>
+    ${diff<=2?'<div class="alert a-ok">편차 '+diff+'회 — 균등 배정 완료</div>':'<div class="alert a-warn">편차 '+diff+'회 — 고정 슬롯 인원이 많은 경우 자연스러운 편차입니다</div>'}
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>#</th><th>이름</th><th>직급</th><th>소속</th><th>고정슬롯</th><th>이번달</th><th>전체 누적</th></tr></thead>
+        <tbody>${sorted.map((e,i)=>{
+          const cur=curCounts[e.name]||0;
+          const acc=hist.filter(h=>h.name===e.name).length; // 전체 이력 기준 누적
+          const dc=e.dept==='장비팀'?'b-장비팀':e.dept==='전산팀'?'b-전산팀':'b-기타';
+          return `<tr>
+            <td style="color:#ccc">${i+1}</td>
+            <td style="font-weight:500">${e.name}</td>
+            <td style="color:#888">${e.rank}</td>
+            <td><span class="badge ${dc}">${e.dept}</span></td>
+            <td>${e.fixed!==''?`<span class="badge b-fix">${+e.fixed+1}번·${TIMES[+e.fixed].slice(0,5)}</span>`:'<span style="color:#ccc;font-size:12px">자동</span>'}</td>
+            <td>
+              <div class="bar-row">
+                <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cur/max*100)}%"></div></div>
+                <span style="min-width:20px;text-align:right;font-weight:600">${cur}</span>
+              </div>
+            </td>
+            <td style="color:#999">${acc}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  이력
+// ══════════════════════════════════════════════
+function renderHistory(){
+  const hist=getHist();
+  if(!hist.length){document.getElementById('hist-out').innerHTML='<div class="alert a-info">이력이 없습니다.</div>';return;}
+  const byMo={};
+  [...hist].sort((a,b)=>b.date.localeCompare(a.date)).forEach(h=>{
+    const k=h.date.slice(0,7);if(!byMo[k])byMo[k]=[];byMo[k].push(h);
+  });
+  const html=Object.entries(byMo).map(([mk,items])=>`
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:12px">
+      <div style="padding:10px 16px;background:#f5f4f0;border-bottom:1px solid #eee;display:flex;align-items:center;gap:10px">
+        <span style="font-size:13px;font-weight:500;flex:1">${mk.replace('-','년 ')}월 — ${items.length}건</span>
+        <button class="btn btn-danger btn-sm" onclick="deleteMonthHistory('${mk}')">이 달 삭제</button>
+      </div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>날짜</th><th>요일</th><th>시간</th><th>성명</th><th>직급</th><th>부서</th><th>구분</th></tr></thead>
+        <tbody>${items.map(h=>{
+          const d=new Date(h.date);
+          const isSwap=h.type&&h.type.startsWith('교체');
+          return `<tr style="${isSwap?'background:#fffdf5':''}">
+            <td style="color:#999">${h.date}</td>
+            <td>${DAYS[d.getDay()]}</td>
+            <td style="font-size:11px;color:#bbb">${h.time}</td>
+            <td style="font-weight:500">${h.name}</td>
+            <td style="color:#888">${h.rank}</td>
+            <td>${h.dept}</td>
+            <td style="font-size:11px;${isSwap?'color:#8b4000':'color:#aaa'}">${h.type||'배정'}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>`).join('');
+  document.getElementById('hist-out').innerHTML=`<div class="alert a-ok" style="margin-bottom:12px">총 ${hist.length}건 저장</div>${html}`;
+}
+function deleteMonthHistory(moKey){
+  if(!confirm(moKey.replace('-','년 ')+'월 이력을 삭제하시겠습니까?'))return;
+  setHist(getHist().filter(h=>h.date.slice(0,7)!==moKey));
+  renderHistory();
+}
+function clearHistory(){if(!confirm('이력을 전체 삭제하시겠습니까?'))return;setHist([]);renderHistory();}
+
+// ══════════════════════════════════════════════
+//  직원 관리
+// ══════════════════════════════════════════════
+function renderMembers(){
+  const emps=getEmps();
+  document.getElementById('emp-cnt').textContent=`총 ${emps.length}명`;
+  document.getElementById('mem-tbody').innerHTML=emps.map((e,i)=>{
+    const dc=e.dept==='장비팀'?'b-장비팀':e.dept==='전산팀'?'b-전산팀':'b-기타';
+    return `<tr>
+      <td style="color:#ccc">${i+1}</td>
+      <td style="font-weight:500">${e.name}</td>
+      <td style="color:#888">${e.rank}</td>
+      <td><span class="badge ${dc}">${e.dept}</span></td>
+      <td>${e.fixed!==''?`<span class="badge b-fix">${+e.fixed+1}번·${TIMES[+e.fixed]}</span>`:'<span style="color:#ccc;font-size:12px">자동</span>'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(${i})" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(${i})">삭제</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function openAddModal(){
+  document.getElementById('emp-modal-h').textContent='직원 추가';
+  document.getElementById('m-idx').value=-1;
+  ['m-name','m-rank','m-dept'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-fixed').value='';
+  document.getElementById('emp-modal').classList.add('show');
+}
+function editEmp(i){
+  const e=getEmps()[i];
+  document.getElementById('emp-modal-h').textContent='직원 편집';
+  document.getElementById('m-idx').value=i;
+  document.getElementById('m-name').value=e.name;
+  document.getElementById('m-rank').value=e.rank;
+  document.getElementById('m-dept').value=e.dept;
+  document.getElementById('m-fixed').value=e.fixed;
+  document.getElementById('emp-modal').classList.add('show');
+}
+function closeEmpModal(){document.getElementById('emp-modal').classList.remove('show');}
+function bgClose(e,id){if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('show');}
+function saveEmp(){
+  const name=document.getElementById('m-name').value.trim();
+  const rank=document.getElementById('m-rank').value.trim();
+  const dept=document.getElementById('m-dept').value.trim();
+  const fixed=document.getElementById('m-fixed').value;
+  if(!name||!rank||!dept){alert('이름, 직급, 소속을 모두 입력해주세요.');return;}
+  const emps=getEmps();
+  const idx=+document.getElementById('m-idx').value;
+  if(idx===-1)emps.push({name,rank,dept,fixed});
+  else emps[idx]={name,rank,dept,fixed};
+  setEmps(emps);closeEmpModal();renderMembers();
+}
+function deleteEmp(i){
+  const emps=getEmps();
+  if(!confirm(`${emps[i].name}을(를) 삭제하시겠습니까?`))return;
+  emps.splice(i,1);setEmps(emps);renderMembers();
+}
+
+// ══════════════════════════════════════════════
+//  복사
+// ══════════════════════════════════════════════
+function copyTsv(){
+  if(!curRoster){alert('당직표를 먼저 생성해주세요.');return;}
+  const m=document.getElementById('base-month').value;
+  const lines=[`${m.slice(0,4)}년 ${+m.slice(5,7)}월 당직표`,'날짜\t요일\t시간\t성명\t직급\t부서'];
+  curRoster.forEach(({day,slots})=>{
+    const dow=DAYS[day.getDay()],ds=day.toISOString().slice(0,10);
+    slots.forEach(({slot,emp})=>lines.push(`${ds}\t${dow}\t${TIMES[slot]}\t${emp.name}\t${emp.rank}\t${emp.dept}`));
+  });
+  navigator.clipboard.writeText(lines.join('\n'))
+    .then(()=>alert('복사되었습니다. 엑셀에 바로 붙여넣기 가능합니다.'))
+    .catch(()=>{const t=document.createElement('textarea');t.value=lines.join('\n');document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);alert('복사되었습니다.');});
+}
+
+
+// ══════════════════════════════════════════════
+//  파일 저장 (데이터 embed 후 HTML 다운로드)
+// ══════════════════════════════════════════════
+function buildEmbeddedData(){
+  return {
+    roster3: getRoster(),
+    counts3: getCounts(),
+    basemonth3: getBaseMonth(),
+    hist3: getHist(),
+    emps3: getEmps(),
+    hols3: getHols(),
+    admin_pw: getPw(),
+  };
+}
+
+function saveFile(){
+  // 현재 HTML에서 app-data 블록만 최신 데이터로 교체해서 다운로드
+  const data=JSON.stringify(buildEmbeddedData());
+  // HTML 텍스트를 fetch로 가져올 수 없으니 document.documentElement 활용
+  let html=document.documentElement.outerHTML;
+  // app-data 블록 교체
+  html=html.replace(
+    /<script id="app-data" type="application\/json">[\s\S]*?<\/script>/,
+    `<script id="app-data" type="application/json">${data}<\/script>`
+  );
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='당직표_자동생성기.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+
+// ══════════════════════════════════════════════
+//  GAS 클라우드 저장/불러오기
+// ══════════════════════════════════════════════
+// ★ 배포 후 받은 웹앱 URL로 교체하세요
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwayE5ggfFbCpwZNssmxK-HWZWNExYLsXIUOhV4pEcCuPfmM88vgx3vJu8qhH2tsLnrtw/exec';
+
+function syncDot(status, msg) {
+  var dot = document.getElementById('sync-dot');
+  var txt = document.getElementById('sync-txt');
+  if (!dot) return;
+  dot.className = status;
+  txt.textContent = msg;
+}
+
+// 앱 전체 상태를 하나로 묶기
+function getSnapshot() {
+  return {
+    roster:    getRoster(),
+    counts:    getCounts(),
+    baseMonth: getBaseMonth(),
+    hist: (function(){ try{return JSON.parse(localStorage.getItem('hist3')||'[]');}catch(e){return [];} })(),
+    emps: (function(){ try{return JSON.parse(localStorage.getItem('emps3')||'null');}catch(e){return null;} })(),
+    hols: (function(){ try{return JSON.parse(localStorage.getItem('hols3')||'[]');}catch(e){return [];} })(),
+    pw:   (function(){ try{return localStorage.getItem('admin_pw')||'sinokorgat01!';}catch(e){return 'sinokorgat01!';} })(),
+  };
+}
+
+// ── 저장 (no-cors POST) ──
+async function saveToCloud() {
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL_HERE') return;
+  syncDot('saving', '저장 중...');
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'save_roster', data: JSON.stringify(getSnapshot()) })
+    });
+    // no-cors라 응답 못읽지만 저장은 완료됨
+    syncDot('ok', '저장됨 ✓');
+  } catch(e) {
+    console.error('저장 오류:', e);
+    syncDot('error', '저장 실패');
+  }
+}
+
+// ── 불러오기 (JSONP) ──
+function loadFromCloud() {
+  return new Promise(function(resolve) {
+    if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL_HERE') {
+      restoreLocal(); resolve(false); return;
+    }
+    syncDot('saving', '불러오는 중...');
+    var cb   = '__cb' + Date.now();
+    var el   = document.createElement('script');
+    var done = false;
+
+    var timer = setTimeout(function() {
+      if (done) return; done = true;
+      cleanup();
+      syncDot('ok', '(로컬 데이터)');
+      restoreLocal();
+      resolve(false);
+    }, 6000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cb];
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }
+
+    window[cb] = function(res) {
+      if (done) return; done = true;
+      cleanup();
+      if (res && res.status === 'success' && res.data) {
+        try {
+          var d = JSON.parse(res.data);
+          if (d.roster)    localStorage.setItem('roster3',    JSON.stringify(d.roster));
+          if (d.counts)    localStorage.setItem('counts3',    JSON.stringify(d.counts));
+          if (d.baseMonth) localStorage.setItem('basemonth3', JSON.stringify(d.baseMonth));
+          if (d.hist)      localStorage.setItem('hist3',      JSON.stringify(d.hist));
+          if (d.emps)      localStorage.setItem('emps3',      JSON.stringify(d.emps));
+          if (d.hols)      localStorage.setItem('hols3',      JSON.stringify(d.hols));
+          if (d.pw)        localStorage.setItem('admin_pw',   d.pw);
+          restoreLocal();
+          syncDot('ok', '저장됨 ✓');
+          resolve(true);
+        } catch(e) {
+          restoreLocal();
+          syncDot('ok', '(로컬 데이터)');
+          resolve(false);
+        }
+      } else {
+        restoreLocal();
+        syncDot('ok', '(데이터 없음)');
+        resolve(false);
+      }
+    };
+
+    el.onerror = function() {
+      if (done) return; done = true;
+      cleanup();
+      syncDot('error', '불러오기 실패');
+      restoreLocal();
+      resolve(false);
+    };
+
+    el.src = GAS_URL + '?action=load_roster&callback=' + cb;
+    document.head.appendChild(el);
+  });
+}
+
+// localStorage → 화면 복원
+function restoreLocal() {
+  var saved  = getRoster();
+  var savedM = getBaseMonth();
+  if (saved && savedM) {
+    saved.forEach(function(r){ if (typeof r.day === 'string') r.day = new Date(r.day); });
+    curRoster = saved;
+    curCounts = getCounts();
+    var el = document.getElementById('base-month');
+    if (el) el.value = savedM;
+    var yr = +savedM.slice(0,4), mo = +savedM.slice(5,7);
+    renderRoster(yr, mo, curRoster);
+  }
+  renderHols();
+}
+
+
+
+// ── 당직표 저장 (명시적 저장 버튼) ──
+async function saveRoster() {
+  if (!curRoster) return;
+  // localStorage에 저장
+  setRoster(JSON.parse(JSON.stringify(curRoster, (k,v)=>v instanceof Date?v.toISOString():v)));
+  setCounts(curCounts);
+  const m = document.getElementById('base-month').value;
+  if (m) setBaseMonth(m);
+  // GAS 클라우드 저장
+  await saveToCloud();
+  // 버튼 비활성화 (저장 완료 상태)
+  const btn = document.getElementById('save-roster-btn');
+  if (btn) { btn.textContent='💾 저장됨 ✓'; btn.disabled=true; btn.style.opacity='.5'; btn.style.cursor='not-allowed'; }
+}
+
+// 당직표 변경 시 저장 버튼 활성화
+function markUnsaved() {
+  const btn = document.getElementById('save-roster-btn');
+  if (btn) { btn.textContent='💾 저장'; btn.disabled=false; btn.style.opacity='1'; btn.style.cursor='pointer'; }
+}
+
+// ── 엑셀 다운로드 ──
+function downloadExcel() {
+  if (!curRoster || !curRoster.length) { alert('당직표를 먼저 생성하세요.'); return; }
+
+  // SheetJS 방식으로 엑셀 생성
+  const m = getBaseMonth() || document.getElementById('base-month').value || '';
+  const yr = m ? m.slice(0,4) : '';
+  const mo = m ? +m.slice(5,7) : '';
+
+  // 데이터 행 구성
+  const wsData = [];
+  // 제목 행
+  wsData.push([`신관 2층 입구 당직표 (${yr}년 ${mo}월)`,'','','','','']);
+  // 헤더
+  wsData.push(['날짜','요일','시간','성명','직급','부서']);
+
+  const DAYS=['일','월','화','수','목','금','토'];
+  const TIMES=['09:00~10:00','10:00~11:00','11:00~11:50','13:00~14:00',
+               '14:00~15:00','15:00~16:00','16:00~17:00','17:00~17:50'];
+
+  curRoster.forEach(function({day, ds, slots}) {
+    const d = typeof day === 'string' ? new Date(day) : day;
+    const dow = DAYS[d.getDay()];
+    const dateStr = ds || d.toISOString().slice(0,10);
+    slots.forEach(function({slot, emp}, si) {
+      const isFirst = si === 0;
+      wsData.push([
+        isFirst ? dateStr : '',
+        isFirst ? dow : '',
+        TIMES[slot],
+        emp.name,
+        emp.rank,
+        emp.dept
+      ]);
+    });
+  });
+
+  // SheetJS로 변환
+  const XLSX = window.XLSX;
+  if (!XLSX) { alert('엑셀 라이브러리 로딩 중입니다. 잠시 후 다시 시도하세요.'); return; }
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // 열 너비
+  ws['!cols'] = [
+    {wch:13},{wch:6},{wch:14},{wch:10},{wch:9},{wch:13}
+  ];
+
+  // 셀 병합 (제목행)
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:5} }];
+
+  XLSX.utils.book_append_sheet(wb, ws, '당직표');
+  XLSX.writeFile(wb, `당직표_${yr}년_${mo}월.xlsx`);
+}
+
+
+// ── window에 명시적으로 등록 (inline onclick 호환) ──
+window.saveFile=saveFile;
+window.saveToCloud=saveToCloud;
+window.saveRoster=saveRoster;
+window.markUnsaved=markUnsaved;
+window.downloadExcel=downloadExcel;
+window.loadFromCloud=loadFromCloud;
+window.restoreLocal=restoreLocal;
+window.goPage=goPage;
+window.requirePw=requirePw;
+window.lockAdmin=lockAdmin;
+window.submitPw=submitPw;
+window.closePwModal=closePwModal;
+window.changePw=changePw;
+window.goPage=goPage;
+window.addHoliday=addHoliday;
+window.removeHoliday=removeHoliday;
+window.autoHolidays=autoHolidays;
+window.generate=generate;
+window.toggleSwapMode=toggleSwapMode;
+window.selectSwap=selectSwap;
+window.confirmSwap=confirmSwap;
+window.closeSwapModal=closeSwapModal;
+window.doSwap=doSwap;
+window.cancelSwap=cancelSwap;
+window.copyTsv=copyTsv;
+window.clearHistory=clearHistory;
+window.deleteMonthHistory=deleteMonthHistory;
+window.openAddModal=openAddModal;
+window.editEmp=editEmp;
+window.deleteEmp=deleteEmp;
+window.closeEmpModal=closeEmpModal;
+window.bgClose=bgClose;
+window.saveEmp=saveEmp;
+
+// ── 초기화: GAS 클라우드 → 없으면 localStorage ──
+(async function init(){
+  await loadFromCloud();
+  if(!curRoster) restoreLocal();
+})();
+</script>
+</body>
+</html>
