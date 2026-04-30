@@ -667,7 +667,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v6';
+const APP_VERSION='2026-05-v7';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1332,14 +1332,15 @@ function syncDot(status, msg) {
 
 // 앱 전체 상태를 하나로 묶기
 function getSnapshot() {
+  // ls.get()을 사용해서 _embedded 캐시 기준으로 가져옴 (항상 최신)
   return {
     roster:    getRoster(),
     counts:    getCounts(),
     baseMonth: getBaseMonth(),
-    hist: (function(){ try{return JSON.parse(localStorage.getItem('hist3')||'[]');}catch(e){return [];} })(),
-    emps: (function(){ try{return JSON.parse(localStorage.getItem('emps3')||'null');}catch(e){return null;} })(),
-    hols: (function(){ try{return JSON.parse(localStorage.getItem('hols3')||'[]');}catch(e){return [];} })(),
-    pw:   (function(){ try{return localStorage.getItem('admin_pw')||'sinokorgat01!';}catch(e){return 'sinokorgat01!';} })(),
+    hist:      getHist(),
+    emps:      getEmps(),
+    hols:      getHols(),
+    pw:        getPw(),
   };
 }
 
@@ -1355,6 +1356,7 @@ async function saveToCloud() {
       body: JSON.stringify({ action: 'save_roster', data: JSON.stringify(getSnapshot()) })
     });
     // no-cors라 응답 못읽지만 저장은 완료됨
+    const snap=getSnapshot(); console.log('[GAS] 저장 완료, emps:', snap.emps?snap.emps.length:0, '명');
     syncDot('ok', '저장됨 ✓');
   } catch(e) {
     console.error('저장 오류:', e);
@@ -1404,6 +1406,7 @@ function loadFromCloud() {
           });
           if(d.pw) localStorage.setItem('admin_pw', d.pw);
           restoreLocal();
+          console.log('[GAS] 불러오기 성공, emps:', getEmps().length, '명');
           syncDot('ok', '저장됨 ✓');
           resolve(true);
         } catch(e) {
