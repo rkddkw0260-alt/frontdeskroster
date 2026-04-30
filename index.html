@@ -667,12 +667,13 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v5';
+const APP_VERSION='2026-05-v6';
 if(localStorage.getItem('app_version')!==APP_VERSION){
-  // 이력·당직표·카운트만 초기화 (직원목록·공휴일·비밀번호는 유지)
-  ['hist3','roster3','counts3','basemonth3'].forEach(k=>localStorage.removeItem(k));
-  // _embedded도 초기화
-  ['hist3','roster3','counts3','basemonth3'].forEach(k=>{ delete _embedded[k]; });
+  // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
+  ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
+    localStorage.removeItem(k);
+    delete _embedded[k];
+  });
   localStorage.setItem('app_version',APP_VERSION);
 }
 
@@ -690,9 +691,16 @@ const ls={
   }
 };
 const getEmps=()=>ls.get('emps3',DEF_EMPS);
-const setEmps=v=>ls.set('emps3',v);
+const setEmps=v=>{
+  ls.set('emps3',v);
+  // GAS에도 즉시 저장
+  if(typeof saveToCloud==='function') saveToCloud();
+};
 const getHols=()=>ls.get('hols3',[]);
-const setHols=v=>ls.set('hols3',v);
+const setHols=v=>{
+  ls.set('hols3',v);
+  if(typeof saveToCloud==='function') saveToCloud();
+};
 const getHist=()=>ls.get('hist3',DEF_HIST);
 const setHist=v=>ls.set('hist3',v);
 const getPw=()=>ls.get('admin_pw','sinokorgat01!');
