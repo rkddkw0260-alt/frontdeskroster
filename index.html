@@ -667,7 +667,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v7';
+const APP_VERSION='2026-05-v9';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1320,7 +1320,7 @@ function saveFile(){
 //  GAS 클라우드 저장/불러오기
 // ══════════════════════════════════════════════
 // ★ 배포 후 받은 웹앱 URL로 교체하세요
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwI_xiY7dTjq5OTRPVHF19XGGgBR7ZU9vrNmyItDL39ee1sEaokEgDS_9NjAXejfPe1NQ/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycby0_0dLFaQSHlr3VZvkG_x6VMQVBvcnxoyFZJJleLfchummFkWNxMqmqTqPq6CSa-0ToA/exec';
 
 function syncDot(status, msg) {
   var dot = document.getElementById('sync-dot');
@@ -1332,36 +1332,52 @@ function syncDot(status, msg) {
 
 // 앱 전체 상태를 하나로 묶기
 function getSnapshot() {
-  // ls.get()을 사용해서 _embedded 캐시 기준으로 가져옴 (항상 최신)
   return {
     roster:    getRoster(),
     counts:    getCounts(),
     baseMonth: getBaseMonth(),
-    hist:      getHist(),
-    emps:      getEmps(),
-    hols:      getHols(),
-    pw:        getPw(),
+    hist: (function(){ try{return JSON.parse(localStorage.getItem('hist3')||'[]');}catch(e){return [];} })(),
+    emps: (function(){ try{return JSON.parse(localStorage.getItem('emps3')||'null');}catch(e){return null;} })(),
+    hols: (function(){ try{return JSON.parse(localStorage.getItem('hols3')||'[]');}catch(e){return [];} })(),
+    pw:   (function(){ try{return localStorage.getItem('admin_pw')||'sinokorgat01!';}catch(e){return 'sinokorgat01!';} })(),
   };
 }
 
 // ── 저장 (no-cors POST) ──
-async function saveToCloud() {
-  if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL_HERE') return;
+function saveToCloud() {
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL_HERE') return Promise.resolve(false);
   syncDot('saving', '저장 중...');
-  try {
-    await fetch(GAS_URL, {
-      method: 'POST',
-      mode:   'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'save_roster', data: JSON.stringify(getSnapshot()) })
-    });
-    // no-cors라 응답 못읽지만 저장은 완료됨
-    const snap=getSnapshot(); console.log('[GAS] 저장 완료, emps:', snap.emps?snap.emps.length:0, '명');
-    syncDot('ok', '저장됨 ✓');
-  } catch(e) {
-    console.error('저장 오류:', e);
-    syncDot('error', '저장 실패');
-  }
+  return new Promise(function(resolve) {
+    var cb = '__savecb' + Date.now();
+    var el = document.createElement('script');
+    var done = false;
+    var timer = setTimeout(function() {
+      if (done) return; done = true;
+      cleanup(); syncDot('error', '저장 실패(timeout)'); resolve(false);
+    }, 8000);
+    function cleanup() {
+      clearTimeout(timer); delete window[cb];
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }
+    window[cb] = function(res) {
+      if (done) return; done = true; cleanup();
+      if (res && res.status === 'success') {
+        var snap = getSnapshot();
+        console.log('[GAS] 저장 완료, emps:', snap.emps ? snap.emps.length : 0, '명');
+        syncDot('ok', '저장됨 ✓'); resolve(true);
+      } else {
+        console.error('[GAS] 저장 실패:', res);
+        syncDot('error', '저장 실패'); resolve(false);
+      }
+    };
+    el.onerror = function() {
+      if (done) return; done = true; cleanup();
+      syncDot('error', '저장 실패'); resolve(false);
+    };
+    var data = encodeURIComponent(JSON.stringify(getSnapshot()));
+    el.src = GAS_URL + '?action=save_roster&callback=' + cb + '&data=' + data;
+    document.head.appendChild(el);
+  });
 }
 
 // ── 불러오기 (JSONP) ──
@@ -1406,7 +1422,6 @@ function loadFromCloud() {
           });
           if(d.pw) localStorage.setItem('admin_pw', d.pw);
           restoreLocal();
-          console.log('[GAS] 불러오기 성공, emps:', getEmps().length, '명');
           syncDot('ok', '저장됨 ✓');
           resolve(true);
         } catch(e) {
