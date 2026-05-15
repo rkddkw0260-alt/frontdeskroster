@@ -1500,13 +1500,16 @@ function verifySave(expectedEmps) {
     const timer = setTimeout(function() {
       if (done) return; done = true;
       cleanup();
-      console.warn('[VERIFY] 검증 timeout');
+      console.warn('[VERIFY] 검증 timeout (12초)');
       resolve(false);
-    }, 6000);
+    }, 12000);  // 6초 → 12초
 
     function cleanup() {
       clearTimeout(timer);
-      delete window[cb];
+      if(typeof window[cb]==='function'){
+        window[cb] = function(){ console.log('[VERIFY] 늦은 응답 무시'); };
+      }
+      setTimeout(function(){ try{delete window[cb];}catch(e){} }, 30000);
       if (el.parentNode) el.parentNode.removeChild(el);
     }
 
@@ -1552,14 +1555,20 @@ function loadFromCloud() {
     var timer = setTimeout(function() {
       if (done) return; done = true;
       cleanup();
+      console.warn('[LOAD] 클라우드 응답 지연(15초 초과) - 로컬 데이터 사용');
       syncDot('ok', '(로컬 데이터)');
       restoreLocal();
       resolve(false);
-    }, 6000);
+    }, 15000);  // 6초 → 15초 (GAS cold start 대응)
 
     function cleanup() {
       clearTimeout(timer);
-      delete window[cb];
+      // 콜백 즉시 삭제 대신 no-op로 교체 (늦은 응답이 와도 에러 없이 무시)
+      if(typeof window[cb]==='function'){
+        window[cb] = function(){ console.log('[LOAD] 늦은 응답 무시'); };
+      }
+      // 30초 후 메모리 정리
+      setTimeout(function(){ try{delete window[cb];}catch(e){} }, 30000);
       if (el.parentNode) el.parentNode.removeChild(el);
     }
 
