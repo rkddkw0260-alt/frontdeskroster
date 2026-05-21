@@ -680,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v24';
+const APP_VERSION='2026-05-v26';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1392,56 +1392,97 @@ function saveFile(){
   let html=document.documentElement.outerHTML;
   var s1='<scr'+'ipt id="app-data" type="application/json">';
   var s2='<'+'/scr'+'ipt>';
-  html=html.replace(new RegExp(s1+'[\s\S]*?'+s2),s1+data+s2);
+  html=html.replace(new RegExp(s1+'[\\s\\S]*?'+s2),s1+data+s2);
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   a.download='index.html';
   a.click();
   URL.revokeObjectURL(a.href);
-}</script>
-
+}
+</script>
 <script>
-// ── GAS 연동 ──
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbw8Mj__O3Hhi47juLx_gLTv-qo9U3BzQm_UKxSGz4P5qHkaCAnnO9ian9WRU2VUxM91pQ/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzc-ja-tr0nzQFGZCpoSFOkKuj6BJzD_5v3ewoF2ICN2o0eVA99lxIWQkR7HLznrQS0gA/exec';
+const CHUNK_SIZE = 8000;
 
+// ── 동기화 표시 ──
 function syncDot(status, msg) {
   var dot = document.getElementById('sync-dot');
   var txt = document.getElementById('sync-txt');
   if (!dot || !txt) return;
   if (status === 'saving') { dot.style.background='#ff9800'; txt.textContent=msg||'저장 중...'; }
-  else if (status === 'ok') { dot.style.background='#4caf50'; txt.textContent=msg||'저장됨 ✓'; }
-  else { dot.style.background='#f44336'; txt.textContent=msg||'오류'; }
+  else if (status === 'ok')  { dot.style.background='#4caf50'; txt.textContent=msg||'저장됨 ✓'; }
+  else                       { dot.style.background='#f44336'; txt.textContent=msg||'오류'; }
 }
 
-let _saveQueue = Promise.resolve();
+// ── 저장할 스냅샷 (이력 제외 → 작게 유지) ──
+function getCloudSnapshot() {
+  var empsRaw = localStorage.getItem('emps3');
+  return {
+    roster:    getRoster(),
+    counts:    getCounts(),
+    baseMonth: getBaseMonth(),
+    emps:      empsRaw ? JSON.parse(empsRaw) : getEmps(),
+    hols:      getHols(),
+    pw:        localStorage.getItem('admin_pw') || 'sinokorgat01!'
+  };
+}
+
+// ── JSONP GET 저장 (청크 분할) ──
 function saveToCloud() {
-  _saveQueue = _saveQueue.then(_doSave).catch(function(){return false;});
-  return _saveQueue;
-}
-
-async function _doSave() {
-  if (!GAS_URL) return false;
-  syncDot('saving', '저장 중...');
-  const snap = getSnapshot();
+  if (!GAS_URL) return Promise.resolve(false);
+  const snap = getCloudSnapshot();
   const dataStr = JSON.stringify(snap);
-  console.log('[GAS] 저장 emps:', (snap.emps||[]).length, 'hist:', (snap.hist||[]).length);
-  try {
-    await fetch(GAS_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({action:'save_roster', data: dataStr})
+  console.log('[GAS] 저장 emps:', (snap.emps||[]).length, '명 크기:', (dataStr.length/1024).toFixed(1)+'KB');
+  syncDot('saving', '저장 중...');
+
+  // 청크 분할해서 순차 저장
+  const chunks = [];
+  for (let i=0; i<dataStr.length; i+=CHUNK_SIZE) chunks.push(dataStr.substring(i,i+CHUNK_SIZE));
+
+  function saveChunk(i) {
+    return new Promise(function(resolve) {
+      if (i >= chunks.length) { resolve(true); return; }
+      var cb = '__savecb' + Date.now() + '_' + i;
+      var el = document.createElement('script');
+      var done = false;
+      var timer = setTimeout(function() {
+        if(done)return; done=true;
+        if(el.parentNode) el.parentNode.removeChild(el);
+        delete window[cb];
+        resolve(false);
+      }, 10000);
+      window[cb] = function(res) {
+        if(done)return; done=true;
+        clearTimeout(timer);
+        if(el.parentNode) el.parentNode.removeChild(el);
+        delete window[cb];
+        resolve(res && res.status==='success');
+      };
+      el.onerror = function() {
+        if(done)return; done=true; clearTimeout(timer);
+        if(el.parentNode) el.parentNode.removeChild(el);
+        delete window[cb]; resolve(false);
+      };
+      var params = '?action=save_chunk&callback='+cb+'&key='+encodeURIComponent(STORAGE_KEY)
+        +'&idx='+i+'&total='+chunks.length+'&data='+encodeURIComponent(chunks[i]);
+      el.src = GAS_URL + params;
+      document.head.appendChild(el);
     });
+  }
+
+  return (async function() {
+    for (let i=0; i<chunks.length; i++) {
+      const ok = await saveChunk(i);
+      if (!ok) { syncDot('error','저장 실패'); return false; }
+    }
     syncDot('ok','저장됨 ✓');
     console.log('[GAS] 저장 완료 ✓');
     return true;
-  } catch(e) {
-    console.error('[GAS] 저장 오류:', e);
-    syncDot('error','저장 실패');
-    return false;
-  }
+  })();
 }
 
+// ── JSONP GET 불러오기 ──
 function loadFromCloud() {
   return new Promise(function(resolve) {
     if (!GAS_URL) { restoreLocal(); resolve(false); return; }
@@ -1455,7 +1496,7 @@ function loadFromCloud() {
       delete window[cb];
       syncDot('ok','(로컬 데이터)');
       restoreLocal(); resolve(false);
-    }, 8000);
+    }, 10000);
     window[cb] = function(res) {
       if(done)return; done=true;
       clearTimeout(timer);
@@ -1464,25 +1505,21 @@ function loadFromCloud() {
       if (res && res.status==='success' && res.data) {
         try {
           var d = JSON.parse(res.data);
-          var keys = {roster3:'roster',counts3:'counts',basemonth3:'baseMonth',hist3:'hist',emps3:'emps',hols3:'hols'};
-          Object.keys(keys).forEach(function(lk){
-            var dk=keys[lk];
-            if(d[dk]!==undefined&&d[dk]!==null){
-              var val=(dk==='hist'&&(!d[dk]||d[dk].length===0))?DEF_HIST:d[dk];
-              localStorage.setItem(lk,JSON.stringify(val));
-              _embedded[lk]=val;
-            }
-          });
-          if(d.pw) localStorage.setItem('admin_pw',d.pw);
+          // 당직표+직원+설정 복원 (이력은 DEF_HIST 유지)
+          if(d.roster)    { localStorage.setItem('roster3',    JSON.stringify(d.roster));    _embedded['roster3']=d.roster; }
+          if(d.counts)    { localStorage.setItem('counts3',    JSON.stringify(d.counts));    _embedded['counts3']=d.counts; }
+          if(d.baseMonth) { localStorage.setItem('basemonth3', JSON.stringify(d.baseMonth)); _embedded['basemonth3']=d.baseMonth; }
+          if(d.emps)      { localStorage.setItem('emps3',      JSON.stringify(d.emps));      _embedded['emps3']=d.emps; }
+          if(d.hols)      { localStorage.setItem('hols3',      JSON.stringify(d.hols));      _embedded['hols3']=d.hols; }
+          if(d.pw)        localStorage.setItem('admin_pw', d.pw);
           restoreLocal();
-          console.log('[GAS] 불러오기 성공 emps:',getEmps().length,'명 hist:',getHist().length,'건');
+          console.log('[GAS] 불러오기 성공 emps:', getEmps().length, '명');
           syncDot('ok','저장됨 ✓'); resolve(true);
         } catch(e) { restoreLocal(); syncDot('ok','(로컬 데이터)'); resolve(false); }
       } else { restoreLocal(); syncDot('ok','(데이터 없음)'); resolve(false); }
     };
     el.onerror = function() {
-      if(done)return; done=true;
-      clearTimeout(timer);
+      if(done)return; done=true; clearTimeout(timer);
       if(el.parentNode) el.parentNode.removeChild(el);
       delete window[cb];
       syncDot('error','불러오기 실패'); restoreLocal(); resolve(false);
@@ -1492,6 +1529,7 @@ function loadFromCloud() {
   });
 }
 
+// ── localStorage → 화면 복원 ──
 function restoreLocal() {
   var saved = getRoster();
   var savedM = getBaseMonth();
@@ -1501,7 +1539,7 @@ function restoreLocal() {
     curCounts = getCounts();
     var el = document.getElementById('base-month');
     if(el) el.value = savedM;
-    var yr = +savedM.slice(0,4), mo = +savedM.slice(5,7);
+    var yr=+savedM.slice(0,4), mo=+savedM.slice(5,7);
     renderRoster(yr, mo, curRoster);
   }
   renderHols();
@@ -1511,7 +1549,7 @@ function restoreLocal() {
 (async function init(){
   console.log('[INIT] 시작');
   await loadFromCloud();
-  console.log('[INIT] 완료 - emps:', getEmps().length, 'hist:', getHist().length);
+  console.log('[INIT] 완료 emps:', getEmps().length, 'hist:', getHist().length);
 })();
 </script>
 </body>
