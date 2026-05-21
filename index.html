@@ -680,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v27';
+const APP_VERSION='2026-05-v31';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -703,7 +703,16 @@ const ls={
     _embedded[k]=v;
   }
 };
-const getEmps=()=>ls.get('emps3',DEF_EMPS);
+const getEmps=()=>{
+  var stored = ls.get('emps3', null);
+  if (!stored) return DEF_EMPS;
+  // DEF_EMPS의 deskMode/deskStart를 항상 우선 적용
+  return stored.map(function(e){
+    var def = DEF_EMPS.find(function(d){ return d.name===e.name; });
+    if (def && def.deskMode) { e.deskMode=def.deskMode; e.deskStart=def.deskStart; }
+    return e;
+  });
+};
 const setEmps=v=>{
   ls.set('emps3',v);
   // GAS에도 즉시 저장
@@ -848,13 +857,18 @@ function renderHols(){
 function isAltdayWorkDay(emp, ds, hols){
   if(emp.deskMode!=='altday'||!emp.deskStart) return false;
   if(ds < emp.deskStart) return false;
+  // 로컬 날짜 문자열 변환 함수 (toISOString은 UTC 기준이라 한국 시간대에서 오류)
+  function toLocal(d){
+    var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+day;
+  }
   const start = new Date(emp.deskStart+'T00:00:00');
   const target = new Date(ds+'T00:00:00');
   if(target < start) return false;
   let workdayIdx = -1;
   const cur = new Date(start);
   while(cur <= target){
-    const dsCur = cur.toISOString().slice(0,10);
+    const dsCur = toLocal(cur);
     const dow = cur.getDay();
     const isHol = hols.includes(dsCur);
     if(dow !== 0 && dow !== 6 && !isHol){
@@ -1402,165 +1416,168 @@ function saveFile(){
 }
 </script>
 <script>
-const STORAGE_KEY = 'duty_roster_data_v1';
+// ══════════════════════════════════════════
+//  GAS 연동 (JSONP 청크 저장/불러오기)
+// ══════════════════════════════════════════
+const GAS_URL      = 'https://script.google.com/macros/s/AKfycbzc-ja-tr0nzQFGZCpoSFOkKuj6BJzD_5v3ewoF2ICN2o0eVA99lxIWQkR7HLznrQS0gA/exec';
+const GAS_KEY      = 'duty_roster_data_v1';
+const GAS_CHUNK_SZ = 8000;
 
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzc-ja-tr0nzQFGZCpoSFOkKuj6BJzD_5v3ewoF2ICN2o0eVA99lxIWQkR7HLznrQS0gA/exec';
-const CHUNK_SIZE = 8000;
-
-// ── 동기화 표시 ──
+// 동기화 상태 표시
 function syncDot(status, msg) {
   var dot = document.getElementById('sync-dot');
   var txt = document.getElementById('sync-txt');
   if (!dot || !txt) return;
-  if (status === 'saving') { dot.style.background='#ff9800'; txt.textContent=msg||'저장 중...'; }
-  else if (status === 'ok')  { dot.style.background='#4caf50'; txt.textContent=msg||'저장됨 ✓'; }
-  else                       { dot.style.background='#f44336'; txt.textContent=msg||'오류'; }
+  if      (status === 'saving') { dot.style.background='#ff9800'; txt.textContent = msg || '저장 중...'; }
+  else if (status === 'ok')     { dot.style.background='#4caf50'; txt.textContent = msg || '저장됨 ✓'; }
+  else                          { dot.style.background='#f44336'; txt.textContent = msg || '오류'; }
 }
 
-// ── 저장할 스냅샷 (이력 제외 → 작게 유지) ──
+// GAS에 저장할 스냅샷 (이력 제외 → 크기 최소화)
 function getCloudSnapshot() {
   var empsRaw = localStorage.getItem('emps3');
+  var emps = empsRaw ? JSON.parse(empsRaw) : getEmps();
+  // DEF_EMPS의 deskMode 정보 보완
+  emps = emps.map(function(e) {
+    var def = DEF_EMPS.find(function(d){ return d.name === e.name; });
+    if (def && def.deskMode && !e.deskMode) {
+      e.deskMode  = def.deskMode;
+      e.deskStart = def.deskStart;
+    }
+    return e;
+  });
   return {
     roster:    getRoster(),
     counts:    getCounts(),
     baseMonth: getBaseMonth(),
-    emps:      empsRaw ? JSON.parse(empsRaw) : getEmps(),
+    emps:      emps,
     hols:      getHols(),
     pw:        localStorage.getItem('admin_pw') || 'sinokorgat01!'
   };
 }
 
-// ── JSONP GET 저장 (청크 분할) ──
-function saveToCloud() {
-  if (!GAS_URL) return Promise.resolve(false);
-  const snap = getCloudSnapshot();
-  const dataStr = JSON.stringify(snap);
-  console.log('[GAS] 저장 emps:', (snap.emps||[]).length, '명 크기:', (dataStr.length/1024).toFixed(1)+'KB');
-  syncDot('saving', '저장 중...');
-
-  // 청크 분할해서 순차 저장
-  const chunks = [];
-  for (let i=0; i<dataStr.length; i+=CHUNK_SIZE) chunks.push(dataStr.substring(i,i+CHUNK_SIZE));
-
-  function saveChunk(i) {
-    return new Promise(function(resolve) {
-      if (i >= chunks.length) { resolve(true); return; }
-      var cb = '__savecb' + Date.now() + '_' + i;
-      var el = document.createElement('script');
-      var done = false;
-      var timer = setTimeout(function() {
-        if(done)return; done=true;
-        if(el.parentNode) el.parentNode.removeChild(el);
-        delete window[cb];
-        resolve(false);
-      }, 10000);
-      window[cb] = function(res) {
-        if(done)return; done=true;
-        clearTimeout(timer);
-        if(el.parentNode) el.parentNode.removeChild(el);
-        delete window[cb];
-        resolve(res && res.status==='success');
-      };
-      el.onerror = function() {
-        if(done)return; done=true; clearTimeout(timer);
-        if(el.parentNode) el.parentNode.removeChild(el);
-        delete window[cb]; resolve(false);
-      };
-      var params = '?action=save_chunk&callback='+cb+'&key='+encodeURIComponent(STORAGE_KEY)
-        +'&idx='+i+'&total='+chunks.length+'&data='+encodeURIComponent(chunks[i]);
-      el.src = GAS_URL + params;
-      document.head.appendChild(el);
-    });
-  }
-
-  return (async function() {
-    for (let i=0; i<chunks.length; i++) {
-      const ok = await saveChunk(i);
-      if (!ok) { syncDot('error','저장 실패'); return false; }
-    }
-    syncDot('ok','저장됨 ✓');
-    console.log('[GAS] 저장 완료 ✓');
-    return true;
-  })();
-}
-
-// ── JSONP GET 불러오기 ──
-function loadFromCloud() {
+// JSONP 헬퍼
+function jsonpCall(url, callback, timeout) {
   return new Promise(function(resolve) {
-    if (!GAS_URL) { restoreLocal(); resolve(false); return; }
-    syncDot('saving','불러오는 중...');
-    var cb = '__loadcb' + Date.now();
-    var el = document.createElement('script');
+    var cb  = '__gcb' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    var el  = document.createElement('script');
     var done = false;
     var timer = setTimeout(function() {
-      if(done)return; done=true;
-      if(el.parentNode) el.parentNode.removeChild(el);
+      if (done) return; done = true;
+      if (el.parentNode) el.parentNode.removeChild(el);
       delete window[cb];
-      syncDot('ok','(로컬 데이터)');
-      restoreLocal(); resolve(false);
-    }, 10000);
+      resolve(null);
+    }, timeout || 10000);
     window[cb] = function(res) {
-      if(done)return; done=true;
+      if (done) return; done = true;
       clearTimeout(timer);
-      if(el.parentNode) el.parentNode.removeChild(el);
+      if (el.parentNode) el.parentNode.removeChild(el);
       delete window[cb];
-      if (res && res.status==='success' && res.data) {
-        try {
-          var d = JSON.parse(res.data);
-          // 당직표+직원+설정 복원 (이력은 DEF_HIST 유지)
-          if(d.roster)    { localStorage.setItem('roster3',    JSON.stringify(d.roster));    _embedded['roster3']=d.roster; }
-          if(d.counts)    { localStorage.setItem('counts3',    JSON.stringify(d.counts));    _embedded['counts3']=d.counts; }
-          if(d.baseMonth) { localStorage.setItem('basemonth3', JSON.stringify(d.baseMonth)); _embedded['basemonth3']=d.baseMonth; }
-          if(d.emps) {
-            // GAS emps에 deskMode 없으면 DEF_EMPS 기준으로 보완
-            var mergedEmps = d.emps.map(function(ge) {
-              var def = DEF_EMPS.find(function(de){ return de.name===ge.name; });
-              if (def && def.deskMode && !ge.deskMode) {
-                ge.deskMode = def.deskMode;
-                ge.deskStart = def.deskStart;
-              }
-              return ge;
-            });
-            localStorage.setItem('emps3', JSON.stringify(mergedEmps));
-            _embedded['emps3'] = mergedEmps;
-          }
-          if(d.hols)      { localStorage.setItem('hols3',      JSON.stringify(d.hols));      _embedded['hols3']=d.hols; }
-          if(d.pw)        localStorage.setItem('admin_pw', d.pw);
-          restoreLocal();
-          console.log('[GAS] 불러오기 성공 emps:', getEmps().length, '명');
-          syncDot('ok','저장됨 ✓'); resolve(true);
-        } catch(e) { restoreLocal(); syncDot('ok','(로컬 데이터)'); resolve(false); }
-      } else { restoreLocal(); syncDot('ok','(데이터 없음)'); resolve(false); }
+      resolve(res);
     };
     el.onerror = function() {
-      if(done)return; done=true; clearTimeout(timer);
-      if(el.parentNode) el.parentNode.removeChild(el);
+      if (done) return; done = true;
+      clearTimeout(timer);
+      if (el.parentNode) el.parentNode.removeChild(el);
       delete window[cb];
-      syncDot('error','불러오기 실패'); restoreLocal(); resolve(false);
+      resolve(null);
     };
-    el.src = GAS_URL + '?action=load_roster&callback=' + cb;
+    el.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
     document.head.appendChild(el);
   });
 }
 
-// ── localStorage → 화면 복원 ──
+// 저장 (청크 분할 JSONP GET)
+var _saveQueue = Promise.resolve();
+function saveToCloud() {
+  _saveQueue = _saveQueue.then(_doSave).catch(function() { return false; });
+  return _saveQueue;
+}
+
+async function _doSave() {
+  if (!GAS_URL) return false;
+  syncDot('saving', '저장 중...');
+  var snap    = getCloudSnapshot();
+  var dataStr = JSON.stringify(snap);
+  var chunks  = [];
+  for (var i = 0; i < dataStr.length; i += GAS_CHUNK_SZ)
+    chunks.push(dataStr.substring(i, i + GAS_CHUNK_SZ));
+  console.log('[GAS] 저장 emps:', (snap.emps||[]).length, '명 /', chunks.length, '청크 /', (dataStr.length/1024).toFixed(1)+'KB');
+  for (var ci = 0; ci < chunks.length; ci++) {
+    var url = GAS_URL
+      + '?action=save_chunk'
+      + '&key='   + encodeURIComponent(GAS_KEY)
+      + '&idx='   + ci
+      + '&total=' + chunks.length
+      + '&data='  + encodeURIComponent(chunks[ci]);
+    var res = await jsonpCall(url, null, 10000);
+    if (!res || res.status !== 'success') {
+      console.error('[GAS] 청크', ci, '저장 실패:', res);
+      syncDot('error', '저장 실패'); return false;
+    }
+  }
+  syncDot('ok', '저장됨 ✓');
+  console.log('[GAS] 저장 완료 ✓');
+  return true;
+}
+
+// 불러오기 (JSONP GET)
+function loadFromCloud() {
+  return new Promise(async function(resolve) {
+    if (!GAS_URL) { restoreLocal(); resolve(false); return; }
+    syncDot('saving', '불러오는 중...');
+    var url = GAS_URL + '?action=load_roster';
+    var res = await jsonpCall(url, null, 10000);
+    if (res && res.status === 'success' && res.data) {
+      try {
+        var d = JSON.parse(res.data);
+        // 당직표·직원·설정 복원 (이력은 DEF_HIST 유지)
+        if (d.roster)    { localStorage.setItem('roster3',    JSON.stringify(d.roster));    _embedded['roster3']    = d.roster;    }
+        if (d.counts)    { localStorage.setItem('counts3',    JSON.stringify(d.counts));    _embedded['counts3']    = d.counts;    }
+        if (d.baseMonth) { localStorage.setItem('basemonth3', JSON.stringify(d.baseMonth)); _embedded['basemonth3'] = d.baseMonth; }
+        if (d.hols)      { localStorage.setItem('hols3',      JSON.stringify(d.hols));      _embedded['hols3']      = d.hols;      }
+        if (d.pw)        localStorage.setItem('admin_pw', d.pw);
+        // emps: GAS 데이터 + DEF_EMPS의 deskMode 보완
+        if (d.emps) {
+          var emps = d.emps.map(function(ge) {
+            var def = DEF_EMPS.find(function(de){ return de.name === ge.name; });
+            if (def && def.deskMode && !ge.deskMode) { ge.deskMode = def.deskMode; ge.deskStart = def.deskStart; }
+            return ge;
+          });
+          localStorage.setItem('emps3', JSON.stringify(emps));
+          _embedded['emps3'] = emps;
+        }
+        restoreLocal();
+        console.log('[GAS] 불러오기 성공 emps:', getEmps().length, '명');
+        syncDot('ok', '저장됨 ✓'); resolve(true);
+      } catch(e) {
+        console.error('[GAS] 파싱 오류:', e);
+        restoreLocal(); syncDot('ok', '(로컬 데이터)'); resolve(false);
+      }
+    } else {
+      console.log('[GAS] 데이터 없음 - 로컬 사용');
+      restoreLocal(); syncDot('ok', '(데이터 없음)'); resolve(false);
+    }
+  });
+}
+
+// localStorage → 화면 복원
 function restoreLocal() {
-  var saved = getRoster();
+  var saved  = getRoster();
   var savedM = getBaseMonth();
   if (saved && savedM) {
-    saved.forEach(function(r){ if(typeof r.day==='string') r.day=new Date(r.day); });
+    saved.forEach(function(r) { if (typeof r.day === 'string') r.day = new Date(r.day); });
     curRoster = saved;
     curCounts = getCounts();
     var el = document.getElementById('base-month');
-    if(el) el.value = savedM;
-    var yr=+savedM.slice(0,4), mo=+savedM.slice(5,7);
-    renderRoster(yr, mo, curRoster);
+    if (el) el.value = savedM;
+    renderRoster(+savedM.slice(0,4), +savedM.slice(5,7), curRoster);
   }
   renderHols();
 }
 
-// ── 초기화 ──
-(async function init(){
+// 초기화
+(async function init() {
   console.log('[INIT] 시작');
   await loadFromCloud();
   console.log('[INIT] 완료 emps:', getEmps().length, 'hist:', getHist().length);
