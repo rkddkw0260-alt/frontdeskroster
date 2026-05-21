@@ -267,6 +267,16 @@ tr:hover td{background:#fafaf8}
       ✅ 시간대 고정 인원은 지정 슬롯만
     </div>
   </div>
+  <!-- 데스크 전담 휴무 지정 -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-h">데스크 전담 휴무 지정</div>
+    <div style="font-size:12px;color:#888;margin-bottom:10px">선택한 날짜에 일반직원 8명 자동배정. 이후 슬롯별 수동 변경 가능.</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <input type="date" id="altday-off-date" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;flex:1">
+      <button onclick="applyAltdayOff()" style="padding:7px 16px;background:#e8734a;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-weight:600;white-space:nowrap">적용</button>
+    </div>
+  </div>
+
   <button class="btn btn-green btn-full" onclick="generate()">당직표 생성 →</button>
 </div>
 
@@ -680,7 +690,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v61';
+const APP_VERSION='2026-05-v66';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1072,7 +1082,9 @@ function renderRoster(yr,mo,data){
           ${swapped?'<span class="badge b-swapped" style="font-size:10px;padding:1px 5px">교체</span>':''}
           ${swapMode?`<button class="btn btn-swap btn-sm ${sel?'selected':''}"
             onclick="selectSwapNormal(${di},${si},'${ds}',${slot},'${emp.name}','${emp.rank}','${emp.dept}')"
-            style="margin-left:auto;flex-shrink:0;min-width:52px">${sel?'✓':'교체'}</button>`:''}
+            style="margin-left:auto;flex-shrink:0;min-width:52px">${sel?'✓':'교체'}</button>`:
+          (adminUnlocked?`<button class="btn btn-sm" onclick="openSlotChange(${di},${si},'${ds}',${slot})"
+            style="margin-left:auto;flex-shrink:0;font-size:11px;padding:3px 8px;color:#666;border-color:#ddd">변경</button>`:'') }
         </div>`;
       }).join('');
     }
@@ -1521,6 +1533,121 @@ function saveFile(){
 
 // generate 함수에서 연차 반영: altdayOnDay에서 연차인 날은 제외
 
+
+// ══════════════════════════════════════════
+//  데스크 전담 휴무 + 슬롯 수동 변경
+// ══════════════════════════════════════════
+var _slotChangeDayIdx = -1;
+var _slotChangeSlotIdx = -1;
+
+// 특정 날짜를 일반배정으로 전환
+function applyAltdayOff() {
+  var ds = document.getElementById('altday-off-date').value;
+  if (!ds) { alert('날짜를 선택하세요'); return; }
+  if (!curRoster) { alert('먼저 당직표를 생성하세요'); return; }
+
+  var dayData = curRoster.find(function(r) { return r.ds === ds; });
+  if (!dayData) { alert('당직표에 없는 날짜입니다 (휴일/공휴일 확인)'); return; }
+
+  // 일반직원 편차 기준 8명 배정
+  var allEmps = getEmps();
+  var normalEmps = allEmps.filter(function(e) { return !(e.deskMode === 'altday' && e.deskStart); });
+  var hist = getHist();
+  var accCnt = {};
+  normalEmps.forEach(function(e) { accCnt[e.name] = 0; });
+  hist.forEach(function(h) { if (accCnt[h.name] !== undefined) accCnt[h.name]++; });
+
+  var sorted = normalEmps.slice().sort(function(a, b) {
+    return (accCnt[a.name]||0) - (accCnt[b.name]||0) || a.name.localeCompare(b.name);
+  });
+  var picked = sorted.slice(0, 8);
+
+  // 슬롯 교체
+  dayData.slots = picked.map(function(e, i) {
+    return { slot: i, emp: Object.assign({}, e), swapped: false };
+  });
+
+  // 이력 기록
+  var moKey = ds.slice(0, 7);
+  var newHist = getHist().filter(function(h) { return !(h.date === ds); });
+  picked.forEach(function(e, i) {
+    newHist.push({ date: ds, name: e.name, rank: e.rank, dept: e.dept,
+      slot: i, time: TIMES[i], type: '휴무대체' });
+  });
+  setHist(newHist);
+
+  setRoster(JSON.parse(JSON.stringify(curRoster, function(k,v){ return v instanceof Date ? v.toISOString() : v; })));
+  saveToCloud();
+
+  var m = document.getElementById('base-month').value;
+  if (m) renderRoster(+m.slice(0,4), +m.slice(5,7), curRoster);
+  alert(ds + ' 일반직원 8명 배정 완료!\n슬롯별 변경은 당직표에서 "변경" 버튼을 누르세요.');
+  goPage('roster');
+}
+
+// 슬롯 변경 모달 열기
+function openSlotChange(di, si, ds, slot) {
+  _slotChangeDayIdx = di;
+  _slotChangeSlotIdx = si;
+  var emp = curRoster[di].slots[si].emp;
+  document.getElementById('slot-change-info').textContent =
+    ds + ' ' + TIMES[slot] + ' · 현재: ' + emp.name;
+  document.getElementById('slot-change-search').value = '';
+  document.getElementById('slot-change-modal').classList.add('show');
+  renderSlotChangeList();
+}
+
+function closeSlotChangeModal() {
+  document.getElementById('slot-change-modal').classList.remove('show');
+}
+
+function renderSlotChangeList() {
+  var q = document.getElementById('slot-change-search').value.trim();
+  var allEmps = getEmps();
+  var list = q ? allEmps.filter(function(e){ return e.name.includes(q); }) : allEmps;
+  var html = list.map(function(e) {
+    return '<div class="slot-change-item" data-name="' + e.name + '" data-rank="' + e.rank + '" data-dept="' + e.dept + '" ' +
+      'style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;display:flex;gap:10px;align-items:center">' +
+      '<span style="font-weight:600;font-size:14px">' + e.name + '</span>' +
+      '<span style="font-size:12px;color:#888">' + e.rank + ' · ' + e.dept + '</span>' +
+      '</div>';
+  }).join('');
+  var el = document.getElementById('slot-change-list');
+  el.innerHTML = html || '<div style="padding:16px;color:#aaa;text-align:center">검색 결과 없음</div>';
+  el.querySelectorAll('.slot-change-item').forEach(function(item) {
+    item.addEventListener('mouseover', function(){ this.style.background='#f5f5f5'; });
+    item.addEventListener('mouseout',  function(){ this.style.background=''; });
+    item.addEventListener('click', function(){
+      selectSlotEmp(this.dataset.name, this.dataset.rank, this.dataset.dept);
+    });
+  });
+}
+
+function selectSlotEmp(name, rank, dept) {
+  var di = _slotChangeDayIdx, si = _slotChangeSlotIdx;
+  if (di < 0 || si < 0 || !curRoster) return;
+  var slot = curRoster[di].slots[si];
+  var oldName = slot.emp.name;
+  var ds = curRoster[di].ds;
+
+  // 슬롯 교체
+  slot.emp = { name: name, rank: rank, dept: dept };
+  slot.swapped = true;
+
+  // 이력 기록
+  var hist = getHist();
+  hist.push({ date: ds, name: name, rank: rank, dept: dept,
+    slot: slot.slot, time: TIMES[slot.slot], type: '수동변경(' + oldName + '→' + name + ')' });
+  setHist(hist);
+
+  setRoster(JSON.parse(JSON.stringify(curRoster, function(k,v){ return v instanceof Date ? v.toISOString() : v; })));
+  saveToCloud();
+
+  closeSlotChangeModal();
+  var m = document.getElementById('base-month').value;
+  if (m) renderRoster(+m.slice(0,4), +m.slice(5,7), curRoster);
+}
+
 // ══════════════════════════════════════════
 //  GAS 연동 (JSONP 청크 저장/불러오기)
 // ══════════════════════════════════════════
@@ -1711,6 +1838,21 @@ function restoreLocal() {
   console.log('[INIT] 완료 emps:', getEmps().length, 'hist:', getHist().length);
 })();
 </script>
+
+<!-- 슬롯 직원 변경 모달 -->
+<div class="modal-bg" id="slot-change-modal">
+  <div class="modal" style="max-width:400px;max-height:80vh;display:flex;flex-direction:column">
+    <div class="modal-h">👤 직원 선택</div>
+    <div class="modal-sub" id="slot-change-info"></div>
+    <input type="text" id="slot-change-search" placeholder="이름 검색..." 
+      style="margin:8px 0;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px"
+      oninput="renderSlotChangeList()">
+    <div id="slot-change-list" style="overflow-y:auto;flex:1;margin:4px 0"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeSlotChangeModal()">취소</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
 </div>
