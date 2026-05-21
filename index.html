@@ -681,7 +681,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v17';
+const APP_VERSION='2026-05-v18';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1403,6 +1403,22 @@ function saveFile(){
   URL.revokeObjectURL(a.href);
 }
 
+
+
+// ── 앱 전체 상태 스냅샷 ──
+function getSnapshot() {
+  var empsRaw = localStorage.getItem('emps3');
+  var emps = empsRaw ? JSON.parse(empsRaw) : getEmps();
+  return {
+    roster:    getRoster(),
+    counts:    getCounts(),
+    baseMonth: getBaseMonth(),
+    hist:      getHist(),
+    emps:      emps,
+    hols:      getHols(),
+    pw:        getPw()
+  };
+}
 
 // ── 동기화 상태 표시 ──
 function syncDot(status, msg) {
