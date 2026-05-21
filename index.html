@@ -680,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v33';
+const APP_VERSION='2026-05-v34';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1421,7 +1421,7 @@ function saveFile(){
 // ══════════════════════════════════════════
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyBdwHHZ57dPDAGDA7oJUGGc1oB6I23C3KlQVR7YajmVbcX6kclFBkPCTg6SE1DnXoArQ/exec';
 const GAS_KEY = 'duty_roster_data_v1';
-const GAS_CHUNK_SZ = 2000;
+const GAS_CHUNK_SZ = 500;
 
 // 동기화 상태 표시
 function syncDot(status, msg) {
