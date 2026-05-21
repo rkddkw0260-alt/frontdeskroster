@@ -681,7 +681,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v15';
+const APP_VERSION='2026-05-v16';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1449,7 +1449,11 @@ function loadFromCloud() {
           var keys = {roster3:'roster',counts3:'counts',basemonth3:'baseMonth',hist3:'hist',emps3:'emps',hols3:'hols'};
           Object.keys(keys).forEach(function(lk){
             var dk=keys[lk];
-            if(d[dk]!==undefined&&d[dk]!==null){ localStorage.setItem(lk,JSON.stringify(d[dk])); _embedded[lk]=d[dk]; }
+            if(d[dk]!==undefined&&d[dk]!==null){
+              // hist가 비어있으면 DEF_HIST 사용
+              var val = (dk==='hist' && (!d[dk] || d[dk].length===0)) ? DEF_HIST : d[dk];
+              localStorage.setItem(lk,JSON.stringify(val)); _embedded[lk]=val;
+            }
           });
           if(d.pw) localStorage.setItem('admin_pw',d.pw);
           restoreLocal();
