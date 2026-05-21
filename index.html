@@ -680,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v37';
+const APP_VERSION='2026-05-v61';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -899,7 +899,10 @@ function generate(){
   const altdayOnDay={};
   workdays.forEach(ds=>{
     for(let i=0;i<altdayEmps.length;i++){
-      if(isAltdayWorkDay(altdayEmps[i],ds,hols)){altdayOnDay[ds]=i; break;}
+      if(isAltdayWorkDay(altdayEmps[i],ds,hols)){
+        altdayOnDay[ds]=i;
+        break;
+      }
     }
   });
   console.log('[생성] 격일제 근무일:',Object.keys(altdayOnDay).length);
@@ -1041,14 +1044,16 @@ function renderRoster(yr,mo,data){
       const emp=slots[0].emp;
       const isSelA=swapA&&swapA.dayIdx===di&&swapA.slotIdx===0;
       const isSelB=swapB&&swapB.dayIdx===di&&swapB.slotIdx===0;
-      sHTML=`<div class="slot-row altday-full ${(isSelA||isSelB)?'swap-hi':''}" id="sr-${di}-0"
-        style="padding:18px 16px;background:linear-gradient(135deg,#e8f0ff,#f0f4ff);border-radius:10px;margin:4px 0">
-        <div style="font-size:18px;font-weight:700;color:#1e4080">${emp.name}</div>
-        <div style="font-size:13px;color:#555;margin-top:4px">${emp.rank} · ${emp.dept}</div>
-        <div style="font-size:11px;color:#888;margin-top:2px">🔵 데스크 전담 (09:00~17:50 종일)</div>
-        ${swapMode?`<button class="btn btn-swap btn-sm ${(isSelA||isSelB)?'selected':''}"
-          onclick="selectSwapAltday(${di},'${ds}','${emp.name}','${emp.rank}','${emp.dept}')"
-          style="margin-top:8px">${(isSelA||isSelB)?'✓선택':'교체'}</button>`:''}
+      sHTML=`<div class="slot-row ${(isSelA||isSelB)?'swap-hi':''}" id="sr-${di}-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080">${emp.name}</div>
+        <div class="slot-rank">${emp.rank}</div>
+        <span class="slot-dept">${emp.dept}</span>
+        ${swapMode?`<button onclick="selectSwapAltday(${di},'${ds}','${emp.name}','${emp.rank}','${emp.dept}')"
+          class="btn btn-swap btn-sm ${(isSelA||isSelB)?'selected':''}"
+          style="margin-left:auto;flex-shrink:0">
+          ${(isSelA||isSelB)?'✓선택':'교체'}</button>`:''}
       </div>`;
     } else {
       // 일반 슬롯
@@ -1056,16 +1061,18 @@ function renderRoster(yr,mo,data){
         const key=`${di}-${si}`;
         const isSelA=swapA&&swapA.dayIdx===di&&swapA.slotIdx===si;
         const isSelB=swapB&&swapB.dayIdx===di&&swapB.slotIdx===si;
-        return `<div class="slot-row ${(isSelA||isSelB)?'swap-hi':''}" id="sr-${key}">
+        const sel=isSelA||isSelB;
+        return `<div class="slot-row ${sel?'swap-hi':''}" id="sr-${key}"
+          style="${swapMode?'cursor:pointer;':''}${sel?'background:#fffbe6;':''}">
           <div class="slot-n">${slot+1}</div>
           <div class="slot-time">${TIMES[slot]}</div>
           <div class="slot-name">${emp.name}</div>
           <div class="slot-rank">${emp.rank}</div>
           <span class="slot-dept">${emp.dept}</span>
           ${swapped?'<span class="badge b-swapped" style="font-size:10px;padding:1px 5px">교체</span>':''}
-          ${swapMode?`<button class="btn btn-swap btn-sm ${(isSelA||isSelB)?'selected':''}"
+          ${swapMode?`<button class="btn btn-swap btn-sm ${sel?'selected':''}"
             onclick="selectSwapNormal(${di},${si},'${ds}',${slot},'${emp.name}','${emp.rank}','${emp.dept}')"
-            style="margin-left:auto;flex-shrink:0">${(isSelA||isSelB)?'✓선택':'교체'}</button>`:''}
+            style="margin-left:auto;flex-shrink:0;min-width:52px">${sel?'✓':'교체'}</button>`:''}
         </div>`;
       }).join('');
     }
@@ -1118,6 +1125,8 @@ function selectSwapAltday(di, ds, name, rank, dept) {
     swapB = entry;
     fillSwapCard('swap-b', name, rank, dept, ds, 0, false);
     setHint('교체 확정 버튼을 누르세요');
+    const cb2=document.getElementById('swap-confirm-btn');
+    if(cb2){cb2.disabled=false;cb2.style.opacity='1';}
   }
   renderRoster(+document.getElementById('base-month').value.slice(0,4),
                +document.getElementById('base-month').value.slice(5,7), curRoster);
@@ -1139,6 +1148,14 @@ function selectSwapNormal(di, si, ds, slot, name, rank, dept) {
     swapB = entry;
     fillSwapCard('swap-b', name, rank, dept, ds, slot, false);
     setHint('교체 확정 버튼을 누르세요');
+    // 버튼 직접 활성화
+    const cb=document.getElementById('swap-confirm-btn');
+    if(cb){cb.disabled=false;cb.style.opacity='1';}
+  } else {
+    // 둘 다 선택된 상태에서 다시 클릭하면 초기화
+    swapA=null; swapB=null;
+    clearSwapCard('swap-a'); clearSwapCard('swap-b');
+    setHint('A 슬롯을 선택하세요');
   }
   renderRoster(+document.getElementById('base-month').value.slice(0,4),
                +document.getElementById('base-month').value.slice(5,7), curRoster);
@@ -1174,6 +1191,14 @@ function fillSwapCard(id,name,rank,dept,ds,slot,filled){
   el.querySelector('.swap-card-name').textContent=name;
   el.querySelector('.swap-card-name').style.color='';
   el.querySelector('.swap-card-detail').textContent=`${ds} · ${TIMES[slot]} · ${rank}`;
+  // 두 카드 모두 채워졌으면 확정 버튼 활성화
+  const cb=document.getElementById('swap-confirm-btn');
+  if(cb){
+    const aFilled=swapA!=null;
+    const bFilled=swapB!=null;
+    cb.disabled=!(aFilled&&bFilled);
+    cb.style.opacity=(aFilled&&bFilled)?'1':'.4';
+  }
 }
 function clearSwapCard(id){
   const el=document.getElementById(id);
@@ -1206,8 +1231,11 @@ function closeSwapModal(){document.getElementById('swap-modal').classList.remove
 
 function doSwap(){
   if(!swapA||!swapB||!curRoster)return;
-  // 격일제 전담 교체: 해당 날 8슬롯 전부 교체
+  const hist=getHist();
+  const nameA=swapA.name, nameB=swapB.name;
+
   if(swapA.isAltday && swapB.isAltday){
+    // 격일제 전담 교체: 해당 날 8슬롯 전부 교체
     const empA={...curRoster[swapA.dayIdx].slots[0].emp};
     const empB={...curRoster[swapB.dayIdx].slots[0].emp};
     for(let s=0;s<8;s++){
@@ -1216,34 +1244,20 @@ function doSwap(){
       curRoster[swapB.dayIdx].slots[s].emp={...empA};
       curRoster[swapB.dayIdx].slots[s].swapped=true;
     }
+    hist.push({date:swapA.ds,name:empB.name,rank:empB.rank,dept:empB.dept,slot:0,time:TIMES[0],type:`교체(${swapB.ds} ${nameB}과 교체)`});
+    hist.push({date:swapB.ds,name:empA.name,rank:empA.rank,dept:empA.dept,slot:0,time:TIMES[0],type:`교체(${swapA.ds} ${nameA}과 교체)`});
   } else {
     // 일반 교체
     const da=curRoster[swapA.dayIdx].slots[swapA.slotIdx];
     const db=curRoster[swapB.dayIdx].slots[swapB.slotIdx];
     const tmpEmp={...da.emp};
-    da.emp={...db.emp};da.swapped=true;
-    db.emp=tmpEmp;db.swapped=true;
+    da.emp={...db.emp}; da.swapped=true;
+    db.emp=tmpEmp;      db.swapped=true;
+    hist.push({date:swapA.ds,name:da.emp.name,rank:da.emp.rank,dept:da.emp.dept,slot:swapA.slot,time:TIMES[swapA.slot],type:`교체(${swapB.ds} ${TIMES[swapB.slot]}의 ${nameB}과 교체)`});
+    hist.push({date:swapB.ds,name:db.emp.name,rank:db.emp.rank,dept:db.emp.dept,slot:swapB.slot,time:TIMES[swapB.slot],type:`교체(${swapA.ds} ${TIMES[swapA.slot]}의 ${nameA}과 교체)`});
   }
-
-  // 이력에 교체 기록
-  const hist=getHist();
-  const now=new Date().toISOString().slice(0,10);
-  hist.push({
-    date:swapA.ds,name:da.emp.name,rank:da.emp.rank,dept:da.emp.dept,
-    slot:swapA.slot,time:TIMES[swapA.slot],
-    type:`교체(${swapB.ds} ${TIMES[swapB.slot]}의 ${swapB.name}과 교체)`
-  });
-  hist.push({
-    date:swapB.ds,name:db.emp.name,rank:db.emp.rank,dept:db.emp.dept,
-    slot:swapB.slot,time:TIMES[swapB.slot],
-    type:`교체(${swapA.ds} ${TIMES[swapA.slot]}의 ${swapA.name}과 교체)`
-  });
   setHist(hist);
-
-  // 이름 미리 저장 (cancelSwap이 null로 만들기 전에)
-  const nameA=swapA.name, nameB=swapB.name;
   closeSwapModal();
-  // ★ 교체 후 roster 저장
   setRoster(JSON.parse(JSON.stringify(curRoster,(k,v)=>v instanceof Date?v.toISOString():v)));
   saveToCloud();
   cancelSwap();
@@ -1491,12 +1505,42 @@ function saveFile(){
 }
 </script>
 <script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// generate 함수에서 연차 반영: altdayOnDay에서 연차인 날은 제외
+
 // ══════════════════════════════════════════
 //  GAS 연동 (JSONP 청크 저장/불러오기)
 // ══════════════════════════════════════════
+
+// ── 화면 배율 자동 조정 ──
+function applyAutoZoom() {
+  var main = document.querySelector('.main');
+  if (!main) return;
+  var available = window.innerWidth - 200;
+  var ratio = available / 900;
+  var zoom = Math.min(1.5, Math.max(1.0, ratio));
+  main.style.zoom = zoom;
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', applyAutoZoom);
+} else {
+  applyAutoZoom();
+}
+window.addEventListener('resize', applyAutoZoom);
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyBdwHHZ57dPDAGDA7oJUGGc1oB6I23C3KlQVR7YajmVbcX6kclFBkPCTg6SE1DnXoArQ/exec';
-const GAS_KEY = 'duty_roster_data_v1';
-const GAS_CHUNK_SZ = 1500;
 
 // 동기화 상태 표시
 function syncDot(status, msg) {
@@ -1564,67 +1608,46 @@ function jsonpCall(url, callback, timeout) {
 
 // 저장 (청크 분할 JSONP GET)
 var _saveQueue = Promise.resolve();
+var _saveTimer = null;
 function saveToCloud() {
-  // 백그라운드 저장 (UI 블로킹 없음)
-  setTimeout(function() {
-    _saveQueue = _saveQueue.then(_doSave).catch(function() { return false; });
-  }, 0);
+  // 중복 저장 방지 (300ms 디바운스)
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(function() {
+    _saveTimer = null;
+    _doSave().catch(function(e) {
+      console.error('[GAS] 저장 오류:', e);
+      syncDot('error','저장 실패');
+    });
+  }, 300);
   return Promise.resolve(true);
 }
 
 async function _doSave() {
   if (!GAS_URL) return false;
   syncDot('saving', '저장 중...');
-
-  var snap    = getCloudSnapshot();
-  var hist    = getHist();
-  var snapStr = JSON.stringify(snap);
-  var histStr = JSON.stringify(hist);
-
-  console.log('[GAS] 저장 emps:', (snap.emps||[]).length, '명 /',
-    (snapStr.length/1024).toFixed(1)+'KB data +',
-    (histStr.length/1024).toFixed(1)+'KB hist');
-
+  const snap = getCloudSnapshot();
+  const dataStr = JSON.stringify(snap);
+  console.log('[GAS] POST 저장', (snap.emps||[]).length, '명 /', (dataStr.length/1024).toFixed(1)+'KB');
   try {
-    // 당직표+직원+설정 저장
-    var r1 = await jsonpPost_(GAS_KEY, snapStr);
-    if (!r1) { syncDot('error','저장 실패'); return false; }
-
-    // 이력 별도 저장
-    var r2 = await jsonpPost_(GAS_KEY_HIST, histStr);
-    if (!r2) console.warn('[GAS] 이력 저장 실패 (무시)');
-
-    syncDot('ok','저장됨 ✓');
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'save_roster', data: dataStr })
+    });
+    // no-cors라 응답 못 읽음, 1초 후 검증
+    await new Promise(r => setTimeout(r, 1000));
+    syncDot('ok', '저장됨 ✓');
     console.log('[GAS] 저장 완료 ✓');
     return true;
   } catch(e) {
     console.error('[GAS] 저장 오류:', e);
-    syncDot('error','저장 실패');
+    syncDot('error', '저장 실패');
     return false;
   }
 }
 
-// 청크 분할 JSONP 저장 헬퍼
-async function jsonpPost_(key, dataStr) {
-  var chunks = [];
-  for (var i = 0; i < dataStr.length; i += GAS_CHUNK_SZ)
-    chunks.push(dataStr.substring(i, i + GAS_CHUNK_SZ));
-  for (var ci = 0; ci < chunks.length; ci++) {
-    var url = GAS_URL
-      + '?action=save_chunk'
-      + '&key='   + encodeURIComponent(key)
-      + '&idx='   + ci
-      + '&total=' + chunks.length
-      + '&data='  + encodeURIComponent(chunks[ci]);
-    var res = await jsonpCall(url, null, 10000);
-    if (!res || res.status !== 'success') {
-      console.error('[GAS]', key, '청크', ci, '실패:', res);
-      return false;
-    }
-  }
-  console.log('[GAS]', key, '저장 완료', chunks.length, '청크');
-  return true;
-}
+
 
 // 불러오기 (JSONP GET)
 function loadFromCloud() {
@@ -1652,26 +1675,9 @@ function loadFromCloud() {
           localStorage.setItem('emps3', JSON.stringify(emps));
           _embedded['emps3'] = emps;
         }
-        // 이력도 별도로 불러오기
-        var histUrl = GAS_URL + '?action=load_hist';
-        jsonpCall(histUrl, null, 10000).then(function(hres) {
-          if (hres && hres.status === 'success' && hres.data) {
-            try {
-              var hist = JSON.parse(hres.data);
-              if (hist && hist.length > 0) {
-                localStorage.setItem('hist3', JSON.stringify(hist));
-                _embedded['hist3'] = hist;
-                console.log('[GAS] 이력 불러오기 성공', hist.length, '건');
-              }
-            } catch(he) { console.warn('[GAS] 이력 파싱 오류:', he); }
-          } else {
-            // GAS에 이력 없으면 DEF_HIST 사용
-            console.log('[GAS] 이력 없음 - DEF_HIST 사용', DEF_HIST.length, '건');
-          }
-          restoreLocal();
-          console.log('[GAS] 불러오기 성공 emps:', getEmps().length, '명 hist:', getHist().length, '건');
-          syncDot('ok', '저장됨 ✓'); resolve(true);
-        });
+        restoreLocal();
+        console.log('[GAS] 불러오기 성공 emps:', getEmps().length, '명 hist:', getHist().length, '건');
+        syncDot('ok', '저장됨 ✓'); resolve(true);
       } catch(e) {
         console.error('[GAS] 파싱 오류:', e);
         restoreLocal(); syncDot('ok', '(로컬 데이터)'); resolve(false);
@@ -1707,3 +1713,4 @@ function restoreLocal() {
 </script>
 </body>
 </html>
+</div>
