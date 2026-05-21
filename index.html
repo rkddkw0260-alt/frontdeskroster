@@ -680,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v31';
+const APP_VERSION='2026-05-v33';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1419,9 +1419,9 @@ function saveFile(){
 // ══════════════════════════════════════════
 //  GAS 연동 (JSONP 청크 저장/불러오기)
 // ══════════════════════════════════════════
-const GAS_URL      = 'https://script.google.com/macros/s/AKfycbzc-ja-tr0nzQFGZCpoSFOkKuj6BJzD_5v3ewoF2ICN2o0eVA99lxIWQkR7HLznrQS0gA/exec';
-const GAS_KEY      = 'duty_roster_data_v1';
-const GAS_CHUNK_SZ = 8000;
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyBdwHHZ57dPDAGDA7oJUGGc1oB6I23C3KlQVR7YajmVbcX6kclFBkPCTg6SE1DnXoArQ/exec';
+const GAS_KEY = 'duty_roster_data_v1';
+const GAS_CHUNK_SZ = 2000;
 
 // 동기화 상태 표시
 function syncDot(status, msg) {
@@ -1516,6 +1516,25 @@ async function _doSave() {
       syncDot('error', '저장 실패'); return false;
     }
   }
+  // 이력도 별도 키로 저장
+  var hist = getHist();
+  var histStr = JSON.stringify(hist);
+  var histChunks = [];
+  for (var hi = 0; hi < histStr.length; hi += GAS_CHUNK_SZ)
+    histChunks.push(histStr.substring(hi, hi + GAS_CHUNK_SZ));
+  for (var hci = 0; hci < histChunks.length; hci++) {
+    var hurl = GAS_URL
+      + '?action=save_chunk'
+      + '&key='   + encodeURIComponent(GAS_KEY_HIST)
+      + '&idx='   + hci
+      + '&total=' + histChunks.length
+      + '&data='  + encodeURIComponent(histChunks[hci]);
+    var hres = await jsonpCall(hurl, null, 10000);
+    if (!hres || hres.status !== 'success') {
+      console.error('[GAS] 이력 청크', hci, '저장 실패:', hres);
+    }
+  }
+  console.log('[GAS] 이력 저장 완료', hist.length, '건');
   syncDot('ok', '저장됨 ✓');
   console.log('[GAS] 저장 완료 ✓');
   return true;
@@ -1547,9 +1566,26 @@ function loadFromCloud() {
           localStorage.setItem('emps3', JSON.stringify(emps));
           _embedded['emps3'] = emps;
         }
-        restoreLocal();
-        console.log('[GAS] 불러오기 성공 emps:', getEmps().length, '명');
-        syncDot('ok', '저장됨 ✓'); resolve(true);
+        // 이력도 별도로 불러오기
+        var histUrl = GAS_URL + '?action=load_hist';
+        jsonpCall(histUrl, null, 10000).then(function(hres) {
+          if (hres && hres.status === 'success' && hres.data) {
+            try {
+              var hist = JSON.parse(hres.data);
+              if (hist && hist.length > 0) {
+                localStorage.setItem('hist3', JSON.stringify(hist));
+                _embedded['hist3'] = hist;
+                console.log('[GAS] 이력 불러오기 성공', hist.length, '건');
+              }
+            } catch(he) { console.warn('[GAS] 이력 파싱 오류:', he); }
+          } else {
+            // GAS에 이력 없으면 DEF_HIST 사용
+            console.log('[GAS] 이력 없음 - DEF_HIST 사용', DEF_HIST.length, '건');
+          }
+          restoreLocal();
+          console.log('[GAS] 불러오기 성공 emps:', getEmps().length, '명 hist:', getHist().length, '건');
+          syncDot('ok', '저장됨 ✓'); resolve(true);
+        });
       } catch(e) {
         console.error('[GAS] 파싱 오류:', e);
         restoreLocal(); syncDot('ok', '(로컬 데이터)'); resolve(false);
