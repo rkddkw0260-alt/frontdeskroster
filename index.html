@@ -680,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v26';
+const APP_VERSION='2026-05-v27';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1402,6 +1402,8 @@ function saveFile(){
 }
 </script>
 <script>
+const STORAGE_KEY = 'duty_roster_data_v1';
+
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzc-ja-tr0nzQFGZCpoSFOkKuj6BJzD_5v3ewoF2ICN2o0eVA99lxIWQkR7HLznrQS0gA/exec';
 const CHUNK_SIZE = 8000;
 
@@ -1509,7 +1511,19 @@ function loadFromCloud() {
           if(d.roster)    { localStorage.setItem('roster3',    JSON.stringify(d.roster));    _embedded['roster3']=d.roster; }
           if(d.counts)    { localStorage.setItem('counts3',    JSON.stringify(d.counts));    _embedded['counts3']=d.counts; }
           if(d.baseMonth) { localStorage.setItem('basemonth3', JSON.stringify(d.baseMonth)); _embedded['basemonth3']=d.baseMonth; }
-          if(d.emps)      { localStorage.setItem('emps3',      JSON.stringify(d.emps));      _embedded['emps3']=d.emps; }
+          if(d.emps) {
+            // GAS emps에 deskMode 없으면 DEF_EMPS 기준으로 보완
+            var mergedEmps = d.emps.map(function(ge) {
+              var def = DEF_EMPS.find(function(de){ return de.name===ge.name; });
+              if (def && def.deskMode && !ge.deskMode) {
+                ge.deskMode = def.deskMode;
+                ge.deskStart = def.deskStart;
+              }
+              return ge;
+            });
+            localStorage.setItem('emps3', JSON.stringify(mergedEmps));
+            _embedded['emps3'] = mergedEmps;
+          }
           if(d.hols)      { localStorage.setItem('hols3',      JSON.stringify(d.hols));      _embedded['hols3']=d.hols; }
           if(d.pw)        localStorage.setItem('admin_pw', d.pw);
           restoreLocal();
