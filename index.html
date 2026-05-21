@@ -680,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v34';
+const APP_VERSION='2026-05-v35';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1421,7 +1421,7 @@ function saveFile(){
 // ══════════════════════════════════════════
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyBdwHHZ57dPDAGDA7oJUGGc1oB6I23C3KlQVR7YajmVbcX6kclFBkPCTg6SE1DnXoArQ/exec';
 const GAS_KEY = 'duty_roster_data_v1';
-const GAS_CHUNK_SZ = 500;
+const GAS_CHUNK_SZ = 1500;
 
 // 동기화 상태 표시
 function syncDot(status, msg) {
@@ -1497,46 +1497,54 @@ function saveToCloud() {
 async function _doSave() {
   if (!GAS_URL) return false;
   syncDot('saving', '저장 중...');
+
   var snap    = getCloudSnapshot();
-  var dataStr = JSON.stringify(snap);
-  var chunks  = [];
+  var hist    = getHist();
+  var snapStr = JSON.stringify(snap);
+  var histStr = JSON.stringify(hist);
+
+  console.log('[GAS] 저장 emps:', (snap.emps||[]).length, '명 /',
+    (snapStr.length/1024).toFixed(1)+'KB data +',
+    (histStr.length/1024).toFixed(1)+'KB hist');
+
+  try {
+    // 당직표+직원+설정 저장
+    var r1 = await jsonpPost_(GAS_KEY, snapStr);
+    if (!r1) { syncDot('error','저장 실패'); return false; }
+
+    // 이력 별도 저장
+    var r2 = await jsonpPost_(GAS_KEY_HIST, histStr);
+    if (!r2) console.warn('[GAS] 이력 저장 실패 (무시)');
+
+    syncDot('ok','저장됨 ✓');
+    console.log('[GAS] 저장 완료 ✓');
+    return true;
+  } catch(e) {
+    console.error('[GAS] 저장 오류:', e);
+    syncDot('error','저장 실패');
+    return false;
+  }
+}
+
+// 청크 분할 JSONP 저장 헬퍼
+async function jsonpPost_(key, dataStr) {
+  var chunks = [];
   for (var i = 0; i < dataStr.length; i += GAS_CHUNK_SZ)
     chunks.push(dataStr.substring(i, i + GAS_CHUNK_SZ));
-  console.log('[GAS] 저장 emps:', (snap.emps||[]).length, '명 /', chunks.length, '청크 /', (dataStr.length/1024).toFixed(1)+'KB');
   for (var ci = 0; ci < chunks.length; ci++) {
     var url = GAS_URL
       + '?action=save_chunk'
-      + '&key='   + encodeURIComponent(GAS_KEY)
+      + '&key='   + encodeURIComponent(key)
       + '&idx='   + ci
       + '&total=' + chunks.length
       + '&data='  + encodeURIComponent(chunks[ci]);
     var res = await jsonpCall(url, null, 10000);
     if (!res || res.status !== 'success') {
-      console.error('[GAS] 청크', ci, '저장 실패:', res);
-      syncDot('error', '저장 실패'); return false;
+      console.error('[GAS]', key, '청크', ci, '실패:', res);
+      return false;
     }
   }
-  // 이력도 별도 키로 저장
-  var hist = getHist();
-  var histStr = JSON.stringify(hist);
-  var histChunks = [];
-  for (var hi = 0; hi < histStr.length; hi += GAS_CHUNK_SZ)
-    histChunks.push(histStr.substring(hi, hi + GAS_CHUNK_SZ));
-  for (var hci = 0; hci < histChunks.length; hci++) {
-    var hurl = GAS_URL
-      + '?action=save_chunk'
-      + '&key='   + encodeURIComponent(GAS_KEY_HIST)
-      + '&idx='   + hci
-      + '&total=' + histChunks.length
-      + '&data='  + encodeURIComponent(histChunks[hci]);
-    var hres = await jsonpCall(hurl, null, 10000);
-    if (!hres || hres.status !== 'success') {
-      console.error('[GAS] 이력 청크', hci, '저장 실패:', hres);
-    }
-  }
-  console.log('[GAS] 이력 저장 완료', hist.length, '건');
-  syncDot('ok', '저장됨 ✓');
-  console.log('[GAS] 저장 완료 ✓');
+  console.log('[GAS]', key, '저장 완료', chunks.length, '청크');
   return true;
 }
 
