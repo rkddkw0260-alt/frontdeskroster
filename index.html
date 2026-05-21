@@ -665,7 +665,9 @@ const DEF_EMPS=[
   {name:'권도윤',rank:'과장',dept:'장비팀',fixed:''},
   {name:'김민수',rank:'대리',dept:'장비팀',fixed:''},
   {name:'권오현',rank:'차장',dept:'장비팀',fixed:''},
-  {name:'정다운',rank:'대리',dept:'장비팀',fixed:''}
+  {name:'정다운',rank:'대리',dept:'장비팀',fixed:''},
+  {name:'윤승현',rank:'계장',dept:'전산팀',fixed:''},
+  {name:'김단',rank:'계약직 사원',dept:'총무팀',fixed:''}
 ];
 
 // ══════════════════════════════════════════════
@@ -678,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v13';
+const APP_VERSION='2026-05-v14';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
