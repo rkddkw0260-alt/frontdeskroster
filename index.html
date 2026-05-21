@@ -681,7 +681,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v16';
+const APP_VERSION='2026-05-v17';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1401,6 +1401,27 @@ function saveFile(){
   a.download='index.html';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+
+// ── 동기화 상태 표시 ──
+function syncDot(status, msg) {
+  var dot = document.getElementById('sync-dot');
+  var txt = document.getElementById('sync-txt');
+  if (!dot || !txt) return;
+  if (status === 'saving') {
+    dot.style.background = '#ff9800';
+    dot.style.animation = 'sp .8s infinite';
+    txt.textContent = msg || '저장 중...';
+  } else if (status === 'ok') {
+    dot.style.background = '#4caf50';
+    dot.style.animation = '';
+    txt.textContent = msg || '저장됨 ✓';
+  } else {
+    dot.style.background = '#f44336';
+    dot.style.animation = '';
+    txt.textContent = msg || '오류';
+  }
 }
 
 // ── GAS 저장 (JSONP GET) ──
