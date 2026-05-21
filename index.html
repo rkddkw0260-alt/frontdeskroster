@@ -678,7 +678,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v12';
+const APP_VERSION='2026-05-v13';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1434,101 +1434,38 @@ function getSnapshot() {
 // ── 저장 (FormData POST, URL 길이 제한 없음) ──
 // ⚠ 기존 JSONP GET 방식은 hist 누적 시 URL이 8KB 초과 → GAS가 silent fail
 //   → POST + 저장 후 검증(load) 단계까지 추가
-let _saveQueue = Promise.resolve(); // 동시 저장 직렬화 (race 방지)
-
+// ── 저장 (JSONP GET - PropertiesService 방식) ──
 function saveToCloud() {
-  // 기존 저장이 진행 중이면 끝나길 기다린 뒤 새로 저장
-  _saveQueue = _saveQueue.then(_doSave).catch(function(){return false;});
-  return _saveQueue;
-}
-
-async function _doSave() {
-  if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL_HERE') return false;
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL_HERE') return Promise.resolve(false);
   syncDot('saving', '저장 중...');
-
-  const snap = getSnapshot();
-  const data = JSON.stringify(snap);
-  const expectedEmps = (snap.emps || []).length;
-  const expectedHist = (snap.hist || []).length;
-  console.log('[GAS] 저장 시도 - emps:', expectedEmps, '명 / hist:', expectedHist, '건 / 크기:', (data.length/1024).toFixed(1) + 'KB');
-
-  try {
-    const fd = new FormData();
-    fd.append('action', 'save_roster');
-    fd.append('data', data);
-
-    // no-cors POST: 응답 본문은 못 읽지만 데이터 전송은 정상.
-    // 검증은 아래 verifySave()에서 별도 GET(JSONP)로 수행.
-    await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: fd });
-    console.log('[GAS] POST 송신 완료. 저장 검증 중...');
-
-    // GAS 처리 대기 (스프레드시트 쓰기 약간 시간 소요)
-    await new Promise(r => setTimeout(r, 700));
-
-    const ok = await verifySave(expectedEmps);
-    if (ok) {
-      console.log('[GAS] 저장 완료 ✓ (검증됨, emps:' + expectedEmps + '명)');
-      syncDot('ok', '저장됨 ✓');
-      return true;
-    } else {
-      console.error('[GAS] ⚠ 저장 검증 실패 - GAS doPost 미동작 또는 시트 쓰기 실패. 콘솔의 [VERIFY] 로그 확인.');
-      syncDot('error', '저장 검증 실패');
-      return false;
-    }
-  } catch (err) {
-    console.error('[GAS] 저장 실패(네트워크):', err);
-    syncDot('error', '저장 실패');
-    return false;
-  }
-}
-
-// 저장 후 검증: GAS에서 다시 읽어와 emps 개수가 일치하는지 확인 (JSONP)
-function verifySave(expectedEmps) {
   return new Promise(function(resolve) {
-    const cb = '__verifycb' + Date.now();
-    const el = document.createElement('script');
-    let done = false;
-
-    const timer = setTimeout(function() {
+    var cb = '__savecb' + Date.now();
+    var el = document.createElement('script');
+    var done = false;
+    var timer = setTimeout(function() {
       if (done) return; done = true;
-      cleanup();
-      console.warn('[VERIFY] 검증 timeout (12초)');
-      resolve(false);
-    }, 12000);
-
+      cleanup(); syncDot('error', '저장 실패'); resolve(false);
+    }, 10000);
     function cleanup() {
-      clearTimeout(timer);
-      if(typeof window[cb]==='function'){
-        window[cb] = function(){ console.log('[VERIFY] 늦은 응답 무시'); };
-      }
-      setTimeout(function(){ try{delete window[cb];}catch(e){} }, 30000);
+      clearTimeout(timer); delete window[cb];
       if (el.parentNode) el.parentNode.removeChild(el);
     }
-
     window[cb] = function(res) {
       if (done) return; done = true; cleanup();
-      if (res && res.status === 'success' && res.data) {
-        try {
-          const d = JSON.parse(res.data);
-          const actual = (d.emps || []).length;
-          console.log('[VERIFY] 예상 emps:', expectedEmps, '/ GAS 응답 emps:', actual);
-          resolve(actual === expectedEmps);
-        } catch (e) {
-          console.warn('[VERIFY] JSON 파싱 실패:', e);
-          resolve(false);
-        }
+      if (res && res.status === 'success') {
+        console.log('[GAS] 저장 완료 ✓ emps:', res.emps, '명');
+        syncDot('ok', '저장됨 ✓'); resolve(true);
       } else {
-        console.warn('[VERIFY] GAS 응답 비정상:', res);
-        resolve(false);
+        console.error('[GAS] 저장 실패:', res);
+        syncDot('error', '저장 실패'); resolve(false);
       }
     };
     el.onerror = function() {
       if (done) return; done = true; cleanup();
-      console.warn('[VERIFY] script load 실패');
-      resolve(false);
+      syncDot('error', '저장 실패'); resolve(false);
     };
-    // 캐시 회피용 t 파라미터
-    el.src = GAS_URL + '?action=load_roster&callback=' + cb + '&t=' + Date.now();
+    var data = encodeURIComponent(JSON.stringify(getSnapshot()));
+    el.src = GAS_URL + '?action=save_roster&callback=' + cb + '&data=' + data;
     document.head.appendChild(el);
   });
 }
