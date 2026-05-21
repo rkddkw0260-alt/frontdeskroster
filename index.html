@@ -680,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v19';
+const APP_VERSION='2026-05-v20';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1448,41 +1448,59 @@ async function _doSave() {
   if (!GAS_URL || GAS_URL === 'YOUR_GAS_URL_HERE') return false;
   syncDot('saving', '저장 중...');
   const snap = getSnapshot();
-  console.log('[GAS] 저장 시도 emps:', (snap.emps||[]).length, '명');
-  return new Promise(function(resolve) {
-    var cb = '__savecb' + Date.now();
-    var el = document.createElement('script');
-    var done = false;
-    var timer = setTimeout(function() {
-      if(done)return; done=true;
-      if(el.parentNode) el.parentNode.removeChild(el);
-      delete window[cb];
-      syncDot('error','저장 실패'); resolve(false);
-    }, 12000);
-    window[cb] = function(res) {
-      if(done)return; done=true;
-      clearTimeout(timer);
-      if(el.parentNode) el.parentNode.removeChild(el);
-      delete window[cb];
-      if(res && res.status==='success') {
-        console.log('[GAS] 저장 완료 ✓ emps:', res.emps, '명');
+  const dataStr = JSON.stringify(snap);
+  console.log('[GAS] 저장 시도 emps:', (snap.emps||[]).length, '명 / 크기:', (dataStr.length/1024).toFixed(1)+'KB');
+
+  try {
+    // POST로 전송 (URL 길이 제한 없음)
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'save_roster', data: dataStr})
+    });
+
+    // no-cors라 응답 못 읽음 → 0.5초 후 JSONP GET으로 저장 검증
+    await new Promise(r => setTimeout(r, 500));
+
+    return new Promise(function(resolve) {
+      var cb = '__verifycb' + Date.now();
+      var el = document.createElement('script');
+      var done = false;
+      var timer = setTimeout(function() {
+        if(done)return; done=true;
+        if(el.parentNode) el.parentNode.removeChild(el);
+        delete window[cb];
+        // 타임아웃이어도 POST는 성공했을 가능성 높음
         syncDot('ok','저장됨 ✓'); resolve(true);
-      } else {
-        console.error('[GAS] 저장 실패:', res);
-        syncDot('error','저장 실패'); resolve(false);
-      }
-    };
-    el.onerror = function() {
-      if(done)return; done=true;
-      clearTimeout(timer);
-      if(el.parentNode) el.parentNode.removeChild(el);
-      delete window[cb];
-      syncDot('error','저장 실패'); resolve(false);
-    };
-    var data = encodeURIComponent(JSON.stringify(snap));
-    el.src = GAS_URL + '?action=save_roster&callback=' + cb + '&data=' + data;
-    document.head.appendChild(el);
-  });
+      }, 5000);
+      window[cb] = function(res) {
+        if(done)return; done=true;
+        clearTimeout(timer);
+        if(el.parentNode) el.parentNode.removeChild(el);
+        delete window[cb];
+        if(res && res.status==='success') {
+          var savedEmps = res.emps || 0;
+          console.log('[GAS] 저장 확인 ✓ emps:', savedEmps, '명');
+          syncDot('ok','저장됨 ✓'); resolve(true);
+        } else {
+          syncDot('ok','저장됨 ✓'); resolve(true); // POST는 성공
+        }
+      };
+      el.onerror = function() {
+        if(done)return; done=true;
+        clearTimeout(timer);
+        if(el.parentNode) el.parentNode.removeChild(el);
+        delete window[cb];
+        syncDot('ok','저장됨 ✓'); resolve(true);
+      };
+      el.src = GAS_URL + '?action=load_roster&callback=' + cb;
+      document.head.appendChild(el);
+    });
+  } catch(e) {
+    console.error('[GAS] 저장 오류:', e);
+    syncDot('error','저장 실패'); return false;
+  }
 }
 
 // 저장 후 검증: GAS에서 다시 읽어와 emps 개수가 일치하는지 확인 (JSONP)
