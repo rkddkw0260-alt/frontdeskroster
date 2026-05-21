@@ -680,7 +680,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v35';
+const APP_VERSION='2026-05-v37';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1031,31 +1031,50 @@ function renderRoster(yr,mo,data){
     const dow=DAYS[day.getDay()];
     const dd=String(day.getDate()).padStart(2,'0');
     const mm=String(day.getMonth()+1).padStart(2,'0');
-    const sHTML=slots.map(({slot,emp,swapped},si)=>{
-      const key=`${di}-${si}`;
-      const isSelA=swapA&&swapA.dayIdx===di&&swapA.slotIdx===si;
-      const isSelB=swapB&&swapB.dayIdx===di&&swapB.slotIdx===si;
-      const hiClass=(isSelA||isSelB)?'swap-hi':'';
-      const dc=emp.dept==='장비팀'?'b-장비팀':emp.dept==='전산팀'?'b-전산팀':'b-기타';
-      return `<div class="slot-row ${hiClass}" id="sr-${key}">
-        <div class="slot-n">${slot+1}</div>
-        <div class="slot-time">${TIMES[slot]}</div>
-        <div class="slot-name">${emp.name}</div>
-        <div class="slot-rank">${emp.rank}</div>
-        <span class="slot-dept">${emp.dept}</span>
-        ${swapped?`<span class="badge b-swapped" style="font-size:10px;padding:1px 5px">교체</span>`:''}
-        ${swapMode?`<button class="btn btn-swap btn-sm ${(isSelA||isSelB)?'selected':''}" onclick="selectSwap(${di},${si},'${ds}',${slot},'${emp.name}','${emp.rank}','${emp.dept}')" style="margin-left:auto;flex-shrink:0">${(isSelA||isSelB)?'✓선택':'교체'}</button>`:''}
+    // 격일제 전담 여부 확인
+    const isAltdayFull = slots.length===8 && slots.every(s=>s.emp.name===slots[0].emp.name)
+      && slots[0].emp.deskMode==='altday';
+
+    let sHTML;
+    if(isAltdayFull){
+      // 격일제 전담: 하나의 큰 카드
+      const emp=slots[0].emp;
+      const isSelA=swapA&&swapA.dayIdx===di&&swapA.slotIdx===0;
+      const isSelB=swapB&&swapB.dayIdx===di&&swapB.slotIdx===0;
+      sHTML=`<div class="slot-row altday-full ${(isSelA||isSelB)?'swap-hi':''}" id="sr-${di}-0"
+        style="padding:18px 16px;background:linear-gradient(135deg,#e8f0ff,#f0f4ff);border-radius:10px;margin:4px 0">
+        <div style="font-size:18px;font-weight:700;color:#1e4080">${emp.name}</div>
+        <div style="font-size:13px;color:#555;margin-top:4px">${emp.rank} · ${emp.dept}</div>
+        <div style="font-size:11px;color:#888;margin-top:2px">🔵 데스크 전담 (09:00~17:50 종일)</div>
+        ${swapMode?`<button class="btn btn-swap btn-sm ${(isSelA||isSelB)?'selected':''}"
+          onclick="selectSwapAltday(${di},'${ds}','${emp.name}','${emp.rank}','${emp.dept}')"
+          style="margin-top:8px">${(isSelA||isSelB)?'✓선택':'교체'}</button>`:''}
       </div>`;
-    }).join('');
-    const isAltdayFull = slots.length===8 && slots.every(s=>s.emp.name===slots[0].emp.name);
-    const altBadge = isAltdayFull
-      ? `<span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">격일제·${slots[0].emp.name} 전담</span>`
-      : '';
+    } else {
+      // 일반 슬롯
+      sHTML=slots.map(({slot,emp,swapped},si)=>{
+        const key=`${di}-${si}`;
+        const isSelA=swapA&&swapA.dayIdx===di&&swapA.slotIdx===si;
+        const isSelB=swapB&&swapB.dayIdx===di&&swapB.slotIdx===si;
+        return `<div class="slot-row ${(isSelA||isSelB)?'swap-hi':''}" id="sr-${key}">
+          <div class="slot-n">${slot+1}</div>
+          <div class="slot-time">${TIMES[slot]}</div>
+          <div class="slot-name">${emp.name}</div>
+          <div class="slot-rank">${emp.rank}</div>
+          <span class="slot-dept">${emp.dept}</span>
+          ${swapped?'<span class="badge b-swapped" style="font-size:10px;padding:1px 5px">교체</span>':''}
+          ${swapMode?`<button class="btn btn-swap btn-sm ${(isSelA||isSelB)?'selected':''}"
+            onclick="selectSwapNormal(${di},${si},'${ds}',${slot},'${emp.name}','${emp.rank}','${emp.dept}')"
+            style="margin-left:auto;flex-shrink:0">${(isSelA||isSelB)?'✓선택':'교체'}</button>`:''}
+        </div>`;
+      }).join('');
+    }
+
     return `<div class="roster-day">
       <div class="roster-dh">
         <div class="day-pill">${dow}요일</div>
         <div class="day-dt">${yr}년 ${mm}월 ${dd}일</div>
-        ${altBadge}
+        ${isAltdayFull?'<span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>':''}
         <div class="day-cnt">${isAltdayFull?'종일':slots.length+'명'}</div>
       </div>
       <div class="roster-slots">${sHTML}</div>
@@ -1082,6 +1101,48 @@ function toggleSwapMode(){
   if(curRoster){const m=document.getElementById('base-month').value;renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);}
 }
 
+
+// 격일제 전담 직원 교체 선택
+function selectSwapAltday(di, ds, name, rank, dept) {
+  const entry = {dayIdx:di, slotIdx:0, ds, slot:0, name, rank, dept, isAltday:true};
+  if (!swapA) {
+    swapA = entry;
+    fillSwapCard('swap-a', name, rank, dept, ds, 0, true);
+    setHint('교체할 다른 데스크 전담 직원의 날짜를 선택하세요');
+  } else if (!swapB) {
+    if (!swapA.isAltday) {
+      alert('⚠️ 데스크 전담 직원은 일반 당직자와 교체할 수 없습니다.\n같은 데스크 전담 직원끼리만 교체 가능합니다.');
+      return;
+    }
+    if (swapA.dayIdx === di) { swapA=null; clearSwapCard('swap-a'); setHint('A 슬롯을 선택하세요'); return; }
+    swapB = entry;
+    fillSwapCard('swap-b', name, rank, dept, ds, 0, false);
+    setHint('교체 확정 버튼을 누르세요');
+  }
+  renderRoster(+document.getElementById('base-month').value.slice(0,4),
+               +document.getElementById('base-month').value.slice(5,7), curRoster);
+}
+
+// 일반 직원 교체 선택
+function selectSwapNormal(di, si, ds, slot, name, rank, dept) {
+  const entry = {dayIdx:di, slotIdx:si, ds, slot, name, rank, dept, isAltday:false};
+  if (!swapA) {
+    swapA = entry;
+    fillSwapCard('swap-a', name, rank, dept, ds, slot, true);
+    setHint('B 슬롯을 선택하세요');
+  } else if (!swapB) {
+    if (swapA.isAltday) {
+      alert('⚠️ 데스크 전담 직원은 일반 당직자와 교체할 수 없습니다.\n같은 데스크 전담 직원끼리만 교체 가능합니다.');
+      return;
+    }
+    if (swapA.dayIdx===di && swapA.slotIdx===si) { swapA=null; clearSwapCard('swap-a'); setHint('A 슬롯을 선택하세요'); return; }
+    swapB = entry;
+    fillSwapCard('swap-b', name, rank, dept, ds, slot, false);
+    setHint('교체 확정 버튼을 누르세요');
+  }
+  renderRoster(+document.getElementById('base-month').value.slice(0,4),
+               +document.getElementById('base-month').value.slice(5,7), curRoster);
+}
 function selectSwap(di,si,ds,slot,name,rank,dept){
   const entry={dayIdx:di,slotIdx:si,ds,slot,name,rank,dept};
   if(!swapA){
@@ -1145,12 +1206,24 @@ function closeSwapModal(){document.getElementById('swap-modal').classList.remove
 
 function doSwap(){
   if(!swapA||!swapB||!curRoster)return;
-  // 실제 교체
-  const da=curRoster[swapA.dayIdx].slots[swapA.slotIdx];
-  const db=curRoster[swapB.dayIdx].slots[swapB.slotIdx];
-  const tmpEmp={...da.emp};
-  da.emp={...db.emp};da.swapped=true;
-  db.emp=tmpEmp;db.swapped=true;
+  // 격일제 전담 교체: 해당 날 8슬롯 전부 교체
+  if(swapA.isAltday && swapB.isAltday){
+    const empA={...curRoster[swapA.dayIdx].slots[0].emp};
+    const empB={...curRoster[swapB.dayIdx].slots[0].emp};
+    for(let s=0;s<8;s++){
+      curRoster[swapA.dayIdx].slots[s].emp={...empB};
+      curRoster[swapA.dayIdx].slots[s].swapped=true;
+      curRoster[swapB.dayIdx].slots[s].emp={...empA};
+      curRoster[swapB.dayIdx].slots[s].swapped=true;
+    }
+  } else {
+    // 일반 교체
+    const da=curRoster[swapA.dayIdx].slots[swapA.slotIdx];
+    const db=curRoster[swapB.dayIdx].slots[swapB.slotIdx];
+    const tmpEmp={...da.emp};
+    da.emp={...db.emp};da.swapped=true;
+    db.emp=tmpEmp;db.swapped=true;
+  }
 
   // 이력에 교체 기록
   const hist=getHist();
@@ -1167,6 +1240,8 @@ function doSwap(){
   });
   setHist(hist);
 
+  // 이름 미리 저장 (cancelSwap이 null로 만들기 전에)
+  const nameA=swapA.name, nameB=swapB.name;
   closeSwapModal();
   // ★ 교체 후 roster 저장
   setRoster(JSON.parse(JSON.stringify(curRoster,(k,v)=>v instanceof Date?v.toISOString():v)));
@@ -1174,7 +1249,7 @@ function doSwap(){
   cancelSwap();
   const m=document.getElementById('base-month').value;
   renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);
-  alert(`교체 완료!\n${swapA.name} ↔ ${swapB.name}`);
+  alert('교체 완료!\n'+nameA+' ↔ '+nameB);
 }
 
 function cancelSwap(){
@@ -1490,8 +1565,11 @@ function jsonpCall(url, callback, timeout) {
 // 저장 (청크 분할 JSONP GET)
 var _saveQueue = Promise.resolve();
 function saveToCloud() {
-  _saveQueue = _saveQueue.then(_doSave).catch(function() { return false; });
-  return _saveQueue;
+  // 백그라운드 저장 (UI 블로킹 없음)
+  setTimeout(function() {
+    _saveQueue = _saveQueue.then(_doSave).catch(function() { return false; });
+  }, 0);
+  return Promise.resolve(true);
 }
 
 async function _doSave() {
