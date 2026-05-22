@@ -1068,7 +1068,7 @@ function renderRoster(yr,mo,data){
       sHTML=`<div class="slot-row ${(isSelA||isSelB)?'swap-hi':''}" id="sr-${di}-0">
         <div class="slot-n">●</div>
         <div class="slot-time">09:00~17:50</div>
-        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto">${emp.name}</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">${emp.name}</div>
         <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">${emp.rank}</div>
         <span class="slot-dept">${emp.dept}</span>
         ${swapMode?`<button onclick="selectSwapAltday(${di},'${ds}','${emp.name}','${emp.rank}','${emp.dept}')"
