@@ -690,7 +690,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v69';
+const APP_VERSION='2026-05-v70';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1776,24 +1776,54 @@ async function _doSave() {
   syncDot('saving', '저장 중...');
   const snap = getCloudSnapshot();
   const dataStr = JSON.stringify(snap);
-  console.log('[GAS] POST 저장', (snap.emps||[]).length, '명 /', (dataStr.length/1024).toFixed(1)+'KB');
-  try {
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'save_roster', data: dataStr })
+  const CHUNK = 6000;
+  const chunks = [];
+  for (let i = 0; i < dataStr.length; i += CHUNK) chunks.push(dataStr.substring(i, i + CHUNK));
+  console.log('[GAS] 저장', (snap.emps||[]).length, '명 /', chunks.length, '청크 /', (dataStr.length/1024).toFixed(1)+'KB');
+
+  for (let ci = 0; ci < chunks.length; ci++) {
+    const ok = await new Promise(function(resolve) {
+      const cb = '__sc' + Date.now() + '_' + ci;
+      const el = document.createElement('script');
+      let done = false;
+      const timer = setTimeout(function() {
+        if(done) return; done=true;
+        if(el.parentNode) el.parentNode.removeChild(el);
+        delete window[cb];
+        resolve(false);
+      }, 10000);
+      window[cb] = function(res) {
+        if(done) return; done=true;
+        clearTimeout(timer);
+        if(el.parentNode) el.parentNode.removeChild(el);
+        delete window[cb];
+        resolve(res && res.status === 'success');
+      };
+      el.onerror = function() {
+        if(done) return; done=true;
+        clearTimeout(timer);
+        if(el.parentNode) el.parentNode.removeChild(el);
+        delete window[cb];
+        resolve(false);
+      };
+      el.src = GAS_URL
+        + '?action=save_chunk'
+        + '&key=' + encodeURIComponent('duty_roster_data_v1')
+        + '&idx=' + ci
+        + '&total=' + chunks.length
+        + '&data=' + encodeURIComponent(chunks[ci])
+        + '&callback=' + cb;
+      document.head.appendChild(el);
     });
-    // no-cors라 응답 못 읽음, 1초 후 검증
-    await new Promise(r => setTimeout(r, 1000));
-    syncDot('ok', '저장됨 ✓');
-    console.log('[GAS] 저장 완료 ✓');
-    return true;
-  } catch(e) {
-    console.error('[GAS] 저장 오류:', e);
-    syncDot('error', '저장 실패');
-    return false;
+    if (!ok) {
+      console.error('[GAS] 청크', ci, '저장 실패');
+      syncDot('error', '저장 실패');
+      return false;
+    }
   }
+  syncDot('ok', '저장됨 ✓');
+  console.log('[GAS] 저장 완료 ✓');
+  return true;
 }
 
 
