@@ -690,7 +690,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v70';
+const APP_VERSION='2026-05-v73';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1705,7 +1705,6 @@ function syncDot(status, msg) {
 function getCloudSnapshot() {
   var empsRaw = localStorage.getItem('emps3');
   var emps = empsRaw ? JSON.parse(empsRaw) : getEmps();
-  // DEF_EMPS의 deskMode 정보 보완
   emps = emps.map(function(e) {
     var def = DEF_EMPS.find(function(d){ return d.name === e.name; });
     if (def && def.deskMode && !e.deskMode) {
@@ -1776,7 +1775,7 @@ async function _doSave() {
   syncDot('saving', '저장 중...');
   const snap = getCloudSnapshot();
   const dataStr = JSON.stringify(snap);
-  const CHUNK = 6000;
+  const CHUNK = 1500;
   const chunks = [];
   for (let i = 0; i < dataStr.length; i += CHUNK) chunks.push(dataStr.substring(i, i + CHUNK));
   console.log('[GAS] 저장', (snap.emps||[]).length, '명 /', chunks.length, '청크 /', (dataStr.length/1024).toFixed(1)+'KB');
@@ -1839,7 +1838,9 @@ function loadFromCloud() {
       try {
         var d = JSON.parse(res.data);
         // 당직표·직원·설정 복원 (이력은 DEF_HIST 유지)
-        if (d.roster)    { localStorage.setItem('roster3',    JSON.stringify(d.roster));    _embedded['roster3']    = d.roster;    }
+        if (d.roster)    { localStorage.setItem('roster3', JSON.stringify(d.roster));
+            _embedded['roster3'] = d.roster;
+          }
         if (d.counts)    { localStorage.setItem('counts3',    JSON.stringify(d.counts));    _embedded['counts3']    = d.counts;    }
         if (d.baseMonth) { localStorage.setItem('basemonth3', JSON.stringify(d.baseMonth)); _embedded['basemonth3'] = d.baseMonth; }
         if (d.hols)      { localStorage.setItem('hols3',      JSON.stringify(d.hols));      _embedded['hols3']      = d.hols;      }
