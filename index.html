@@ -690,7 +690,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v73';
+const APP_VERSION='2026-05-v75';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1671,25 +1671,10 @@ function selectSlotEmp(name, rank, dept) {
 }
 
 // ══════════════════════════════════════════
-//  GAS 연동 (JSONP 청크 저장/불러오기)
+//  Firebase Realtime Database 연동
 // ══════════════════════════════════════════
-
-// ── 화면 배율 자동 조정 ──
-function applyAutoZoom() {
-  var main = document.querySelector('.main');
-  if (!main) return;
-  var available = window.innerWidth - 200;
-  var ratio = available / 900;
-  var zoom = Math.min(1.5, Math.max(1.0, ratio));
-  main.style.zoom = zoom;
-}
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', applyAutoZoom);
-} else {
-  applyAutoZoom();
-}
-window.addEventListener('resize', applyAutoZoom);
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbyBdwHHZ57dPDAGDA7oJUGGc1oB6I23C3KlQVR7YajmVbcX6kclFBkPCTg6SE1DnXoArQ/exec';
+const FIREBASE_URL = 'https://front-desk-roster-default-rtdb.asia-southeast1.firebasedatabase.app';
+const DB_KEY = 'roster';
 
 // 동기화 상태 표시
 function syncDot(status, msg) {
@@ -1701,16 +1686,16 @@ function syncDot(status, msg) {
   else                          { dot.style.background='#f44336'; txt.textContent = msg || '오류'; }
 }
 
-// GAS에 저장할 스냅샷 (이력 제외 → 크기 최소화)
+// GAS 관련 더미 (호환성)
+const GAS_URL = '';
+
+// 저장할 스냅샷
 function getCloudSnapshot() {
   var empsRaw = localStorage.getItem('emps3');
   var emps = empsRaw ? JSON.parse(empsRaw) : getEmps();
   emps = emps.map(function(e) {
     var def = DEF_EMPS.find(function(d){ return d.name === e.name; });
-    if (def && def.deskMode && !e.deskMode) {
-      e.deskMode  = def.deskMode;
-      e.deskStart = def.deskStart;
-    }
+    if (def && def.deskMode && !e.deskMode) { e.deskMode = def.deskMode; e.deskStart = def.deskStart; }
     return e;
   });
   return {
@@ -1723,129 +1708,54 @@ function getCloudSnapshot() {
   };
 }
 
-// JSONP 헬퍼
-function jsonpCall(url, callback, timeout) {
-  return new Promise(function(resolve) {
-    var cb  = '__gcb' + Date.now() + '_' + Math.random().toString(36).slice(2);
-    var el  = document.createElement('script');
-    var done = false;
-    var timer = setTimeout(function() {
-      if (done) return; done = true;
-      if (el.parentNode) el.parentNode.removeChild(el);
-      delete window[cb];
-      resolve(null);
-    }, timeout || 10000);
-    window[cb] = function(res) {
-      if (done) return; done = true;
-      clearTimeout(timer);
-      if (el.parentNode) el.parentNode.removeChild(el);
-      delete window[cb];
-      resolve(res);
-    };
-    el.onerror = function() {
-      if (done) return; done = true;
-      clearTimeout(timer);
-      if (el.parentNode) el.parentNode.removeChild(el);
-      delete window[cb];
-      resolve(null);
-    };
-    el.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
-    document.head.appendChild(el);
-  });
-}
-
-// 저장 (청크 분할 JSONP GET)
-var _saveQueue = Promise.resolve();
+// Firebase 저장 (fetch PUT)
 var _saveTimer = null;
 function saveToCloud() {
-  // 중복 저장 방지 (300ms 디바운스)
   if (_saveTimer) clearTimeout(_saveTimer);
   _saveTimer = setTimeout(function() {
     _saveTimer = null;
-    _doSave().catch(function(e) {
-      console.error('[GAS] 저장 오류:', e);
-      syncDot('error','저장 실패');
-    });
+    _doSave();
   }, 300);
   return Promise.resolve(true);
 }
 
 async function _doSave() {
-  if (!GAS_URL) return false;
   syncDot('saving', '저장 중...');
   const snap = getCloudSnapshot();
   const dataStr = JSON.stringify(snap);
-  const CHUNK = 1500;
-  const chunks = [];
-  for (let i = 0; i < dataStr.length; i += CHUNK) chunks.push(dataStr.substring(i, i + CHUNK));
-  console.log('[GAS] 저장', (snap.emps||[]).length, '명 /', chunks.length, '청크 /', (dataStr.length/1024).toFixed(1)+'KB');
-
-  for (let ci = 0; ci < chunks.length; ci++) {
-    const ok = await new Promise(function(resolve) {
-      const cb = '__sc' + Date.now() + '_' + ci;
-      const el = document.createElement('script');
-      let done = false;
-      const timer = setTimeout(function() {
-        if(done) return; done=true;
-        if(el.parentNode) el.parentNode.removeChild(el);
-        delete window[cb];
-        resolve(false);
-      }, 10000);
-      window[cb] = function(res) {
-        if(done) return; done=true;
-        clearTimeout(timer);
-        if(el.parentNode) el.parentNode.removeChild(el);
-        delete window[cb];
-        resolve(res && res.status === 'success');
-      };
-      el.onerror = function() {
-        if(done) return; done=true;
-        clearTimeout(timer);
-        if(el.parentNode) el.parentNode.removeChild(el);
-        delete window[cb];
-        resolve(false);
-      };
-      el.src = GAS_URL
-        + '?action=save_chunk'
-        + '&key=' + encodeURIComponent('duty_roster_data_v1')
-        + '&idx=' + ci
-        + '&total=' + chunks.length
-        + '&data=' + encodeURIComponent(chunks[ci])
-        + '&callback=' + cb;
-      document.head.appendChild(el);
+  console.log('[Firebase] 저장', (snap.emps||[]).length, '명 /', (dataStr.length/1024).toFixed(1)+'KB');
+  try {
+    const res = await fetch(FIREBASE_URL + '/' + DB_KEY + '.json', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: dataStr
     });
-    if (!ok) {
-      console.error('[GAS] 청크', ci, '저장 실패');
+    if (res.ok) {
+      syncDot('ok', '저장됨 ✓');
+      console.log('[Firebase] 저장 완료 ✓');
+    } else {
       syncDot('error', '저장 실패');
-      return false;
+      console.error('[Firebase] 저장 실패:', res.status);
     }
+  } catch(e) {
+    syncDot('error', '저장 실패');
+    console.error('[Firebase] 오류:', e);
   }
-  syncDot('ok', '저장됨 ✓');
-  console.log('[GAS] 저장 완료 ✓');
-  return true;
 }
 
-
-
-// 불러오기 (JSONP GET)
+// Firebase 불러오기 (fetch GET)
 function loadFromCloud() {
   return new Promise(async function(resolve) {
-    if (!GAS_URL) { restoreLocal(); resolve(false); return; }
     syncDot('saving', '불러오는 중...');
-    var url = GAS_URL + '?action=load_roster';
-    var res = await jsonpCall(url, null, 10000);
-    if (res && res.status === 'success' && res.data) {
-      try {
-        var d = JSON.parse(res.data);
-        // 당직표·직원·설정 복원 (이력은 DEF_HIST 유지)
-        if (d.roster)    { localStorage.setItem('roster3', JSON.stringify(d.roster));
-            _embedded['roster3'] = d.roster;
-          }
+    try {
+      const res = await fetch(FIREBASE_URL + '/' + DB_KEY + '.json');
+      const d = await res.json();
+      if (d && d.roster) {
+        if (d.roster)    { localStorage.setItem('roster3',    JSON.stringify(d.roster));    _embedded['roster3']    = d.roster;    }
         if (d.counts)    { localStorage.setItem('counts3',    JSON.stringify(d.counts));    _embedded['counts3']    = d.counts;    }
         if (d.baseMonth) { localStorage.setItem('basemonth3', JSON.stringify(d.baseMonth)); _embedded['basemonth3'] = d.baseMonth; }
         if (d.hols)      { localStorage.setItem('hols3',      JSON.stringify(d.hols));      _embedded['hols3']      = d.hols;      }
         if (d.pw)        localStorage.setItem('admin_pw', d.pw);
-        // emps: GAS 데이터 + DEF_EMPS의 deskMode 보완
         if (d.emps) {
           var emps = d.emps.map(function(ge) {
             var def = DEF_EMPS.find(function(de){ return de.name === ge.name; });
@@ -1856,15 +1766,15 @@ function loadFromCloud() {
           _embedded['emps3'] = emps;
         }
         restoreLocal();
-        console.log('[GAS] 불러오기 성공 emps:', getEmps().length, '명 hist:', getHist().length, '건');
+        console.log('[Firebase] 불러오기 성공 emps:', getEmps().length, '명');
         syncDot('ok', '저장됨 ✓'); resolve(true);
-      } catch(e) {
-        console.error('[GAS] 파싱 오류:', e);
-        restoreLocal(); syncDot('ok', '(로컬 데이터)'); resolve(false);
+      } else {
+        console.log('[Firebase] 데이터 없음 - 로컬 사용');
+        restoreLocal(); syncDot('ok', '(데이터 없음)'); resolve(false);
       }
-    } else {
-      console.log('[GAS] 데이터 없음 - 로컬 사용');
-      restoreLocal(); syncDot('ok', '(데이터 없음)'); resolve(false);
+    } catch(e) {
+      console.error('[Firebase] 불러오기 오류:', e);
+      restoreLocal(); syncDot('error', '연결 오류'); resolve(false);
     }
   });
 }
