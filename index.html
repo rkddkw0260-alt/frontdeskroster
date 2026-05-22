@@ -690,7 +690,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v66';
+const APP_VERSION='2026-05-v69';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -771,6 +771,11 @@ function lockAdmin(){
   document.getElementById('lock-btn').style.display='none';
   document.getElementById('lock-status').textContent='';
   goPage('roster');
+  // goPage 후에 재렌더링 (변경 버튼 숨김)
+  if(curRoster){
+    var m=document.getElementById('base-month').value;
+    if(m) renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);
+  }
 }
 function submitPw(){
   const v=document.getElementById('pw-input').value;
@@ -780,6 +785,11 @@ function submitPw(){
     document.getElementById('lock-btn').style.display='inline-flex';
     document.getElementById('lock-status').textContent='관리자 모드';
     goPage(pwTarget);
+    // 당직표 다시 렌더링 (변경 버튼 표시)
+    if(curRoster){
+      var m=document.getElementById('base-month').value;
+      if(m) renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);
+    }
   } else {
     document.getElementById('pw-err').style.display='block';
     document.getElementById('pw-input').value='';
@@ -1552,10 +1562,22 @@ function applyAltdayOff() {
   // 일반직원 편차 기준 8명 배정
   var allEmps = getEmps();
   var normalEmps = allEmps.filter(function(e) { return !(e.deskMode === 'altday' && e.deskStart); });
+
+  // 전체 이력 누적 카운트
   var hist = getHist();
   var accCnt = {};
   normalEmps.forEach(function(e) { accCnt[e.name] = 0; });
   hist.forEach(function(h) { if (accCnt[h.name] !== undefined) accCnt[h.name]++; });
+
+  // 현재 당직표에서 이미 배정된 사람도 카운트 (이번달 배정 반영)
+  if (curRoster) {
+    curRoster.forEach(function(day) {
+      if (!day.slots) return;
+      day.slots.forEach(function(s) {
+        if (s.emp && accCnt[s.emp.name] !== undefined) accCnt[s.emp.name]++;
+      });
+    });
+  }
 
   var sorted = normalEmps.slice().sort(function(a, b) {
     return (accCnt[a.name]||0) - (accCnt[b.name]||0) || a.name.localeCompare(b.name);
