@@ -690,7 +690,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v75';
+const APP_VERSION='2026-05-v76';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1725,7 +1725,7 @@ async function _doSave() {
   const dataStr = JSON.stringify(snap);
   console.log('[Firebase] 저장', (snap.emps||[]).length, '명 /', (dataStr.length/1024).toFixed(1)+'KB');
   try {
-    const res = await fetch(FIREBASE_URL + '/' + DB_KEY + '.json', {
+    const res = await fetch(FIREBASE_URL + '/' + DB_KEY + '.json?auth=AvbLMrgT9GE7ueWAg8hKeSXDuvMSYGdujArgJvGl', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: dataStr
