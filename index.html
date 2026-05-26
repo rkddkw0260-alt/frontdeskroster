@@ -333,6 +333,22 @@ tr:hover td{background:#fafaf8}
     </select>
   </div>
 
+  <!-- 이력 보존 경계일 (월 중 재생성 대응) -->
+  <div class="card" style="margin-top:16px;border-left:3px solid #c89000;background:#fffdf5">
+    <div class="card-h" style="color:#7a5000">월 중 재생성 보존 경계일 <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#bbb;font-size:11px">— 선택 사항</span></div>
+    <div style="font-size:12px;color:#7a5000;margin-bottom:10px;line-height:1.7">
+      이미 진행 중인 달에 신규 직원이 합류해 재생성할 때 사용합니다.<br>
+      지정한 날짜 <strong>이전 이력은 그대로 보존</strong>되고, 그 날짜부터만 새로 배정됩니다.
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <input type="date" id="regen-from-date" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;flex:1">
+      <button onclick="document.getElementById('regen-from-date').value=''" style="padding:7px 12px;background:#fff;border:1px solid #ddd;color:#666;border-radius:6px;font-size:12px;cursor:pointer">초기화</button>
+    </div>
+    <div style="font-size:11px;color:#888;margin-top:8px">
+      💡 비워두면 자동 감지 — 해당 월에 이미 쌓인 이력이 있다면 마지막 이력 다음날부터 재배정합니다.
+    </div>
+  </div>
+
   <!-- 데스크 전담 휴무 지정 -->
   <div class="card" style="margin-top:16px">
     <div class="card-h">데스크 전담 휴무 지정</div>
@@ -503,7 +519,21 @@ tr:hover td{background:#fafaf8}
     <div class="card-h">📋 업데이트 로그</div>
 
     <div style="display:flex;gap:0;padding:14px 0;border-bottom:1px solid #f0f0f0">
-      <div style="min-width:120px;font-size:12px;font-weight:600;color:#2d5a3d;padding-top:1px">v2.1.5 · 2026-05</div>
+      <div style="min-width:120px;font-size:12px;font-weight:600;color:#2d5a3d;padding-top:1px">v2.1.6 · 2026-05</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">월 중 재생성 시 기존 이력 보존</div>
+        <div style="font-size:12px;color:#888;line-height:1.9">
+          • 신규 직원이 월 중간에 합류했을 때 재생성하면 <strong>이전 이력은 보존</strong>, 합류일부터만 재배정<br>
+          • 설정 페이지에 <strong>월 중 재생성 보존 경계일</strong> 옵션 추가 (수동 지정)<br>
+          • 미지정 시 해당 월의 마지막 이력 다음날부터 자동 재배정<br>
+          • 격일제 교체 시 8슬롯 전부 이력 갱신되도록 수정 (이력 꼬임 버그 해결)<br>
+          • Firebase 클라우드 동기화에 이력 누락되던 버그 수정
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0;padding:14px 0;border-bottom:1px solid #f0f0f0">
+      <div style="min-width:120px;font-size:12px;font-weight:600;color:#888;padding-top:1px">v2.1.5 · 2026-05</div>
       <div>
         <div style="font-size:13px;font-weight:600;margin-bottom:6px">사용 안내 페이지 추가</div>
         <div style="font-size:12px;color:#888;line-height:1.9">
@@ -1016,7 +1046,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v92';
+const APP_VERSION='2026-05-v93';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -1346,10 +1376,45 @@ function generate(){
   const hist=getHist();
   const moKey=m.slice(0,7);
 
-  // 격일제 배정 계산 (누적 정산 기반 핑퐁 + 관리자 지정 우선시작 옵션)
+  // ─────────────────────────────────────────
+  //  보존 경계일(regenFrom) 결정
+  //  - 수동: 설정의 regen-from-date 입력값이 있으면 그 값
+  //  - 자동: 해당 월에 이력이 이미 있으면 마지막 이력 다음 평일
+  //  - 둘 다 없으면 빈 문자열 → 전체 재생성 (기존 동작)
+  //
+  //  의미: regenFrom 이전 평일의 이력은 그대로 보존, regenFrom부터만 새로 배정
+  // ─────────────────────────────────────────
+  const regenInput = (document.getElementById('regen-from-date')||{}).value || '';
+  let regenFrom = '';
+  if(regenInput && regenInput.slice(0,7) === moKey){
+    regenFrom = regenInput;
+  } else {
+    // 자동 감지: 해당 월의 이력 중 마지막 날짜
+    const monthHist = hist.filter(h=>h.date.slice(0,7)===moKey);
+    if(monthHist.length){
+      const lastDateInHist = monthHist.reduce((a,h)=>h.date>a?h.date:a, '');
+      // 그 다음 평일을 regenFrom으로
+      const idx = workdays.indexOf(lastDateInHist);
+      if(idx >= 0 && idx < workdays.length-1){
+        regenFrom = workdays[idx+1];
+      } else if(idx === workdays.length-1){
+        // 이미 월 끝까지 이력 있음 → 재생성 의미 없음 (사용자에게 안내)
+        if(!confirm(`${moKey} 이력이 이미 월 전체에 있습니다.\n전체를 새로 만들까요? (취소하면 보존)`)){
+          console.log('[생성] 사용자가 전체 재생성 취소');
+          return;
+        }
+        regenFrom = '';
+      }
+    }
+  }
+  const keptDays = regenFrom ? workdays.filter(ds=>ds < regenFrom) : [];
+  const regenDays = regenFrom ? workdays.filter(ds=>ds >= regenFrom) : workdays;
+  console.log('[생성] 보존 경계일:', regenFrom||'(없음/전체 재생성)', '| 보존:', keptDays.length, '일 / 재배정:', regenDays.length, '일');
+
+  // 격일제 배정 계산 (재배정 대상 날짜만 계산, 보존일은 이력 그대로)
   const startSel = document.getElementById('altday-start-select');
   const startOverride = (startSel && startSel.value) ? startSel.value : null;
-  const altdayOnDay = computeAltdayAssignment(workdays, altdayEmps, hols, hist, moKey, startOverride);
+  const altdayOnDay = computeAltdayAssignment(regenDays, altdayEmps, hols, hist, moKey, startOverride);
   console.log('[생성] 격일제 근무일:',Object.keys(altdayOnDay).length, '/ 시작지정:', startOverride||'(자동)');
 
   const lastOf={};
@@ -1358,28 +1423,80 @@ function generate(){
   const accCnt=Object.fromEntries(allEmps.map(e=>[e.name,0]));
   hist.forEach(h=>{if(accCnt[h.name]!==undefined)accCnt[h.name]++;});
 
-  const regularWorkdays=workdays.filter(ds=>!(ds in altdayOnDay));
-  const totalSlots=regularWorkdays.length*8;
-  const base=Math.floor(totalSlots/n);
-  const extraCount=totalSlots%n;
+  // 재배정 대상의 일반(=격일제 아닌) 평일만 카운트
+  const regenRegularDays=regenDays.filter(ds=>!(ds in altdayOnDay));
+  const totalSlots=regenRegularDays.length*8;
+  const base=n>0?Math.floor(totalSlots/n):0;
+  const extraCount=n>0?totalSlots%n:0;
   const sortedByAcc=[...emps.map((e,i)=>({i,acc:accCnt[e.name]||0}))].sort((a,b)=>a.acc-b.acc||(a.i-b.i));
   const target=new Array(n).fill(base);
   for(let k=0;k<extraCount;k++) target[sortedByAcc[k].i]=base+1;
   const hardCap=base+2;
 
+  // 이번달 카운트 시드: 보존된 날의 이력은 thisCnt에 미리 반영 (편차 계산이 정확해짐)
   const thisCnt=Object.fromEntries(allEmps.map(e=>[e.name,0]));
   const sltCnt=Object.fromEntries(allEmps.map(e=>[e.name,new Array(8).fill(0)]));
+  // 이전 달 슬롯별 카운트
   hist.filter(h=>h.date.slice(0,7)!==moKey).forEach(h=>{
     if(sltCnt[h.name]&&h.slot>=0&&h.slot<8)sltCnt[h.name][h.slot]++;
-    // slot>=100은 휴무대체 일반직원으로, 슬롯별 카운트엔 포함하지 않음
   });
+  // 보존된 이번달 이력으로 thisCnt 시드
+  if(regenFrom){
+    hist.filter(h=>h.date.slice(0,7)===moKey && h.date < regenFrom).forEach(h=>{
+      if(thisCnt[h.name]!==undefined) thisCnt[h.name]++;
+      if(sltCnt[h.name]&&h.slot>=0&&h.slot<8)sltCnt[h.name][h.slot]++;
+    });
+  }
 
   const result=[];
   const newEntries=[];
 
+  // 보존된 평일은 이력에서 그대로 가져와 result에 채워 넣기
+  const keptByDate = {};
+  if(regenFrom){
+    hist.filter(h=>h.date.slice(0,7)===moKey && h.date < regenFrom).forEach(h=>{
+      if(!keptByDate[h.date]) keptByDate[h.date] = { slotMap:{}, altdayOrig:null };
+      if(h.type==='연차' && h.slot===0){
+        keptByDate[h.date].altdayOrig = { name:h.name, rank:h.rank, dept:h.dept, deskMode:'altday' };
+      }
+      if(h.slot>=0 && h.slot<8 && h.type!=='연차'){
+        keptByDate[h.date].slotMap[h.slot] = h;
+      } else if(h.slot>=100 && h.slot<108){
+        keptByDate[h.date].slotMap[h.slot-100] = h;
+      }
+    });
+  }
+
   workdays.forEach(ds=>{
     const day=new Date(ds);
     const slots=[];
+    if(regenFrom && ds < regenFrom){
+      // ── 보존 영역: 이력에서 복원 ──
+      const cell = keptByDate[ds];
+      if(cell){
+        for(let s=0;s<8;s++){
+          const h = cell.slotMap[s];
+          if(!h) continue;
+          const fromEmp = allEmps.find(e=>e.name===h.name);
+          slots.push({slot:s, emp:{
+            name:h.name,
+            rank:h.rank || (fromEmp?fromEmp.rank:''),
+            dept:h.dept || (fromEmp?fromEmp.dept:''),
+            deskMode: fromEmp?fromEmp.deskMode:undefined,
+            deskStart: fromEmp?fromEmp.deskStart:undefined
+          }, swapped:false});
+        }
+        const dayObj = {day, ds, slots};
+        if(cell.altdayOrig) dayObj.altdayOriginal = cell.altdayOrig;
+        result.push(dayObj);
+      } else {
+        // 평일인데 이력 없음 (예: 시작일 이전 격일제 미배정으로 비어있던 날)
+        // 그냥 빈 슬롯 — 보통은 사용자가 신경 안 써도 됨
+        result.push({day, ds, slots:[]});
+      }
+      return;
+    }
+    // ── 재배정 영역: 새로 배정 ──
     if(ds in altdayOnDay){
       const altEmp=altdayEmps[altdayOnDay[ds]];
       for(let s=0;s<8;s++){
@@ -1404,8 +1521,20 @@ function generate(){
     result.push({day,ds,slots});
   });
 
-  // 이력 저장
-  setHist([...getHist().filter(h=>h.date.slice(0,7)!==moKey),...newEntries]);
+  // 이력 저장: 보존 영역의 이력은 그대로, 재배정 영역만 새 이력으로 교체
+  let mergedHist;
+  if(regenFrom){
+    mergedHist = [
+      ...hist.filter(h => !(h.date.slice(0,7)===moKey && h.date >= regenFrom)),
+      ...newEntries
+    ];
+  } else {
+    mergedHist = [
+      ...hist.filter(h=>h.date.slice(0,7)!==moKey),
+      ...newEntries
+    ];
+  }
+  setHist(mergedHist);
 
   curRoster=result;
   curCounts=Object.fromEntries(allEmps.map(e=>[e.name,thisCnt[e.name]])); // 이번달 배정 횟수
@@ -1424,6 +1553,12 @@ function generate(){
   viewMonth = m;  // 생성한 월을 현재 보기 월로
   renderStats(allEmps);
   goPage('roster');
+  if(regenFrom){
+    alert(`당직표가 부분 재생성되었습니다.\n${regenFrom} 이전 이력 ${keptDays.length}일은 그대로 보존되었어요.`);
+  }
+  // 일회성 옵션은 초기화 (다음 생성 시 의도치 않게 재적용되지 않도록)
+  const _regenFld = document.getElementById('regen-from-date');
+  if(_regenFld) _regenFld.value = '';
   console.log('[생성] 완료!');
   }catch(err){console.error('[생성] 오류:',err);alert('생성 오류: '+err.message);}
 }
