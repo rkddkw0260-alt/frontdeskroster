@@ -1046,7 +1046,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v93';
+const APP_VERSION='2026-05-v94';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -2420,6 +2420,9 @@ function copyTsv(){
 //  파일 저장 (데이터 embed 후 HTML 다운로드)
 // ══════════════════════════════════════════════
 function buildEmbeddedData(){
+  // ★ admin_pw는 의도적으로 제외:
+  //   매뉴얼 페이지를 아는 팀원이 다운로드해도 관리자 비밀번호가 노출되지 않도록 함.
+  //   파일을 다시 로드하면 비밀번호는 코드의 기본값 또는 클라우드값을 사용.
   return {
     roster3: getRoster(),
     counts3: getCounts(),
@@ -2427,7 +2430,6 @@ function buildEmbeddedData(){
     hist3: getHist(),
     emps3: getEmps(),
     hols3: getHols(),
-    admin_pw: getPw(),
   };
 }
 
