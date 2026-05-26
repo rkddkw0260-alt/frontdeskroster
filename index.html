@@ -1016,7 +1016,7 @@ try{
   if(raw&&raw!=='{}') _embedded=JSON.parse(raw);
 }catch(e){}
 
-const APP_VERSION='2026-05-v91';
+const APP_VERSION='2026-05-v92';
 if(localStorage.getItem('app_version')!==APP_VERSION){
   // 버전 업 시 전체 초기화 (GAS에서 최신 데이터 불러옴)
   ['hist3','roster3','counts3','basemonth3','emps3','hols3'].forEach(k=>{
@@ -2001,7 +2001,7 @@ function closeSwapModal(){document.getElementById('swap-modal').classList.remove
 
 function doSwap(){
   if(!swapA||!swapB||!curRoster)return;
-  const hist=getHist();
+  let hist=getHist();
   const nameA=swapA.name, nameB=swapB.name;
 
   if(swapA.isAltday && swapB.isAltday){
@@ -2014,8 +2014,15 @@ function doSwap(){
       curRoster[swapB.dayIdx].slots[s].emp={...empA};
       curRoster[swapB.dayIdx].slots[s].swapped=true;
     }
-    hist.push({date:swapA.ds,name:empB.name,rank:empB.rank,dept:empB.dept,slot:0,time:TIMES[0],type:`교체(${swapB.ds} ${nameB}과 교체)`});
-    hist.push({date:swapB.ds,name:empA.name,rank:empA.rank,dept:empA.dept,slot:0,time:TIMES[0],type:`교체(${swapA.ds} ${nameA}과 교체)`});
+    // ★ 두 날의 기존 이력 모두 제거 후 교체 결과를 8슬롯씩 새로 기록
+    //   (1개 슬롯만 갱신하면 다른 슬롯엔 옛 이름이 남아서 미리보기/누적 정산이 깨짐)
+    hist = hist.filter(h => h.date !== swapA.ds && h.date !== swapB.ds);
+    for(let s=0; s<8; s++){
+      hist.push({date:swapA.ds, name:empB.name, rank:empB.rank, dept:empB.dept,
+        slot:s, time:TIMES[s], type:s===0 ? `교체(${swapB.ds} ${nameB}과 교체)` : '교체'});
+      hist.push({date:swapB.ds, name:empA.name, rank:empA.rank, dept:empA.dept,
+        slot:s, time:TIMES[s], type:s===0 ? `교체(${swapA.ds} ${nameA}과 교체)` : '교체'});
+    }
   } else {
     // 일반 교체
     const da=curRoster[swapA.dayIdx].slots[swapA.slotIdx];
@@ -2023,6 +2030,9 @@ function doSwap(){
     const tmpEmp={...da.emp};
     da.emp={...db.emp}; da.swapped=true;
     db.emp=tmpEmp;      db.swapped=true;
+    // 해당 슬롯의 옛 이력 제거 후 새 이력 추가
+    hist = hist.filter(h => !(h.date===swapA.ds && h.slot===swapA.slot) &&
+                            !(h.date===swapB.ds && h.slot===swapB.slot));
     hist.push({date:swapA.ds,name:da.emp.name,rank:da.emp.rank,dept:da.emp.dept,slot:swapA.slot,time:TIMES[swapA.slot],type:`교체(${swapB.ds} ${TIMES[swapB.slot]}의 ${nameB}과 교체)`});
     hist.push({date:swapB.ds,name:db.emp.name,rank:db.emp.rank,dept:db.emp.dept,slot:swapB.slot,time:TIMES[swapB.slot],type:`교체(${swapA.ds} ${TIMES[swapA.slot]}의 ${nameA}과 교체)`});
   }
