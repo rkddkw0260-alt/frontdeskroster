@@ -3243,7 +3243,6 @@ function refreshRosterView(){
   if(!viewMonth) viewMonth = baseM;
   const yr=+viewMonth.slice(0,4), mo=+viewMonth.slice(5,7);
   const isLive = (viewMonth === baseM) && !!curRoster;
-  // 라벨/플래그
   const lab = document.getElementById('view-month-label');
   const flag = document.getElementById('view-month-flag');
   if(lab) lab.textContent = `${yr}년 ${mo}월`;
@@ -3253,6 +3252,9 @@ function refreshRosterView(){
   }
   updateMonthNavButtons();
   const view = getRosterForView();
+  // ★ swap 등에서 참조할 수 있도록 현재 표시 데이터를 전역에 저장
+  window.viewedData = view.data;
+  window.viewedIsLive = view.isLive;
   renderRoster(yr, mo, view.data, !view.isLive);
 }
 
@@ -3587,6 +3589,13 @@ function selectSwapAltday(di, ds, name, rank, dept) {
 
 // 일반 직원 교체 선택
 function selectSwapNormal(di, si, ds, slot, name, rank, dept) {
+  // ★ 안전망: emps3에서 이 사람의 deskMode 확인 → altday면 일반 슬롯 swap 거부
+  const _emps = getEmps();
+  const _empMatch = _emps.find(e=>e.name===name);
+  if(_empMatch && _empMatch.deskMode==='altday'){
+    alert('⚠️ '+name+'님은 격일제 데스크 전담이라 일반 슬롯 교체 대상이 아닙니다.\n같은 격일제 직원의 근무일끼리만 교체 가능합니다.');
+    return;
+  }
   const entry = {dayIdx:di, slotIdx:si, ds, slot, name, rank, dept, isAltday:false};
   if (!swapA) {
     swapA = entry;
@@ -3683,9 +3692,50 @@ function confirmSwap(){
 function closeSwapModal(){document.getElementById('swap-modal').classList.remove('show');}
 
 function doSwap(){
-  if(!swapA||!swapB||!curRoster)return;
+  if(!swapA||!swapB)return;
   let hist=getHist();
   const nameA=swapA.name, nameB=swapB.name;
+  const baseM_ds = document.getElementById('base-month').value;
+  const liveM_ds = (typeof viewMonth!=='undefined' && viewMonth) ? viewMonth : baseM_ds;
+  const isLive_ds = (liveM_ds === baseM_ds) && !!curRoster;
+
+  // ★ 미리보기 모드 (지난달 보기): hist만 entry 기반으로 갱신, curRoster 안 건드림
+  if(!isLive_ds){
+    if(swapA.isAltday && swapB.isAltday){
+      // 격일제 일자끼리: 두 날의 8슬롯 hist 모두 제거 후 새로 push
+      hist = hist.filter(h => h.date !== swapA.ds && h.date !== swapB.ds);
+      for(let s=0; s<8; s++){
+        hist.push({date:swapA.ds, name:nameB, rank:swapB.rank, dept:swapB.dept,
+          slot:s, time:TIMES[s], type: s===0 ? `교체(${swapB.ds} ${nameB}과 교체)` : '교체'});
+        hist.push({date:swapB.ds, name:nameA, rank:swapA.rank, dept:swapA.dept,
+          slot:s, time:TIMES[s], type: s===0 ? `교체(${swapA.ds} ${nameA}과 교체)` : '교체'});
+      }
+    } else if(!swapA.isAltday && !swapB.isAltday){
+      // 일반끼리: 두 슬롯의 hist만 교체
+      hist = hist.filter(h => !(h.date===swapA.ds && h.slot===swapA.slot) &&
+                              !(h.date===swapB.ds && h.slot===swapB.slot));
+      hist.push({date:swapA.ds, name:nameB, rank:swapB.rank, dept:swapB.dept,
+        slot:swapA.slot, time:TIMES[swapA.slot],
+        type:`교체(${swapB.ds} ${TIMES[swapB.slot]}의 ${nameB}과 교체)`});
+      hist.push({date:swapB.ds, name:nameA, rank:swapA.rank, dept:swapA.dept,
+        slot:swapB.slot, time:TIMES[swapB.slot],
+        type:`교체(${swapA.ds} ${TIMES[swapA.slot]}의 ${nameA}과 교체)`});
+    } else {
+      alert('⚠️ 데스크 전담과 일반 당직은 교체할 수 없습니다.');
+      cancelSwap();
+      return;
+    }
+    setHist(hist);
+    closeSwapModal();
+    saveToCloud();
+    cancelSwap();
+    refreshRosterView();
+    alert('교체 완료!\n'+nameA+' ↔ '+nameB);
+    return;
+  }
+
+  // ── 이하 라이브 모드 (현재 baseMonth) — 기존 로직 ──
+  if(!curRoster) return;
 
   if(swapA.isAltday && swapB.isAltday){
     // 격일제 전담 교체: 해당 날 8슬롯 전부 교체
@@ -3721,13 +3771,7 @@ function doSwap(){
   }
   setHist(hist);
   closeSwapModal();
-  // ★ 현재 보고 있는 월이 baseMonth와 같을 때만 roster3 갱신 (지난달 미리보기는 hist만 갱신)
-  const baseM_ds = document.getElementById('base-month').value;
-  const liveM_ds = (typeof viewMonth!=='undefined' && viewMonth) ? viewMonth : baseM_ds;
-  const isLive_ds = (liveM_ds === baseM_ds);
-  if(isLive_ds){
-    setRoster(JSON.parse(JSON.stringify(curRoster,(k,v)=>v instanceof Date?v.toISOString():v)));
-  }
+  setRoster(JSON.parse(JSON.stringify(curRoster,(k,v)=>v instanceof Date?v.toISOString():v)));
   saveToCloud();
   cancelSwap();
   renderRoster(+liveM_ds.slice(0,4),+liveM_ds.slice(5,7),curRoster);
