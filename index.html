@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>데스크 당직표 자동생성기</title>
@@ -172,52 +170,52 @@ tr:hover td{background:#fafaf8}
   <div class="side-logo">Desk Duty v2</div>
   <div class="side-title">당직표<br>자동생성기</div>
   <div class="side-nav">
-    <button class="nav-btn on" id="nb-roster" onclick="goPage('roster')">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1A1.5 1.5 0 002 2.5v11A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0012.5 1h-9zm0 1.5h9v11h-9v-11zM5 5.75A.75.75 0 015.75 5h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 5.75zm0 3A.75.75 0 015.75 8h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 8.75zm0 3A.75.75 0 015.75 11h2.5a.75.75 0 010 1.5h-2.5A.75.75 0 015 11.75z"/></svg>
+    <button class="nav-btn" id="nb-roster" onclick="goPage('roster')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1A1.5 1.5 0 002 2.5v11A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0012.5 1h-9zm0 1.5h9v11h-9v-11zM5 5.75A.75.75 0 015.75 5h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 5.75zm0 3A.75.75 0 015.75 8h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 8.75zm0 3A.75.75 0 015.75 11h2.5a.75.75 0 010 1.5h-2.5A.75.75 0 015 11.75z"></path></svg>
       당직표
     </button>
     <button class="nav-btn" id="nb-guide" onclick="goPage('guide')">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zM6.5 4.5a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8 7.75a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 7.75z"/></svg>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zM6.5 4.5a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8 7.75a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 7.75z"></path></svg>
       방문대장 안내
     </button>
     <button class="nav-btn" id="nb-userguide" onclick="goPage('userguide')">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M14 4.5V14a2 2 0 01-2 2H4a2 2 0 01-2-2V2a2 2 0 012-2h5.5L14 4.5zM4 8.5A.5.5 0 014.5 8h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zM5 10.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5z"/></svg>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M14 4.5V14a2 2 0 01-2 2H4a2 2 0 01-2-2V2a2 2 0 012-2h5.5L14 4.5zM4 8.5A.5.5 0 014.5 8h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zM5 10.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5z"></path></svg>
       사용 안내
     </button>
     <button class="nav-btn" id="nb-setup" onclick="requirePw('setup')">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.5a5.5 5.5 0 110 11 5.5 5.5 0 010-11zM8.75 5.25a.75.75 0 00-1.5 0v3c0 .414.336.75.75.75h2a.75.75 0 000-1.5H8.75V5.25z"/></svg>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.5a5.5 5.5 0 110 11 5.5 5.5 0 010-11zM8.75 5.25a.75.75 0 00-1.5 0v3c0 .414.336.75.75.75h2a.75.75 0 000-1.5H8.75V5.25z"></path></svg>
       설정
       <span class="nav-lock">🔒</span>
     </button>
     <button class="nav-btn" id="nb-stats" onclick="requirePw('stats')">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 11a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5zm4-4a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5zm4-4a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5z"/></svg>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 11a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5zm4-4a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5zm4-4a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5z"></path></svg>
       통계
       <span class="nav-lock">🔒</span>
     </button>
     <button class="nav-btn" id="nb-history" onclick="requirePw('history')">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.75 4.75a.75.75 0 00-1.5 0V8.5c0 .414.336.75.75.75h2.5a.75.75 0 000-1.5H8.75V4.75z"/></svg>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.75 4.75a.75.75 0 00-1.5 0V8.5c0 .414.336.75.75.75h2.5a.75.75 0 000-1.5H8.75V4.75z"></path></svg>
       이력
       <span class="nav-lock">🔒</span>
     </button>
     <button class="nav-btn" id="nb-members" onclick="requirePw('members')">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/></svg>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"></path></svg>
       직원 관리
       <span class="nav-lock">🔒</span>
     </button>
-    <button class="nav-btn" id="nb-manual" onclick="requirePw('manual')">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1A1.5 1.5 0 002 2.5v11A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0012.5 1h-9zm0 1.5h9v11h-9v-11zM5 5.75A.75.75 0 015.75 5h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 5.75zm0 3A.75.75 0 015.75 8h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 8.75zm0 3A.75.75 0 015.75 11h2.5a.75.75 0 010 1.5h-2.5A.75.75 0 015 11.75z"/></svg>
+    <button class="nav-btn on" id="nb-manual" onclick="requirePw('manual')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1A1.5 1.5 0 002 2.5v11A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0012.5 1h-9zm0 1.5h9v11h-9v-11zM5 5.75A.75.75 0 015.75 5h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 5.75zm0 3A.75.75 0 015.75 8h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 015 8.75zm0 3A.75.75 0 015.75 11h2.5a.75.75 0 010 1.5h-2.5A.75.75 0 015 11.75z"></path></svg>
       매뉴얼 / 로그
       <span class="nav-lock">🔒</span>
     </button>
   </div>
   <div class="side-admin" style="padding:10px 20px;border-top:1px solid rgba(255,255,255,.08)">
-  <button id="lock-btn" onclick="lockAdmin()" style="display:none;width:100%;padding:7px 12px;background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.3);border-radius:6px;color:#ff9999;font-size:12px;font-family:inherit;cursor:pointer;text-align:center">🔓 관리자 잠금</button>
-  <div id="lock-status" style="font-size:11px;color:rgba(255,255,255,.35);text-align:center;margin-top:4px"></div>
+  <button id="lock-btn" onclick="lockAdmin()" style="display: inline-flex; width: 100%; padding: 7px 12px; background: rgba(255, 80, 80, 0.15); border: 1px solid rgba(255, 80, 80, 0.3); border-radius: 6px; color: rgb(255, 153, 153); font-size: 12px; font-family: inherit; cursor: pointer; text-align: center;">🔓 관리자 잠금</button>
+  <div id="lock-status" style="font-size:11px;color:rgba(255,255,255,.35);text-align:center;margin-top:4px">관리자 모드</div>
 </div>
 <div style="padding:8px 16px;border-top:1px solid rgba(255,255,255,.08)">
     <span style="font-size:10px;color:rgba(255,255,255,.35)">
-      <span id="sync-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#aaa;margin-right:4px;vertical-align:middle;transition:.3s"></span>
-      <span id="sync-txt">연결 중...</span>
+      <span id="sync-dot" style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: rgb(76, 175, 80); margin-right: 4px; vertical-align: middle; transition: 0.3s;"></span>
+      <span id="sync-txt">저장됨 ✓</span>
     </span>
   </div>
   <div class="side-footer">근무일 기준 3일 간격<br>하루 8슬롯 × 8명<br>이력 자동저장</div>
@@ -230,13 +228,13 @@ tr:hover td{background:#fafaf8}
 </nav>
 
 <!-- ══ 메인 ══ -->
-<main class="main">
+<main class="main" style="zoom: 1.5;">
 
 <!-- 당직표 (공개) -->
-<div id="pg-roster" class="page on">
+<div id="pg-roster" class="page">
   <div class="pg-head">
-    <div class="pg-h" id="roster-h">당직표</div>
-    <div class="pg-sub" id="roster-sub">설정 탭에서 당직표를 생성하세요</div>
+    <div class="pg-h" id="roster-h">2026년 7월 당직표</div>
+    <div class="pg-sub" id="roster-sub">총 22개 근무일 · 공휴일 1일 제외</div>
   </div>
 
   <!-- 교체 패널 -->
@@ -257,7 +255,7 @@ tr:hover td{background:#fafaf8}
       </div>
     </div>
     <div class="row">
-      <button class="btn btn-green btn-sm" id="swap-confirm-btn" onclick="confirmSwap()" disabled style="opacity:.4">교체 확정</button>
+      <button class="btn btn-green btn-sm" id="swap-confirm-btn" onclick="confirmSwap()" disabled="" style="opacity:.4">교체 확정</button>
       <button class="btn btn-sm" onclick="cancelSwap()">취소</button>
       <span id="swap-hint" style="font-size:12px;color:#aaa"></span>
     </div>
@@ -266,11 +264,11 @@ tr:hover td{background:#fafaf8}
   <div class="row" style="margin-bottom:10px;justify-content:space-between" id="month-nav-row">
     <div class="row" style="gap:6px">
       <div class="view-toggle">
-        <button id="btn-prev-month" onclick="navMonthGo(-1)">5월</button>
-        <button class="on" id="btn-this-month" onclick="navMonthGo(0)">6월</button>
+        <button id="btn-prev-month" onclick="navMonthGo(-1)" class="">6월</button>
+        <button class="on" id="btn-this-month" onclick="navMonthGo(0)">7월</button>
       </div>
-      <span id="view-month-label" style="margin-left:8px;font-weight:600;color:#1c1b18"></span>
-      <span id="view-month-flag" style="font-size:11px;color:#aaa"></span>
+      <span id="view-month-label" style="margin-left:8px;font-weight:600;color:#1c1b18">2026년 7월</span>
+      <span id="view-month-flag" style="font-size:11px;color:#aaa">· 편집 가능</span>
     </div>
   </div>
 
@@ -280,15 +278,1172 @@ tr:hover td{background:#fafaf8}
       <button id="vt-cal" onclick="setRosterView('cal')">📅 캘린더</button>
     </div>
     <button class="btn btn-sm" id="swap-toggle-btn" onclick="toggleSwapMode()">⇄ 교체 모드</button>
-    <button class="btn btn-green btn-sm" onclick="saveRoster()" id="save-roster-btn" style="opacity:.4;cursor:not-allowed" disabled>💾 저장</button>
+    <button class="btn btn-green btn-sm" onclick="saveRoster()" id="save-roster-btn" style="opacity:.4;cursor:not-allowed" disabled="">💾 저장</button>
     <button class="btn btn-sm" onclick="downloadExcel()">📥 엑셀 다운로드</button>
     <button class="btn btn-sm" onclick="copyTsv()">표 복사</button>
     <button class="btn btn-sm" onclick="window.print()">인쇄</button>
 
   </div>
 
-  <div id="roster-out"><div class="alert a-info">왼쪽 설정 탭(🔒)에서 당직표를 먼저 생성해주세요.</div></div>
-  <div id="roster-cal-out" style="display:none"></div>
+  <div id="roster-out"><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">수요일</div>
+        <div class="day-dt">2026년 07월 01일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-0-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">노승민</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(0,0,'2026-07-01',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-0-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">문광진</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(0,1,'2026-07-01',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-0-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">김준</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">영업기획2팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(0,2,'2026-07-01',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-0-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">안의영</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">영업기획1팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(0,3,'2026-07-01',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-0-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">조아로리</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">총무팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(0,4,'2026-07-01',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-0-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">류화수</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(0,5,'2026-07-01',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-0-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">천재우</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(0,6,'2026-07-01',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-0-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">김재찬</div>
+          <div class="slot-rank">차장</div>
+          <span class="slot-dept">영업기획1팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(0,7,'2026-07-01',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">목요일</div>
+        <div class="day-dt">2026년 07월 02일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-1-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">금요일</div>
+        <div class="day-dt">2026년 07월 03일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-2-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">이가준</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(2,0,'2026-07-03',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-2-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">박해성</div>
+          <div class="slot-rank">계장</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(2,1,'2026-07-03',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-2-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">이승윤</div>
+          <div class="slot-rank">6급사원</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(2,2,'2026-07-03',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-2-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">박현준</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(2,3,'2026-07-03',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-2-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">박현석</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(2,4,'2026-07-03',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-2-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">박형종</div>
+          <div class="slot-rank">부장</div>
+          <span class="slot-dept">영업기획2팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(2,5,'2026-07-03',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-2-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">송국환</div>
+          <div class="slot-rank">차장</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(2,6,'2026-07-03',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-2-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">고준영</div>
+          <div class="slot-rank">부장대우</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(2,7,'2026-07-03',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">월요일</div>
+        <div class="day-dt">2026년 07월 06일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-3-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">화요일</div>
+        <div class="day-dt">2026년 07월 07일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-4-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">지윤중</div>
+          <div class="slot-rank">차장</div>
+          <span class="slot-dept">영업기획2팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(4,0,'2026-07-07',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-4-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">장세훈</div>
+          <div class="slot-rank">부장대우</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(4,1,'2026-07-07',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-4-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">박정욱</div>
+          <div class="slot-rank">부장대우</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(4,2,'2026-07-07',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-4-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">최기순</div>
+          <div class="slot-rank">부장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(4,3,'2026-07-07',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-4-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">안성헌</div>
+          <div class="slot-rank">부장</div>
+          <span class="slot-dept">전략팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(4,4,'2026-07-07',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-4-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">김승일</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(4,5,'2026-07-07',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-4-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">김남룡</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(4,6,'2026-07-07',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-4-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">이용범</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(4,7,'2026-07-07',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">수요일</div>
+        <div class="day-dt">2026년 07월 08일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-5-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">목요일</div>
+        <div class="day-dt">2026년 07월 09일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-6-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">박대형</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(6,0,'2026-07-09',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-6-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">정재경</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(6,1,'2026-07-09',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-6-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">이정준</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(6,2,'2026-07-09',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-6-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">호수현</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(6,3,'2026-07-09',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-6-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">정철환</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(6,4,'2026-07-09',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-6-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">황태원</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(6,5,'2026-07-09',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-6-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">황승인</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(6,6,'2026-07-09',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-6-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">정훈</div>
+          <div class="slot-rank">부장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(6,7,'2026-07-09',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">금요일</div>
+        <div class="day-dt">2026년 07월 10일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-7-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">월요일</div>
+        <div class="day-dt">2026년 07월 13일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-8-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">김진우</div>
+          <div class="slot-rank">계장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(8,0,'2026-07-13',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-8-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">권도윤</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(8,1,'2026-07-13',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-8-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">김민수</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(8,2,'2026-07-13',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-8-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">권오현</div>
+          <div class="slot-rank">차장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(8,3,'2026-07-13',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-8-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">정다운</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(8,4,'2026-07-13',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-8-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">윤승현</div>
+          <div class="slot-rank">계장</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(8,5,'2026-07-13',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-8-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">김준</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">영업기획2팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(8,6,'2026-07-13',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-8-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">이승윤</div>
+          <div class="slot-rank">6급사원</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(8,7,'2026-07-13',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">화요일</div>
+        <div class="day-dt">2026년 07월 14일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-9-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">수요일</div>
+        <div class="day-dt">2026년 07월 15일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-10-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">문광진</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(10,0,'2026-07-15',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-10-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">노승민</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(10,1,'2026-07-15',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-10-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">안의영</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">영업기획1팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(10,2,'2026-07-15',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-10-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">조아로리</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">총무팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(10,3,'2026-07-15',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-10-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">류화수</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(10,4,'2026-07-15',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-10-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">이가준</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(10,5,'2026-07-15',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-10-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">김재찬</div>
+          <div class="slot-rank">차장</div>
+          <span class="slot-dept">영업기획1팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(10,6,'2026-07-15',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-10-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">천재우</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(10,7,'2026-07-15',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">목요일</div>
+        <div class="day-dt">2026년 07월 16일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-11-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">월요일</div>
+        <div class="day-dt">2026년 07월 20일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-12-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">박현석</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(12,0,'2026-07-20',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-12-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">박현준</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(12,1,'2026-07-20',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-12-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">박해성</div>
+          <div class="slot-rank">계장</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(12,2,'2026-07-20',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-12-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">박형종</div>
+          <div class="slot-rank">부장</div>
+          <span class="slot-dept">영업기획2팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(12,3,'2026-07-20',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-12-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">송국환</div>
+          <div class="slot-rank">차장</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(12,4,'2026-07-20',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-12-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">지윤중</div>
+          <div class="slot-rank">차장</div>
+          <span class="slot-dept">영업기획2팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(12,5,'2026-07-20',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-12-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">고준영</div>
+          <div class="slot-rank">부장대우</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(12,6,'2026-07-20',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-12-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">박정욱</div>
+          <div class="slot-rank">부장대우</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(12,7,'2026-07-20',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">화요일</div>
+        <div class="day-dt">2026년 07월 21일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-13-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">수요일</div>
+        <div class="day-dt">2026년 07월 22일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-14-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">안성헌</div>
+          <div class="slot-rank">부장</div>
+          <span class="slot-dept">전략팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(14,0,'2026-07-22',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-14-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">최기순</div>
+          <div class="slot-rank">부장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(14,1,'2026-07-22',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-14-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">김남룡</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(14,2,'2026-07-22',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-14-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">김승일</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(14,3,'2026-07-22',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-14-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">장세훈</div>
+          <div class="slot-rank">부장대우</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(14,4,'2026-07-22',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-14-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">이용범</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(14,5,'2026-07-22',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-14-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">이정준</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(14,6,'2026-07-22',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-14-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">정재경</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(14,7,'2026-07-22',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">목요일</div>
+        <div class="day-dt">2026년 07월 23일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-15-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">금요일</div>
+        <div class="day-dt">2026년 07월 24일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-16-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">정철환</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(16,0,'2026-07-24',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-16-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">박대형</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(16,1,'2026-07-24',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-16-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">호수현</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(16,2,'2026-07-24',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-16-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">황승인</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(16,3,'2026-07-24',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-16-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">황태원</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(16,4,'2026-07-24',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-16-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">김진우</div>
+          <div class="slot-rank">계장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(16,5,'2026-07-24',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-16-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">정훈</div>
+          <div class="slot-rank">부장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(16,6,'2026-07-24',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-16-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">권도윤</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(16,7,'2026-07-24',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">월요일</div>
+        <div class="day-dt">2026년 07월 27일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-17-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">화요일</div>
+        <div class="day-dt">2026년 07월 28일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-18-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">김민수</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(18,0,'2026-07-28',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-18-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">권오현</div>
+          <div class="slot-rank">차장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(18,1,'2026-07-28',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-18-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">정다운</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(18,2,'2026-07-28',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-18-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">윤승현</div>
+          <div class="slot-rank">계장</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(18,3,'2026-07-28',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-18-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">노승민</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(18,4,'2026-07-28',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-18-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">문광진</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(18,5,'2026-07-28',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-18-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">안의영</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">영업기획1팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(18,6,'2026-07-28',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-18-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">조아로리</div>
+          <div class="slot-rank">대리</div>
+          <span class="slot-dept">총무팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(18,7,'2026-07-28',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">수요일</div>
+        <div class="day-dt">2026년 07월 29일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-19-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">목요일</div>
+        <div class="day-dt">2026년 07월 30일</div>
+        
+        
+        <div class="day-cnt">8명</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-20-0" style="">
+          <div class="slot-n">1</div>
+          <div class="slot-time">09:00~10:00</div>
+          <div class="slot-name">류화수</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(20,0,'2026-07-30',0)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-20-1" style="">
+          <div class="slot-n">2</div>
+          <div class="slot-time">10:00~11:00</div>
+          <div class="slot-name">이가준</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(20,1,'2026-07-30',1)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-20-2" style="">
+          <div class="slot-n">3</div>
+          <div class="slot-time">11:00~11:50</div>
+          <div class="slot-name">김재찬</div>
+          <div class="slot-rank">차장</div>
+          <span class="slot-dept">영업기획1팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(20,2,'2026-07-30',2)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-20-3" style="">
+          <div class="slot-n">4</div>
+          <div class="slot-time">13:00~14:00</div>
+          <div class="slot-name">천재우</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">기획팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(20,3,'2026-07-30',3)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-20-4" style="">
+          <div class="slot-n">5</div>
+          <div class="slot-time">14:00~15:00</div>
+          <div class="slot-name">박해성</div>
+          <div class="slot-rank">계장</div>
+          <span class="slot-dept">심사팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(20,4,'2026-07-30',4)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-20-5" style="">
+          <div class="slot-n">6</div>
+          <div class="slot-time">15:00~16:00</div>
+          <div class="slot-name">박현석</div>
+          <div class="slot-rank">수석</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(20,5,'2026-07-30',5)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-20-6" style="">
+          <div class="slot-n">7</div>
+          <div class="slot-time">16:00~17:00</div>
+          <div class="slot-name">정다운</div>
+          <div class="slot-rank">과장</div>
+          <span class="slot-dept">장비팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(20,6,'2026-07-30',6)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div><div class="slot-row " id="sr-20-7" style="">
+          <div class="slot-n">8</div>
+          <div class="slot-time">17:00~17:50</div>
+          <div class="slot-name">윤승현</div>
+          <div class="slot-rank">계장</div>
+          <span class="slot-dept">전산팀</span>
+          
+          <button class="btn btn-sm" onclick="openSlotChange(20,7,'2026-07-30',7)" style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px;color:#666;border-color:#ddd">변경</button>
+        </div></div>
+    </div><div class="roster-day">
+      <div class="roster-dh">
+        <div class="day-pill">금요일</div>
+        <div class="day-dt">2026년 07월 31일</div>
+        <span class="badge" style="background:#e8f0ff;color:#1e4080;font-size:11px">🔵 데스크 전담</span>
+        
+        <div class="day-cnt">종일</div>
+        
+      </div>
+      <div class="roster-slots"><div class="slot-row " id="sr-21-0">
+        <div class="slot-n">●</div>
+        <div class="slot-time">09:00~17:50</div>
+        <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">김단</div>
+        <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">계약직 사원</div>
+        <span class="slot-dept">총무팀</span>
+        
+      </div></div>
+    </div></div>
+  <div id="roster-cal-out" style="display:none">
+    <div class="cal-wrap">
+      <div class="cal-title">2026년 7월 안내직 근무표 (달력)</div>
+      <div class="cal-grid">
+        <div class="cal-head sun">일</div>
+        <div class="cal-head">월</div>
+        <div class="cal-head">화</div>
+        <div class="cal-head">수</div>
+        <div class="cal-head">목</div>
+        <div class="cal-head">금</div>
+        <div class="cal-head sat">토</div>
+        <div class="cal-cell empty"></div><div class="cal-cell empty"></div><div class="cal-cell empty"></div><div class="cal-cell normal">
+      <div class="cal-date ">1</div>
+      <div class="cal-emp-list" title="노승민, 문광진, 김준, 안의영, 조아로리, 류화수, 천재우, 김재찬">노승민, 문광진, 김준, 안의영, 조아로리, 류화수, 천재우, 김재찬</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">2</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">3</div>
+      <div class="cal-emp-list" title="이가준, 박해성, 이승윤, 박현준, 박현석, 박형종, 송국환, 고준영">이가준, 박해성, 이승윤, 박현준, 박현석, 박형종, 송국환, 고준영</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell weekend">
+      <div class="cal-date sat">4</div>
+      <div class="cal-main duty-rest">휴무</div>
+      
+    </div><div class="cal-cell weekend">
+      <div class="cal-date sun">5</div>
+      <div class="cal-main duty-rest">휴무</div>
+      
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">6</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">7</div>
+      <div class="cal-emp-list" title="지윤중, 장세훈, 박정욱, 최기순, 안성헌, 김승일, 김남룡, 이용범">지윤중, 장세훈, 박정욱, 최기순, 안성헌, 김승일, 김남룡, 이용범</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">8</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">9</div>
+      <div class="cal-emp-list" title="박대형, 정재경, 이정준, 호수현, 정철환, 황태원, 황승인, 정훈">박대형, 정재경, 이정준, 호수현, 정철환, 황태원, 황승인, 정훈</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">10</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell weekend">
+      <div class="cal-date sat">11</div>
+      <div class="cal-main duty-rest">휴무</div>
+      
+    </div><div class="cal-cell weekend">
+      <div class="cal-date sun">12</div>
+      <div class="cal-main duty-rest">휴무</div>
+      
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">13</div>
+      <div class="cal-emp-list" title="김진우, 권도윤, 김민수, 권오현, 정다운, 윤승현, 김준, 이승윤">김진우, 권도윤, 김민수, 권오현, 정다운, 윤승현, 김준, 이승윤</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">14</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">15</div>
+      <div class="cal-emp-list" title="문광진, 노승민, 안의영, 조아로리, 류화수, 이가준, 김재찬, 천재우">문광진, 노승민, 안의영, 조아로리, 류화수, 이가준, 김재찬, 천재우</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">16</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell holiday">
+      <div class="cal-date ">17</div>
+      <div class="cal-main duty-rest">휴무</div>
+      <div class="cal-tag">공휴일</div>
+    </div><div class="cal-cell weekend">
+      <div class="cal-date sat">18</div>
+      <div class="cal-main duty-rest">휴무</div>
+      
+    </div><div class="cal-cell weekend">
+      <div class="cal-date sun">19</div>
+      <div class="cal-main duty-rest">휴무</div>
+      
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">20</div>
+      <div class="cal-emp-list" title="박현석, 박현준, 박해성, 박형종, 송국환, 지윤중, 고준영, 박정욱">박현석, 박현준, 박해성, 박형종, 송국환, 지윤중, 고준영, 박정욱</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">21</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">22</div>
+      <div class="cal-emp-list" title="안성헌, 최기순, 김남룡, 김승일, 장세훈, 이용범, 이정준, 정재경">안성헌, 최기순, 김남룡, 김승일, 장세훈, 이용범, 이정준, 정재경</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">23</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">24</div>
+      <div class="cal-emp-list" title="정철환, 박대형, 호수현, 황승인, 황태원, 김진우, 정훈, 권도윤">정철환, 박대형, 호수현, 황승인, 황태원, 김진우, 정훈, 권도윤</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell weekend">
+      <div class="cal-date sat">25</div>
+      <div class="cal-main duty-rest">휴무</div>
+      
+    </div><div class="cal-cell weekend">
+      <div class="cal-date sun">26</div>
+      <div class="cal-main duty-rest">휴무</div>
+      
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">27</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">28</div>
+      <div class="cal-emp-list" title="김민수, 권오현, 정다운, 윤승현, 노승민, 문광진, 안의영, 조아로리">김민수, 권오현, 정다운, 윤승현, 노승민, 문광진, 안의영, 조아로리</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">29</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell normal">
+      <div class="cal-date ">30</div>
+      <div class="cal-emp-list" title="류화수, 이가준, 김재찬, 천재우, 박해성, 박현석, 정다운, 윤승현">류화수, 이가준, 김재찬, 천재우, 박해성, 박현석, 정다운, 윤승현</div>
+      <div class="cal-tag">8명 배정</div>
+    </div><div class="cal-cell altday">
+      <div class="cal-date ">31</div>
+      <div class="cal-main duty-a">A · 김단</div>
+      <div class="cal-tag">데스크 전담</div>
+    </div><div class="cal-cell empty"></div>
+      </div>
+      
+    <div class="cal-summary">
+      
+        <div class="cal-stat">A(김단) 근무일수<strong>11일</strong></div>
+        
+        
+      
+      <div class="cal-stat">일반 배정일<strong>11일</strong></div>
+      <div class="cal-stat">총 슬롯<strong>88개</strong></div>
+    </div>
+      
+    <div class="cal-legend">
+      <span class="lg"><span class="sw" style="background:#1e5a30"></span>A · 김단</span>
+      <span class="lg"><span class="sw" style="background:#f4faf6;border-color:#cfe5d6"></span>일반 8명 배정</span>
+      <span class="lg"><span class="sw" style="background:#fff8eb;border-color:#e8c96a"></span>휴무대체</span>
+      <span class="lg"><span class="sw" style="background:#f4f6fb;border-color:#dde3ee"></span>주말</span>
+      <span class="lg"><span class="sw" style="background:#fff5f5;border-color:#f3cfcf"></span>공휴일</span>
+    </div>
+    </div>
+  </div>
 </div>
 
 <!-- 설정 (잠금) -->
@@ -303,7 +1458,7 @@ tr:hover td{background:#fafaf8}
   </div>
   <div class="card">
     <div class="card-h">공휴일 <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#bbb;font-size:11px">— 해당 날짜는 당직표에서 제외</span></div>
-    <div class="chips" id="hol-chips"><span style="font-size:12px;color:#ccc">추가된 공휴일 없음</span></div>
+    <div class="chips" id="hol-chips"><span class="tag">2026-07-17<span class="x" onclick="removeHoliday('2026-07-17')">×</span></span></div>
     <div class="row"><input type="date" id="hol-input"><button class="btn btn-sm" onclick="addHoliday()">+ 추가</button></div>
   </div>
   <div class="card">
@@ -328,9 +1483,7 @@ tr:hover td{background:#fafaf8}
       비워두면 자동 결정 (이전 달 누적이 적은 사람 우선, 같으면 신규 합류자 우선).<br>
       특정 사정으로 첫 시작자를 강제하고 싶을 때만 선택하세요.
     </div>
-    <select id="altday-start-select" style="width:100%;padding:8px 11px;border:1px solid #ddd;border-radius:6px;font-size:13px">
-      <option value="">자동 (누적 정산 기반)</option>
-    </select>
+    <select id="altday-start-select" style="width:100%;padding:8px 11px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="">자동 (누적 정산 기반)</option><option value="김단">A · 김단 (합류 2026-05-27)</option></select>
   </div>
 
   <!-- 이력 보존 경계일 (월 중 재생성 대응) -->
@@ -380,18 +1533,408 @@ tr:hover td{background:#fafaf8}
   <div class="pg-head"><div class="pg-h">직원 관리</div><div class="pg-sub">직원 추가·삭제, 시간대 고정 설정</div></div>
   <div class="row" style="margin-bottom:14px">
     <button class="btn btn-green btn-sm" onclick="openAddModal()">+ 직원 추가</button>
-    <span style="font-size:12px;color:#aaa" id="emp-cnt"></span>
+    <span style="font-size:12px;color:#aaa" id="emp-cnt">총 39명</span>
   </div>
   <div class="card" style="padding:0;overflow:hidden">
     <div class="tbl-wrap"><table>
       <thead><tr><th>#</th><th>이름</th><th>직급</th><th>소속</th><th>고정 시간대</th><th>관리</th></tr></thead>
-      <tbody id="mem-tbody"></tbody>
+      <tbody id="mem-tbody"><tr>
+      <td style="color:#ccc">1</td>
+      <td style="font-weight:500">이승윤</td>
+      <td style="color:#888">6급사원</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(0)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(0)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">2</td>
+      <td style="font-weight:500">김준</td>
+      <td style="color:#888">대리</td>
+      <td><span class="badge b-기타">영업기획2팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(1)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(1)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">3</td>
+      <td style="font-weight:500">노승민</td>
+      <td style="color:#888">대리</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(2)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(2)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">4</td>
+      <td style="font-weight:500">문광진</td>
+      <td style="color:#888">대리</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(3)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(3)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">5</td>
+      <td style="font-weight:500">안의영</td>
+      <td style="color:#888">대리</td>
+      <td><span class="badge b-기타">영업기획1팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(4)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(4)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">6</td>
+      <td style="font-weight:500">조아로리</td>
+      <td style="color:#888">대리</td>
+      <td><span class="badge b-기타">총무팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(5)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(5)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">7</td>
+      <td style="font-weight:500">류화수</td>
+      <td style="color:#888">과장</td>
+      <td><span class="badge b-기타">기획팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(6)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(6)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">8</td>
+      <td style="font-weight:500">이가준</td>
+      <td style="color:#888">과장</td>
+      <td><span class="badge b-기타">기획팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(7)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(7)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">9</td>
+      <td style="font-weight:500">천재우</td>
+      <td style="color:#888">과장</td>
+      <td><span class="badge b-기타">기획팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(8)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(8)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">10</td>
+      <td style="font-weight:500">김재찬</td>
+      <td style="color:#888">차장</td>
+      <td><span class="badge b-기타">영업기획1팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(9)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(9)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">11</td>
+      <td style="font-weight:500">박해성</td>
+      <td style="color:#888">계장</td>
+      <td><span class="badge b-기타">심사팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(10)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(10)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">12</td>
+      <td style="font-weight:500">박현석</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(11)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(11)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">13</td>
+      <td style="font-weight:500">박현준</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(12)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(12)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">14</td>
+      <td style="font-weight:500">박형종</td>
+      <td style="color:#888">부장</td>
+      <td><span class="badge b-기타">영업기획2팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(13)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(13)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">15</td>
+      <td style="font-weight:500">송국환</td>
+      <td style="color:#888">차장</td>
+      <td><span class="badge b-기타">심사팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(14)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(14)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">16</td>
+      <td style="font-weight:500">지윤중</td>
+      <td style="color:#888">차장</td>
+      <td><span class="badge b-기타">영업기획2팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(15)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(15)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">17</td>
+      <td style="font-weight:500">고준영</td>
+      <td style="color:#888">부장대우</td>
+      <td><span class="badge b-기타">심사팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(16)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(16)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">18</td>
+      <td style="font-weight:500">박정욱</td>
+      <td style="color:#888">부장대우</td>
+      <td><span class="badge b-기타">심사팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(17)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(17)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">19</td>
+      <td style="font-weight:500">장세훈</td>
+      <td style="color:#888">부장대우</td>
+      <td><span class="badge b-기타">심사팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(18)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(18)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">20</td>
+      <td style="font-weight:500">안성헌</td>
+      <td style="color:#888">부장</td>
+      <td><span class="badge b-기타">전략팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(19)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(19)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">21</td>
+      <td style="font-weight:500">최기순</td>
+      <td style="color:#888">부장</td>
+      <td><span class="badge b-기타">기획팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(20)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(20)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">22</td>
+      <td style="font-weight:500">김남룡</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(21)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(21)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">23</td>
+      <td style="font-weight:500">김승일</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(22)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(22)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">24</td>
+      <td style="font-weight:500">박대형</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(23)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(23)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">25</td>
+      <td style="font-weight:500">이용범</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(24)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(24)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">26</td>
+      <td style="font-weight:500">이정준</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(25)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(25)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">27</td>
+      <td style="font-weight:500">정재경</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(26)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(26)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">28</td>
+      <td style="font-weight:500">정철환</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(27)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(27)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">29</td>
+      <td style="font-weight:500">호수현</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(28)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(28)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">30</td>
+      <td style="font-weight:500">황승인</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(29)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(29)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">31</td>
+      <td style="font-weight:500">황태원</td>
+      <td style="color:#888">수석</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(30)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(30)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">32</td>
+      <td style="font-weight:500">김진우</td>
+      <td style="color:#888">계장</td>
+      <td><span class="badge b-장비팀">장비팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(31)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(31)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">33</td>
+      <td style="font-weight:500">정훈</td>
+      <td style="color:#888">부장</td>
+      <td><span class="badge b-장비팀">장비팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(32)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(32)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">34</td>
+      <td style="font-weight:500">권도윤</td>
+      <td style="color:#888">과장</td>
+      <td><span class="badge b-장비팀">장비팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(33)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(33)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">35</td>
+      <td style="font-weight:500">김민수</td>
+      <td style="color:#888">과장</td>
+      <td><span class="badge b-장비팀">장비팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(34)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(34)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">36</td>
+      <td style="font-weight:500">권오현</td>
+      <td style="color:#888">차장</td>
+      <td><span class="badge b-장비팀">장비팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(35)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(35)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">37</td>
+      <td style="font-weight:500">정다운</td>
+      <td style="color:#888">과장</td>
+      <td><span class="badge b-장비팀">장비팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(36)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(36)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">38</td>
+      <td style="font-weight:500">윤승현</td>
+      <td style="color:#888">계장</td>
+      <td><span class="badge b-전산팀">전산팀</span></td>
+      <td><span style="color:#ccc;font-size:12px">자동</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(37)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(37)">삭제</button>
+      </td>
+    </tr><tr>
+      <td style="color:#ccc">39</td>
+      <td style="font-weight:500">김단</td>
+      <td style="color:#888">계약직 사원</td>
+      <td><span class="badge b-기타">총무팀</span></td>
+      <td><span class="badge" style="background:#e8f0ff;color:#1e4080">격일제·05/27부터</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="editEmp(38)" style="margin-right:5px">편집</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmp(38)">삭제</button>
+      </td>
+    </tr></tbody>
     </table></div>
   </div>
 </div>
 
 <!-- 매뉴얼 / 로그 (공개) -->
-<div id="pg-manual" class="page">
+<div id="pg-manual" class="page on">
   <div class="pg-head">
     <div class="pg-h">매뉴얼 &amp; 업데이트 로그</div>
     <div class="pg-sub">기능 설명 및 변경 이력</div>
@@ -753,7 +2296,7 @@ tr:hover td{background:#fafaf8}
             <td style="padding:7px 8px;border:1px solid #ddd;text-align:center;color:#888"></td>
           </tr>
           <tr style="background:#f9f9f7">
-            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center" colspan="11" style="color:#aaa;font-size:11px;text-align:center">
+            <td style="padding:7px 8px;border:1px solid #ddd;text-align:center" colspan="11">
               <span style="color:#aaa">↑ 위 양식에 맞게 빠짐없이 기재해주세요</span>
             </td>
           </tr>
@@ -919,7 +2462,7 @@ tr:hover td{background:#fafaf8}
     <div class="modal-h">🔒 비밀번호 확인</div>
     <div class="modal-sub" id="pw-modal-sub">이 페이지는 관리자만 접근할 수 있습니다</div>
     <div class="field"><label>비밀번호</label><input type="password" id="pw-input" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')submitPw()"></div>
-    <div id="pw-err" style="font-size:12px;color:#b82222;margin-bottom:4px;display:none">비밀번호가 맞지 않습니다</div>
+    <div id="pw-err" style="font-size: 12px; color: rgb(184, 34, 34); margin-bottom: 4px; display: block;">비밀번호가 맞지 않습니다</div>
     <div class="modal-foot">
       <button class="btn" onclick="closePwModal()">취소</button>
       <button class="btn btn-green" onclick="submitPw()">확인</button>
@@ -981,7 +2524,7 @@ tr:hover td{background:#fafaf8}
   </div>
 </div>
 
-<script id="app-data" type="application/json">{}</script>
+<script id="app-data" type="application/json">{"roster3":[{"day":"2026-07-01T00:00:00.000Z","ds":"2026-07-01","slots":[{"emp":{"dept":"전산팀","fixed":"","name":"노승민","rank":"대리"},"slot":0,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"문광진","rank":"대리"},"slot":1,"swapped":false},{"emp":{"dept":"영업기획2팀","fixed":"","name":"김준","rank":"대리"},"slot":2,"swapped":false},{"emp":{"dept":"영업기획1팀","fixed":"","name":"안의영","rank":"대리"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","fixed":"","name":"조아로리","rank":"대리"},"slot":4,"swapped":false},{"emp":{"dept":"기획팀","fixed":"","name":"류화수","rank":"과장"},"slot":5,"swapped":false},{"emp":{"dept":"기획팀","fixed":"","name":"천재우","rank":"과장"},"slot":6,"swapped":false},{"emp":{"dept":"영업기획1팀","fixed":"","name":"김재찬","rank":"차장"},"slot":7,"swapped":false}]},{"day":"2026-07-02T00:00:00.000Z","ds":"2026-07-02","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-03T00:00:00.000Z","ds":"2026-07-03","slots":[{"emp":{"dept":"기획팀","fixed":"","name":"이가준","rank":"과장"},"slot":0,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"박해성","rank":"계장"},"slot":1,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"이승윤","rank":"6급사원"},"slot":2,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"박현준","rank":"수석"},"slot":3,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"박현석","rank":"수석"},"slot":4,"swapped":false},{"emp":{"dept":"영업기획2팀","fixed":"","name":"박형종","rank":"부장"},"slot":5,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"송국환","rank":"차장"},"slot":6,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"고준영","rank":"부장대우"},"slot":7,"swapped":false}]},{"day":"2026-07-06T00:00:00.000Z","ds":"2026-07-06","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-07T00:00:00.000Z","ds":"2026-07-07","slots":[{"emp":{"dept":"영업기획2팀","fixed":"","name":"지윤중","rank":"차장"},"slot":0,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"장세훈","rank":"부장대우"},"slot":1,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"박정욱","rank":"부장대우"},"slot":2,"swapped":false},{"emp":{"dept":"기획팀","fixed":"","name":"최기순","rank":"부장"},"slot":3,"swapped":false},{"emp":{"dept":"전략팀","fixed":"","name":"안성헌","rank":"부장"},"slot":4,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"김승일","rank":"수석"},"slot":5,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"김남룡","rank":"수석"},"slot":6,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"이용범","rank":"수석"},"slot":7,"swapped":false}]},{"day":"2026-07-08T00:00:00.000Z","ds":"2026-07-08","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-09T00:00:00.000Z","ds":"2026-07-09","slots":[{"emp":{"dept":"전산팀","fixed":"","name":"박대형","rank":"수석"},"slot":0,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"정재경","rank":"수석"},"slot":1,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"이정준","rank":"수석"},"slot":2,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"호수현","rank":"수석"},"slot":3,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"정철환","rank":"수석"},"slot":4,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"황태원","rank":"수석"},"slot":5,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"황승인","rank":"수석"},"slot":6,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"정훈","rank":"부장"},"slot":7,"swapped":false}]},{"day":"2026-07-10T00:00:00.000Z","ds":"2026-07-10","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-13T00:00:00.000Z","ds":"2026-07-13","slots":[{"emp":{"dept":"장비팀","fixed":"","name":"김진우","rank":"계장"},"slot":0,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"권도윤","rank":"과장"},"slot":1,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"김민수","rank":"과장"},"slot":2,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"권오현","rank":"차장"},"slot":3,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"정다운","rank":"과장"},"slot":4,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"윤승현","rank":"계장"},"slot":5,"swapped":false},{"emp":{"dept":"영업기획2팀","fixed":"","name":"김준","rank":"대리"},"slot":6,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"이승윤","rank":"6급사원"},"slot":7,"swapped":false}]},{"day":"2026-07-14T00:00:00.000Z","ds":"2026-07-14","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-15T00:00:00.000Z","ds":"2026-07-15","slots":[{"emp":{"dept":"전산팀","fixed":"","name":"문광진","rank":"대리"},"slot":0,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"노승민","rank":"대리"},"slot":1,"swapped":false},{"emp":{"dept":"영업기획1팀","fixed":"","name":"안의영","rank":"대리"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","fixed":"","name":"조아로리","rank":"대리"},"slot":3,"swapped":false},{"emp":{"dept":"기획팀","fixed":"","name":"류화수","rank":"과장"},"slot":4,"swapped":false},{"emp":{"dept":"기획팀","fixed":"","name":"이가준","rank":"과장"},"slot":5,"swapped":false},{"emp":{"dept":"영업기획1팀","fixed":"","name":"김재찬","rank":"차장"},"slot":6,"swapped":false},{"emp":{"dept":"기획팀","fixed":"","name":"천재우","rank":"과장"},"slot":7,"swapped":false}]},{"day":"2026-07-16T00:00:00.000Z","ds":"2026-07-16","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-20T00:00:00.000Z","ds":"2026-07-20","slots":[{"emp":{"dept":"전산팀","fixed":"","name":"박현석","rank":"수석"},"slot":0,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"박현준","rank":"수석"},"slot":1,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"박해성","rank":"계장"},"slot":2,"swapped":false},{"emp":{"dept":"영업기획2팀","fixed":"","name":"박형종","rank":"부장"},"slot":3,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"송국환","rank":"차장"},"slot":4,"swapped":false},{"emp":{"dept":"영업기획2팀","fixed":"","name":"지윤중","rank":"차장"},"slot":5,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"고준영","rank":"부장대우"},"slot":6,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"박정욱","rank":"부장대우"},"slot":7,"swapped":false}]},{"day":"2026-07-21T00:00:00.000Z","ds":"2026-07-21","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-22T00:00:00.000Z","ds":"2026-07-22","slots":[{"emp":{"dept":"전략팀","fixed":"","name":"안성헌","rank":"부장"},"slot":0,"swapped":false},{"emp":{"dept":"기획팀","fixed":"","name":"최기순","rank":"부장"},"slot":1,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"김남룡","rank":"수석"},"slot":2,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"김승일","rank":"수석"},"slot":3,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"장세훈","rank":"부장대우"},"slot":4,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"이용범","rank":"수석"},"slot":5,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"이정준","rank":"수석"},"slot":6,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"정재경","rank":"수석"},"slot":7,"swapped":false}]},{"day":"2026-07-23T00:00:00.000Z","ds":"2026-07-23","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-24T00:00:00.000Z","ds":"2026-07-24","slots":[{"emp":{"dept":"전산팀","fixed":"","name":"정철환","rank":"수석"},"slot":0,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"박대형","rank":"수석"},"slot":1,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"호수현","rank":"수석"},"slot":2,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"황승인","rank":"수석"},"slot":3,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"황태원","rank":"수석"},"slot":4,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"김진우","rank":"계장"},"slot":5,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"정훈","rank":"부장"},"slot":6,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"권도윤","rank":"과장"},"slot":7,"swapped":false}]},{"day":"2026-07-27T00:00:00.000Z","ds":"2026-07-27","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-28T00:00:00.000Z","ds":"2026-07-28","slots":[{"emp":{"dept":"장비팀","fixed":"","name":"김민수","rank":"과장"},"slot":0,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"권오현","rank":"차장"},"slot":1,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"정다운","rank":"과장"},"slot":2,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"윤승현","rank":"계장"},"slot":3,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"노승민","rank":"대리"},"slot":4,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"문광진","rank":"대리"},"slot":5,"swapped":false},{"emp":{"dept":"영업기획1팀","fixed":"","name":"안의영","rank":"대리"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","fixed":"","name":"조아로리","rank":"대리"},"slot":7,"swapped":false}]},{"day":"2026-07-29T00:00:00.000Z","ds":"2026-07-29","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]},{"day":"2026-07-30T00:00:00.000Z","ds":"2026-07-30","slots":[{"emp":{"dept":"기획팀","fixed":"","name":"류화수","rank":"과장"},"slot":0,"swapped":false},{"emp":{"dept":"기획팀","fixed":"","name":"이가준","rank":"과장"},"slot":1,"swapped":false},{"emp":{"dept":"영업기획1팀","fixed":"","name":"김재찬","rank":"차장"},"slot":2,"swapped":false},{"emp":{"dept":"기획팀","fixed":"","name":"천재우","rank":"과장"},"slot":3,"swapped":false},{"emp":{"dept":"심사팀","fixed":"","name":"박해성","rank":"계장"},"slot":4,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"박현석","rank":"수석"},"slot":5,"swapped":false},{"emp":{"dept":"장비팀","fixed":"","name":"정다운","rank":"과장"},"slot":6,"swapped":false},{"emp":{"dept":"전산팀","fixed":"","name":"윤승현","rank":"계장"},"slot":7,"swapped":false}]},{"day":"2026-07-31T00:00:00.000Z","ds":"2026-07-31","slots":[{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":0,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":1,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":2,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":3,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":4,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":5,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":6,"swapped":false},{"emp":{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"},"slot":7,"swapped":false}]}],"counts3":{"고준영":2,"권도윤":2,"권오현":2,"김남룡":2,"김단":88,"김민수":2,"김승일":2,"김재찬":3,"김준":2,"김진우":2,"노승민":3,"류화수":3,"문광진":3,"박대형":2,"박정욱":2,"박해성":3,"박현석":3,"박현준":2,"박형종":2,"송국환":2,"안성헌":2,"안의영":3,"윤승현":3,"이가준":3,"이승윤":2,"이용범":2,"이정준":2,"장세훈":2,"정다운":3,"정재경":2,"정철환":2,"정훈":2,"조아로리":3,"지윤중":2,"천재우":3,"최기순":2,"호수현":2,"황승인":2,"황태원":2},"basemonth3":"2026-07","hist3":[{"date":"2026-06-01","dept":"전산팀","name":"이승윤","rank":"6급사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-01","dept":"영업기획2팀","name":"김준","rank":"대리","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-01","dept":"전산팀","name":"노승민","rank":"대리","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-01","dept":"전산팀","name":"문광진","rank":"대리","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-01","dept":"영업기획1팀","name":"안의영","rank":"대리","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-01","dept":"총무팀","name":"조아로리","rank":"대리","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-01","dept":"기획팀","name":"류화수","rank":"과장","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-01","dept":"기획팀","name":"이가준","rank":"과장","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-02","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-02","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-02","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-02","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-02","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-02","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-02","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-02","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-04","dept":"영업기획1팀","name":"김재찬","rank":"차장","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-04","dept":"전산팀","name":"박현석","rank":"수석","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-04","dept":"전산팀","name":"박현준","rank":"수석","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-04","dept":"영업기획2팀","name":"지윤중","rank":"차장","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-05","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-05","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-05","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-05","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-05","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-05","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-05","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-05","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-08","dept":"영업기획2팀","name":"김준","rank":"대리","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-08","dept":"전산팀","name":"이승윤","rank":"6급사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-08","dept":"전산팀","name":"문광진","rank":"대리","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-08","dept":"영업기획1팀","name":"안의영","rank":"대리","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-08","dept":"기획팀","name":"이가준","rank":"과장","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-08","dept":"기획팀","name":"류화수","rank":"과장","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-09","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-09","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-09","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-09","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-09","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-09","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-09","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-09","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-10","dept":"영업기획1팀","name":"김재찬","rank":"차장","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-10","dept":"전산팀","name":"박현석","rank":"수석","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-10","dept":"심사팀","name":"박해성","rank":"계장","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-10","dept":"전산팀","name":"박현준","rank":"수석","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-10","dept":"영업기획2팀","name":"지윤중","rank":"차장","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-11","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-11","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-11","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-11","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-11","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-11","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-11","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-11","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-12","dept":"심사팀","name":"고준영","rank":"부장대우","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-12","dept":"심사팀","name":"박정욱","rank":"부장대우","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-12","dept":"심사팀","name":"장세훈","rank":"부장대우","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-12","dept":"전략팀","name":"안성헌","rank":"부장","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-12","dept":"기획팀","name":"최기순","rank":"부장","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-12","dept":"전산팀","name":"김남룡","rank":"수석","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-12","dept":"전산팀","name":"김승일","rank":"수석","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-12","dept":"전산팀","name":"박대형","rank":"수석","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-15","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-15","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-15","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-15","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-15","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-15","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-15","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-15","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-16","dept":"전산팀","name":"박현준","rank":"수석","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-16","dept":"영업기획2팀","name":"박형종","rank":"부장","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-16","dept":"심사팀","name":"송국환","rank":"차장","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-16","dept":"전산팀","name":"이용범","rank":"수석","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-16","dept":"전산팀","name":"이정준","rank":"수석","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-16","dept":"전산팀","name":"정재경","rank":"수석","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-16","dept":"전산팀","name":"정철환","rank":"수석","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-17","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-17","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-17","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-17","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-17","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-17","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-17","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-17","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-18","dept":"심사팀","name":"박정욱","rank":"부장대우","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-18","dept":"심사팀","name":"고준영","rank":"부장대우","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-18","dept":"전략팀","name":"안성헌","rank":"부장","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-18","dept":"심사팀","name":"장세훈","rank":"부장대우","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-18","dept":"전산팀","name":"김남룡","rank":"수석","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-18","dept":"기획팀","name":"최기순","rank":"부장","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-18","dept":"전산팀","name":"박대형","rank":"수석","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-19","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-19","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-19","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-19","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-19","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-19","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-19","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-19","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-22","dept":"전산팀","name":"이용범","rank":"수석","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-22","dept":"전산팀","name":"이정준","rank":"수석","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-22","dept":"전산팀","name":"정재경","rank":"수석","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-22","dept":"전산팀","name":"정철환","rank":"수석","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-22","dept":"전산팀","name":"호수현","rank":"수석","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-22","dept":"전산팀","name":"황승인","rank":"수석","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-22","dept":"장비팀","name":"김진우","rank":"계장","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-23","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-23","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-23","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-23","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-23","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-23","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-23","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-23","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-24","dept":"심사팀","name":"장세훈","rank":"부장대우","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-24","dept":"전략팀","name":"안성헌","rank":"부장","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-24","dept":"심사팀","name":"고준영","rank":"부장대우","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-24","dept":"심사팀","name":"박정욱","rank":"부장대우","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-24","dept":"전산팀","name":"김승일","rank":"수석","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-24","dept":"전산팀","name":"박대형","rank":"수석","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-24","dept":"기획팀","name":"최기순","rank":"부장","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-24","dept":"전산팀","name":"김남룡","rank":"수석","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-25","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-25","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-25","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-25","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-25","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-25","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-25","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-25","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-26","dept":"전산팀","name":"호수현","rank":"수석","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-26","dept":"전산팀","name":"황승인","rank":"수석","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-26","dept":"전산팀","name":"황태원","rank":"수석","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-26","dept":"장비팀","name":"김진우","rank":"계장","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-26","dept":"장비팀","name":"정훈","rank":"부장","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-26","dept":"장비팀","name":"권도윤","rank":"과장","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-26","dept":"장비팀","name":"김민수","rank":"과장","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-26","dept":"장비팀","name":"권오현","rank":"차장","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-29","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-29","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-29","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-29","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-29","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-29","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-29","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-29","dept":"총무팀","name":"김단","rank":"계약직 사원","slot":7,"time":"17:00~17:50","type":"배정"},{"date":"2026-06-30","dept":"장비팀","name":"정다운","rank":"과장","slot":0,"time":"09:00~10:00","type":"배정"},{"date":"2026-06-30","dept":"전산팀","name":"윤승현","rank":"계장","slot":1,"time":"10:00~11:00","type":"배정"},{"date":"2026-06-30","dept":"장비팀","name":"정훈","rank":"부장","slot":2,"time":"11:00~11:50","type":"배정"},{"date":"2026-06-30","dept":"장비팀","name":"권도윤","rank":"과장","slot":3,"time":"13:00~14:00","type":"배정"},{"date":"2026-06-30","dept":"장비팀","name":"김민수","rank":"과장","slot":4,"time":"14:00~15:00","type":"배정"},{"date":"2026-06-30","dept":"장비팀","name":"권오현","rank":"차장","slot":5,"time":"15:00~16:00","type":"배정"},{"date":"2026-06-30","dept":"전산팀","name":"이승윤","rank":"6급사원","slot":6,"time":"16:00~17:00","type":"배정"},{"date":"2026-06-04","dept":"심사팀","name":"송국환","rank":"차장","slot":5,"time":"15:00~16:00","type":"교체(2026-06-04 16:00~17:00의 송국환과 교체)"},{"date":"2026-06-04","dept":"영업기획2팀","name":"박형종","rank":"부장","slot":6,"time":"16:00~17:00","type":"교체(2026-06-04 15:00~16:00의 박형종과 교체)"},{"date":"2026-06-04","dept":"심사팀","name":"박해성","rank":"계장","slot":0,"time":"09:00~10:00","type":"교체(2026-06-04 11:00~11:50의 박해성과 교체)"},{"date":"2026-06-04","dept":"기획팀","name":"천재우","rank":"과장","slot":2,"time":"11:00~11:50","type":"교체(2026-06-04 09:00~10:00의 천재우과 교체)"},{"date":"2026-06-08","dept":"전산팀","name":"노승민","rank":"대리","slot":3,"time":"13:00~14:00","type":"교체(2026-06-08 14:00~15:00의 노승민과 교체)"},{"date":"2026-06-08","dept":"기획팀","name":"천재우","rank":"과장","slot":4,"time":"14:00~15:00","type":"교체(2026-06-10 10:00~11:00의 천재우과 교체)"},{"date":"2026-06-10","dept":"총무팀","name":"조아로리","rank":"대리","slot":1,"time":"10:00~11:00","type":"교체(2026-06-08 14:00~15:00의 조아로리과 교체)"},{"date":"2026-06-10","dept":"영업기획2팀","name":"박형종","rank":"부장","slot":4,"time":"14:00~15:00","type":"교체(2026-06-10 17:00~17:50의 박형종과 교체)"},{"date":"2026-06-10","dept":"심사팀","name":"송국환","rank":"차장","slot":7,"time":"17:00~17:50","type":"교체(2026-06-10 14:00~15:00의 송국환과 교체)"},{"date":"2026-06-16","dept":"영업기획2팀","name":"김준","rank":"대리","slot":3,"time":"13:00~14:00","type":"교체(2026-06-30 17:00~17:50의 김준과 교체)"},{"date":"2026-06-30","dept":"영업기획2팀","name":"지윤중","rank":"차장","slot":7,"time":"17:00~17:50","type":"교체(2026-06-16 13:00~14:00의 지윤중과 교체)"},{"date":"2026-06-18","dept":"전산팀","name":"황태원","rank":"수석","slot":7,"time":"17:00~17:50","type":"교체(2026-06-22 16:00~17:00의 황태원과 교체)"},{"date":"2026-06-22","dept":"전산팀","name":"김승일","rank":"수석","slot":6,"time":"16:00~17:00","type":"교체(2026-06-18 17:00~17:50의 김승일과 교체)"}],"emps3":[{"dept":"전산팀","fixed":"","name":"이승윤","rank":"6급사원"},{"dept":"영업기획2팀","fixed":"","name":"김준","rank":"대리"},{"dept":"전산팀","fixed":"","name":"노승민","rank":"대리"},{"dept":"전산팀","fixed":"","name":"문광진","rank":"대리"},{"dept":"영업기획1팀","fixed":"","name":"안의영","rank":"대리"},{"dept":"총무팀","fixed":"","name":"조아로리","rank":"대리"},{"dept":"기획팀","fixed":"","name":"류화수","rank":"과장"},{"dept":"기획팀","fixed":"","name":"이가준","rank":"과장"},{"dept":"기획팀","fixed":"","name":"천재우","rank":"과장"},{"dept":"영업기획1팀","fixed":"","name":"김재찬","rank":"차장"},{"dept":"심사팀","fixed":"","name":"박해성","rank":"계장"},{"dept":"전산팀","fixed":"","name":"박현석","rank":"수석"},{"dept":"전산팀","fixed":"","name":"박현준","rank":"수석"},{"dept":"영업기획2팀","fixed":"","name":"박형종","rank":"부장"},{"dept":"심사팀","fixed":"","name":"송국환","rank":"차장"},{"dept":"영업기획2팀","fixed":"","name":"지윤중","rank":"차장"},{"dept":"심사팀","fixed":"","name":"고준영","rank":"부장대우"},{"dept":"심사팀","fixed":"","name":"박정욱","rank":"부장대우"},{"dept":"심사팀","fixed":"","name":"장세훈","rank":"부장대우"},{"dept":"전략팀","fixed":"","name":"안성헌","rank":"부장"},{"dept":"기획팀","fixed":"","name":"최기순","rank":"부장"},{"dept":"전산팀","fixed":"","name":"김남룡","rank":"수석"},{"dept":"전산팀","fixed":"","name":"김승일","rank":"수석"},{"dept":"전산팀","fixed":"","name":"박대형","rank":"수석"},{"dept":"전산팀","fixed":"","name":"이용범","rank":"수석"},{"dept":"전산팀","fixed":"","name":"이정준","rank":"수석"},{"dept":"전산팀","fixed":"","name":"정재경","rank":"수석"},{"dept":"전산팀","fixed":"","name":"정철환","rank":"수석"},{"dept":"전산팀","fixed":"","name":"호수현","rank":"수석"},{"dept":"전산팀","fixed":"","name":"황승인","rank":"수석"},{"dept":"전산팀","fixed":"","name":"황태원","rank":"수석"},{"dept":"장비팀","fixed":"","name":"김진우","rank":"계장"},{"dept":"장비팀","fixed":"","name":"정훈","rank":"부장"},{"dept":"장비팀","fixed":"","name":"권도윤","rank":"과장"},{"dept":"장비팀","fixed":"","name":"김민수","rank":"과장"},{"dept":"장비팀","fixed":"","name":"권오현","rank":"차장"},{"dept":"장비팀","fixed":"","name":"정다운","rank":"과장"},{"dept":"전산팀","fixed":"","name":"윤승현","rank":"계장"},{"dept":"총무팀","deskMode":"altday","deskStart":"2026-05-27","fixed":"","name":"김단","rank":"계약직 사원"}],"hols3":["2026-07-17"]}</script>
 <script>
 // ══════════════════════════════════════════════
 //  상수
@@ -1732,6 +3275,11 @@ function updateMonthNavButtons(){
 function renderRoster(yr,mo,data,readOnly){
   // viewMonth 라벨/플래그 동기화 (다른 곳에서 직접 호출돼도 라벨이 맞도록)
   const incomingKey = yr+'-'+String(mo).padStart(2,'0');
+  // ★ readOnly 미지정 시 baseMonth 비교로 자동 결정 (지난달 보기는 readOnly)
+  if(readOnly === undefined){
+    const baseM_auto = (typeof getBaseMonth==='function' ? getBaseMonth() : '') || document.getElementById('base-month').value || '';
+    readOnly = (baseM_auto && incomingKey !== baseM_auto);
+  }
   if(!readOnly && viewMonth !== incomingKey){
     // 편집 가능한 라이브 데이터로 그릴 때는 viewMonth를 그쪽으로 맞춤
     viewMonth = incomingKey;
@@ -1785,7 +3333,7 @@ function renderRoster(yr,mo,data,readOnly){
         <div class="slot-name" style="font-size:16px;font-weight:700;color:#1e4080;flex:1;width:auto;overflow:visible;text-overflow:unset">${emp.name}</div>
         <div class="slot-rank" style="flex-shrink:0;white-space:nowrap">${emp.rank}</div>
         <span class="slot-dept">${emp.dept}</span>
-        ${(!readOnly&&swapMode)?`<button onclick="selectSwapAltday(${di},'${ds}','${emp.name}','${emp.rank}','${emp.dept}')"
+        ${swapMode?`<button onclick="selectSwapAltday(${di},'${ds}','${emp.name}','${emp.rank}','${emp.dept}')"
           class="btn btn-swap btn-sm ${(isSelA||isSelB)?'selected':''}"
           style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px">
           ${(isSelA||isSelB)?'✓선택':'교체'}</button>`:''}
@@ -1798,14 +3346,14 @@ function renderRoster(yr,mo,data,readOnly){
         const isSelB=swapB&&swapB.dayIdx===di&&swapB.slotIdx===si;
         const sel=isSelA||isSelB;
         return `<div class="slot-row ${sel?'swap-hi':''}" id="sr-${key}"
-          style="${(!readOnly&&swapMode)?'cursor:pointer;':''}${sel?'background:#fffbe6;':''}">
+          style="${swapMode?'cursor:pointer;':''}${sel?'background:#fffbe6;':''}">
           <div class="slot-n">${slot+1}</div>
           <div class="slot-time">${TIMES[slot]}</div>
           <div class="slot-name">${emp.name}</div>
           <div class="slot-rank">${emp.rank}</div>
           <span class="slot-dept">${emp.dept}</span>
           ${swapped?'<span class="badge b-swapped" style="font-size:10px;padding:1px 5px;flex-shrink:0">교체</span>':''}
-          ${(!readOnly&&swapMode)?`<button class="btn btn-swap btn-sm ${sel?'selected':''}"
+          ${swapMode?`<button class="btn btn-swap btn-sm ${sel?'selected':''}"
             onclick="selectSwapNormal(${di},${si},'${ds}',${slot},'${emp.name}','${emp.rank}','${emp.dept}')"
             style="margin-left:auto;flex-shrink:0;white-space:nowrap;padding:4px 10px">${sel?'✓':'교체'}</button>`:
           ((!readOnly&&adminUnlocked)?`<button class="btn btn-sm" onclick="openSlotChange(${di},${si},'${ds}',${slot})"
@@ -2173,11 +3721,16 @@ function doSwap(){
   }
   setHist(hist);
   closeSwapModal();
-  setRoster(JSON.parse(JSON.stringify(curRoster,(k,v)=>v instanceof Date?v.toISOString():v)));
+  // ★ 현재 보고 있는 월이 baseMonth와 같을 때만 roster3 갱신 (지난달 미리보기는 hist만 갱신)
+  const baseM_ds = document.getElementById('base-month').value;
+  const liveM_ds = (typeof viewMonth!=='undefined' && viewMonth) ? viewMonth : baseM_ds;
+  const isLive_ds = (liveM_ds === baseM_ds);
+  if(isLive_ds){
+    setRoster(JSON.parse(JSON.stringify(curRoster,(k,v)=>v instanceof Date?v.toISOString():v)));
+  }
   saveToCloud();
   cancelSwap();
-  const m=document.getElementById('base-month').value;
-  renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);
+  renderRoster(+liveM_ds.slice(0,4),+liveM_ds.slice(5,7),curRoster);
   alert('교체 완료!\n'+nameA+' ↔ '+nameB);
 }
 
@@ -2818,14 +4371,12 @@ function restoreLocal() {
   <div class="modal" style="max-width:400px;max-height:80vh;display:flex;flex-direction:column">
     <div class="modal-h">👤 직원 선택</div>
     <div class="modal-sub" id="slot-change-info"></div>
-    <input type="text" id="slot-change-search" placeholder="이름 검색..." 
-      style="margin:8px 0;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px"
-      oninput="renderSlotChangeList()">
+    <input type="text" id="slot-change-search" placeholder="이름 검색..." style="margin:8px 0;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px" oninput="renderSlotChangeList()">
     <div id="slot-change-list" style="overflow-y:auto;flex:1;margin:4px 0"></div>
     <div class="modal-foot">
       <button class="btn" onclick="closeSlotChangeModal()">취소</button>
     </div>
   </div>
 </div>
-</body>
-</html>
+
+</body></html>
