@@ -3729,7 +3729,22 @@ function doSwap(){
   let hist=getHist();
   const nameA=swapA.name, nameB=swapB.name;
   const baseM_ds = document.getElementById('base-month').value;
-  const liveM_ds = (typeof viewMonth!=='undefined' && viewMonth) ? viewMonth : baseM_ds;
+
+  // ★★ swap 대상 월: viewMonth가 아니라 swap entry의 ds에서 직접 추출 (안전)
+  const monthA = (swapA.ds || '').slice(0,7);
+  const monthB = (swapB.ds || '').slice(0,7);
+  if(!monthA || !monthB){
+    alert('교체 대상 날짜 정보가 없습니다.');
+    cancelSwap();
+    return;
+  }
+  if(monthA !== monthB){
+    alert('⚠️ 서로 다른 월끼리는 교체할 수 없습니다.\n('+monthA+' ↔ '+monthB+')');
+    cancelSwap();
+    return;
+  }
+  const liveM_ds = monthA;
+  console.log('[swap] 대상 월:', liveM_ds, '/ baseMonth:', baseM_ds);
 
   // ★ 다중 월 라이브: viewMonth의 roster를 직접 mutation
   let targetRoster;
