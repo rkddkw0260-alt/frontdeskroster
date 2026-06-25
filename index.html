@@ -3593,7 +3593,7 @@ function toggleSwapMode(){
     btn.classList.remove('btn-green');btn.style.color='';
     panel.classList.remove('show');
   }
-  if(curRoster){const m=document.getElementById('base-month').value;renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);}
+  if(typeof refreshRosterView==='function') refreshRosterView();
 }
 
 
@@ -3616,8 +3616,8 @@ function selectSwapAltday(di, ds, name, rank, dept) {
     const cb2=document.getElementById('swap-confirm-btn');
     if(cb2){cb2.disabled=false;cb2.style.opacity='1';}
   }
-  renderRoster(+document.getElementById('base-month').value.slice(0,4),
-               +document.getElementById('base-month').value.slice(5,7), curRoster);
+  // ★ viewMonth 유지하도록 refreshRosterView 사용
+  if(typeof refreshRosterView==='function') refreshRosterView();
 }
 
 // 일반 직원 교체 선택
@@ -3652,8 +3652,8 @@ function selectSwapNormal(di, si, ds, slot, name, rank, dept) {
     clearSwapCard('swap-a'); clearSwapCard('swap-b');
     setHint('A 슬롯을 선택하세요');
   }
-  renderRoster(+document.getElementById('base-month').value.slice(0,4),
-               +document.getElementById('base-month').value.slice(5,7), curRoster);
+  // ★ viewMonth 유지
+  if(typeof refreshRosterView==='function') refreshRosterView();
 }
 function selectSwap(di,si,ds,slot,name,rank,dept){
   const entry={dayIdx:di,slotIdx:si,ds,slot,name,rank,dept};
@@ -3677,7 +3677,7 @@ function selectSwap(di,si,ds,slot,name,rank,dept){
     cb.disabled=true;cb.style.opacity='.4';
     setHint('B 슬롯을 선택하세요');
   }
-  if(curRoster){const m=document.getElementById('base-month').value;renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);}
+  if(typeof refreshRosterView==='function') refreshRosterView();
 }
 
 function fillSwapCard(id,name,rank,dept,ds,slot,filled){
@@ -3845,7 +3845,7 @@ function cancelSwap(){
   const cb=document.getElementById('swap-confirm-btn');
   cb.disabled=true;cb.style.opacity='.4';
   setHint('교체할 슬롯의 교체 버튼을 클릭하세요');
-  if(curRoster){const m=document.getElementById('base-month').value;renderRoster(+m.slice(0,4),+m.slice(5,7),curRoster);}
+  if(typeof refreshRosterView==='function') refreshRosterView();
 }
 
 // ══════════════════════════════════════════════
@@ -4362,6 +4362,7 @@ function getCloudSnapshot() {
   });
   return {
     roster:    getRoster(),
+    rosters:   getRosters(),  // ★ 다중 월 저장소 (Firebase에 반드시 포함)
     counts:    getCounts(),
     baseMonth: getBaseMonth(),
     hist:      getHist(),
@@ -4413,8 +4414,15 @@ function loadFromCloud() {
     try {
       const res = await fetch(FIREBASE_URL + '/' + DB_KEY + '.json');
       const d = await res.json();
-      if (d && d.roster) {
+      if (d && (d.roster || d.rosters)) {
         if (d.rosters)   { localStorage.setItem('rosters3',   JSON.stringify(d.rosters));   _embedded['rosters3']   = d.rosters;   }
+        else if (d.roster && d.baseMonth) {
+          // 옛 단일 roster → rosters[baseMonth]로 자동 마이그레이션
+          const migrated = {[d.baseMonth]: d.roster};
+          localStorage.setItem('rosters3', JSON.stringify(migrated));
+          _embedded['rosters3'] = migrated;
+          console.log('[Firebase] 옛 roster를 rosters3로 마이그레이션:', d.baseMonth);
+        }
         if (d.roster)    { localStorage.setItem('roster3',    JSON.stringify(d.roster));    _embedded['roster3']    = d.roster;    }
         if (d.counts)    { localStorage.setItem('counts3',    JSON.stringify(d.counts));    _embedded['counts3']    = d.counts;    }
         if (d.baseMonth) { localStorage.setItem('basemonth3', JSON.stringify(d.baseMonth)); _embedded['basemonth3'] = d.baseMonth; }
